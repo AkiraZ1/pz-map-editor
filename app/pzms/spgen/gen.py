@@ -99,7 +99,7 @@ MINFREE = int(os.environ.get("MINFREE_MB", "600")) << 20            # para de es
 ASPHALT = ["blends_street_01_80"] * 5 + ["blends_street_01_85", "blends_street_01_86", "blends_street_01_87"]
 ASPH_FAM, SIDE_FAM = 80, 48     # familias do blends_street_01: base f, canto f+1..4, borda f+8..11
 SIDEWALK = ["blends_street_01_48"] * 6 + ["blends_street_01_53", "blends_street_01_54"]
-YARD = ["floors_exterior_street_01_17", "floors_exterior_street_01_19"]
+YARD = ["floors_exterior_street_01_17", "floors_exterior_street_01_16"]   # _19 = meia-peca (buraco), _18 = piso preto: nunca usar
 PAVING = ["floors_exterior_tilesandstone_01_4", "floors_exterior_tilesandstone_01_4"]
 GRASS = ["blends_natural_01_32", "blends_natural_01_37", "blends_natural_01_38", "blends_natural_01_39"]
 GRASS2 = ["blends_natural_01_16", "blends_natural_01_21", "blends_natural_01_22", "blends_natural_01_23"]
@@ -115,6 +115,7 @@ ROOF = "floors_exterior_street_01_16"
 STAIRS = ["fixtures_stairs_01_13", "fixtures_stairs_01_12", "fixtures_stairs_01_11"]
 WIN_W, WIN_N = "fixtures_windows_01_0", "fixtures_windows_01_1"
 DOOR_EXT = ("fixtures_doors_01_20", "fixtures_doors_01_21")
+VITRINE = ("walls_commercial_02_52", "walls_commercial_02_48")   # W, N: parede de vidro do chao ao teto (vanilla, FullWindow)
 DOOR_INT = ("fixtures_doors_01_0", "fixtures_doors_01_1")
 FRAME_INT = ("fixtures_doors_frames_01_0", "fixtures_doors_frames_01_1")
 
@@ -213,6 +214,7 @@ FURN = {
 }
 FURN["sshelf"] = _f("location_shop_generic_01", S=62, E=63, N=118, W=119)   # prateleira de loja (shelves)
 FURN["cooler"] = _f("location_shop_generic_01", S=64, E=67)                   # geladeira de loja (fridge)
+FURN["shopfreezer"] = _f("appliances_refrigeration_01", S=48, E=49, N=50, W=51)
 FURN["chair"] = _f("furniture_seating_outdoor_01", E=16, S=17, N=18, W=19)    # cadeira plastica
 # hospital/clinica/farmacia (location_community_medical_01, como no vanilla)
 _M = "location_community_medical_01"
@@ -428,7 +430,12 @@ FURNISH = {
     "church": (["counter"], ["shelf", "sidetable"], 15),
     "hall": (["sidetable"], ["sidetable", "shelf", "bookshelf"], 7),
     "glassesstore": (["counter"], ["display", "shelf"], True),
-    "grocery": (["counter", "cooler", "cooler"], ["sshelf", "grocer", "cooler"], True),
+    "grocery": (["counter", "cooler", "cooler", "shopfreezer", "shopfreezer", "cooler", "shopfreezer", "cooler"],
+                ["sshelf", "grocer", "cooler", "shopfreezer"], True),
+    # estoque do supermercado: prateleiras metalicas encostadas (o miolo vira fileiras, ISLAND)
+    "grocerystorage": (["mshelf", "mshelf"], ["mshelf", "mshelf", "sshelf"], 3),
+    "restaurantkitchen": (["counter", "stove", "counter", "fridge", "sink", "counter", "stove"], ["counter", "mshelf"], 4),
+    "cafekitchen": (["counter", "stove", "fridge", "sink", "counter"], ["counter", "mshelf"], 4),
     "generalstore": (["counter", "cooler"], ["sshelf", "sshelf", "mshelf"], True),
     "pharmacy": (["counter", "counter", "widemed", "cooler", "mags", "firstaid"], ["sshelf", "sshelf", "widemed"], True),
     "bookstore": (["counter"], ["shelf", "sshelf"], True),
@@ -448,7 +455,7 @@ FURNISH = {
     "cafe": (["counter", "stove", "cooler"], ["counter", "sshelf"], True),
     "restaurantdining": (["counter", "cooler"], ["counter"], True),
     "bar": (["counter", "cooler", "cooler"], ["counter", "sshelf"], True),
-    "burgerkitchen": (["counter", "stove", "fridge"], ["counter", "mshelf"], False),
+    "burgerkitchen": (["counter", "stove", "fridge", "sink", "counter", "stove"], ["counter", "mshelf"], 4),
     # industrial (progressao: ferramentas, metal, solda, madeira, pecas de carro)
     "warehouse": ([], ["mshelf", "shelf", "mshelf"], 8),
     "factory": (["toolcab", "counter"], ["mshelf", "toolcab", "counter"], 8),
@@ -503,7 +510,8 @@ FURNISH = {
 STOREISH = ("store", "shop", "supply")
 HAND_ONLY = {"kitchen", "bathroom", "bedroom", "livingroom", "motelroom"}     # variedade propria (room_style)
 HAND_MERGE = {"medicaloffice", "hospitalroom", "hospitalstorage", "medicalstorage", "laboratory", "waitingroom",
-              "medical", "pharmacy"}                                         # mao + modelo vanilla
+              "medical", "pharmacy", "grocery", "grocerystorage", "restaurantkitchen", "cafekitchen",
+              "burgerkitchen"}                                              # mao + modelo vanilla
 SEATS = ("Chair", "Seat", "Stool", "Seating", "Pew", "Bench")
 
 
@@ -618,25 +626,37 @@ def furnish(add, rname, cells_, same, z, dsq, stz, seed):
     if not fx and not rep:
         return 0
     C = set(cells_)
+    if not C:
+        return 0
     near = lambda x, y, S_: bool(S_) and any((x + a, y + b) in S_ for a in (-1, 0, 1) for b in (-1, 0, 1))
     D9 = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 0), (0, 1), (1, -1), (1, 0), (1, 1))
     nd = lambda x, y: bool(dsq) and any((x + a, y + b, z) in dsq for a, b in D9)
     used, keep = set(), set()
     # zona livre (calcula 1 vez): a escada com patamar (st_zone ja tem folga) e a porta + vizinhos em cruz;
     # o 3x3 em volta de cada lado da porta + anel da escada tirava ~metade do comodo (11 de 24 quadrados)
-    D5 = ((0, 0), (-1, 0), (1, 0), (0, -1), (0, 1))
-    bad = {c for c in C if c in stz or any((c[0] + a, c[1] + b, z) in dsq for a, b in D5)} if dsq or stz else set()
+    def blocked(x, y):
+        return ((x, y) in stz or (x, y, z) in dsq or (x - 1, y, z) in dsq or
+                (x + 1, y, z) in dsq or (x, y - 1, z) in dsq or (x, y + 1, z) in dsq)
+    xmin, xmax = min(x for x, _ in C), max(x for x, _ in C)
+    ymin, ymax = min(y for _, y in C), max(y for _, y in C)
+    if len(C) == (xmax - xmin + 1) * (ymax - ymin + 1):
+        boundary = {(x, y) for x in range(xmin, xmax + 1) for y in (ymin, ymax)} | \
+                   {(x, y) for y in range(ymin + 1, ymax) for x in (xmin, xmax)}
+    else:
+        boundary = {(x, y) for x, y in C if (x - 1, y) not in C or (x + 1, y) not in C or
+                    (x, y - 1) not in C or (x, y + 1) not in C}
     cand = []
-    for x, y in sorted(C, key=lambda c: (h32(seed, c[0], c[1]), c)):
-        if (x, y) in bad:
+    for x, y in boundary:
+        if blocked(x, y):
             continue
         walls = [d for d, (a, b) in (("N", (0, -1)), ("W", (-1, 0)), ("S", (0, 1)), ("E", (1, 0)))
-                 if not same(x + a, y + b)]
+                 if (x + a, y + b) not in C and not same(x + a, y + b)]
         if not walls or ({"N", "S"} <= set(walls) and {"W", "E"} <= set(walls)):
             continue
         if {"N", "S"} <= set(walls) or {"W", "E"} <= set(walls):
             continue    # corredor de 1 tile: nao bloqueia
         cand.append((x, y, walls))
+    cand.sort(key=lambda c: (h32(seed, c[0], c[1]), (c[0], c[1])))
     if not cand:
         return 0
     cap = max(len(fx), min(len(C) // per, 40))
@@ -649,8 +669,13 @@ def furnish(add, rname, cells_, same, z, dsq, stz, seed):
     sty = room_style(seed)
     alt = [k for k in dict.fromkeys(list(fx) + list(rep)) if k in FURN and len(FURN[k]) >= 3]  # 1 quadrado
     lim = len(items) * 2
+    doors = [(x, y) for x, y in C if (x, y, z) in dsq] if reg else []
+    checkout_cand = sorted(cand, key=lambda c: min(abs(c[0] - x) + abs(c[1] - y) for x, y in doors)) if doors else cand
+    rear_cand = list(reversed(checkout_cand)) if rname == "grocery" and doors else cand
     for kind in items:
-        for x, y, walls in cand:
+        # O caixa fica o mais proximo possivel da entrada, sem invadir sua passagem.
+        candidates = checkout_cand if kind == "counter" and reg else rear_cand if kind in ("cooler", "shopfreezer") and rname == "grocery" else cand
+        for x, y, walls in candidates:
             if (x, y) in used or (x, y) in keep:
                 continue
             if kind in TWO:
@@ -663,7 +688,7 @@ def furnish(add, rname, cells_, same, z, dsq, stz, seed):
                     t1, t2, dx, dy = two[f]
                     rest = t2 if isinstance(t2, list) else [t2]
                     ps = [(x + dx * (i + 1), y + dy * (i + 1)) for i in range(len(rest))]
-                    if any(q not in C or q in used or q in keep or q in bad for q in ps):
+                    if any(q not in C or q in used or q in keep or blocked(*q) for q in ps):
                         continue
                     ok = (f, t1, rest, ps); break
                 if not ok:
@@ -730,9 +755,12 @@ def islands(add, mode, C, busy, z, dsq, stz, seed, gond=None, seat=None, rname=N
     corredor de 2, e/ou mesas redondas com 2 cadeiras plasticas."""
     def far(x, y, r):
         return all((x + a, y + b) in C for a in range(-r, r + 1) for b in range(-r, r + 1))
-    I = {c for c in C if far(c[0], c[1], 2) and c not in busy and
-         not any((c[0] + a, c[1] + b) in stz for a in range(-2, 3) for b in range(-2, 3)) and
-         not any((c[0] + a, c[1] + b, z) in dsq for a in range(-2, 3) for b in range(-2, 3))}
+    # Enfermarias comuns sao pequenas: dois tiles de margem impediam os leitos com cortina.
+    margin = 1 if mode == "beds" else 2
+    offsets = range(-margin, margin + 1)
+    I = {c for c in C if far(c[0], c[1], margin) and c not in busy and
+         not any((c[0] + a, c[1] + b) in stz for a in offsets for b in offsets) and
+         not any((c[0] + a, c[1] + b, z) in dsq for a in offsets for b in offsets)}
     if len(I) < 4:
         return 0
     xs, ys = [c[0] for c in I], [c[1] for c in I]
@@ -807,16 +835,16 @@ def islands(add, mode, C, busy, z, dsq, stz, seed, gond=None, seat=None, rname=N
                     n += 1; lim -= 1
         if mode == "tables":
             return n
-    # gondolas ao longo do eixo mais comprido; pares costas com costas, corredor de 2 e travessa a cada 6
+    # gondolas ao longo do eixo mais comprido; pares costas com costas e corredor de 1
     horiz = (max(xs) - x0) >= (max(ys) - y0)
     for (x, y) in sorted(I):
         u, v = (x - x0, y - y0) if horiz else (y - y0, x - x0)
-        if v % 4 not in (0, 1) or u % 7 not in (0, 2, 4):
+        if v % 3 not in (0, 1) or u % 10 not in (0, 2, 4):
             continue
         if horiz:
-            f = "N" if v % 4 == 0 else "S"
+            f = "N" if v % 3 == 0 else "S"
         else:
-            f = "W" if v % 4 == 0 else "E"
+            f = "W" if v % 3 == 0 else "E"
         t1, t2, dx, dy = (gond or GONDOLA)[f]
         x2, y2 = x + dx, y + dy
         if (x2, y2) not in I or {(x, y), (x2, y2)} & occ:
@@ -893,6 +921,135 @@ def pj(latlon):
     a = np.asarray(latlon, np.float64)
     x, y = proj(a[:, 0], a[:, 1])
     return np.stack([x, y], 1).astype(np.float32)
+
+
+
+# ---- bordas do chao (autotile com mascara de vizinhos, tabela tirada do vanilla por scripts/blend_lut.py)
+_LUT = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "blend_lut.json")))
+BLEND_LUT = [[]] + [_LUT["blend"].get(str(m), []) for m in range(1, 16)]   # mascara N1 E2 S4 W8 -> pecas
+CURB_LUT = _LUT["curb"]                       # "<R|A><E><SE><S>" -> street_curbs_01_<n> (no quadrado N/W)
+NAT_G = (G_DEF, G_GRASS, G_PARK, G_WOOD)      # chao natural (G_DEF tambem e grama)
+# meio-fio na diagonal (degrau de 1 quadrado com asfalto meio a meio): k do asfalto -> peca
+CURB_DIAG = {1: "street_curbs_01_diag_2_41", 2: "street_curbs_01_diag_2_40",
+             3: None, 4: None}            # 45 graus na vertical da tela: o tileset nao tem peca (so a meia-peca)
+LINE_PC = {1: 2, 2: 0, 3: 1}                  # faixa: borda N -> 2, borda W -> 0, as duas (cruzamento) -> 1
+
+
+
+def smooth_ground(Ga, Ba, keep):
+    """Tira o dente de serra do raster: quadrado com 3+ vizinhos (N/S/E/W) de outro grupo vira esse grupo.
+    Grupos: asfalto, agua, natural, piso duro. Predio e `keep` (postos) ficam como estao."""
+    grp = np.zeros(256, np.uint8)
+    grp[G_ASPH], grp[G_WATER] = 1, 2
+    grp[list(NAT_G)] = 3
+    grp[[G_SIDE, G_PAVE, G_YARD]] = 4
+    for _ in range(2):
+        P = np.pad(Ga, 1, mode="edge")
+        nbs = [P[:-2, 1:-1], P[2:, 1:-1], P[1:-1, :-2], P[1:-1, 2:]]       # N S W E
+        gn = [grp[v] for v in nbs]
+        g0 = grp[Ga]
+        free = (g0 > 0) & (Ba == 0) & ~keep
+        out = Ga.copy()
+        for g in (1, 2, 3, 4):
+            cnt = sum((v == g).astype(np.uint8) for v in gn)
+            m = free & (cnt >= 3) & (g0 != g)
+            if not m.any():
+                continue
+            pick = np.where(gn[0] == g, nbs[0], np.where(gn[1] == g, nbs[1], np.where(gn[2] == g, nbs[2], nbs[3])))
+            out[m] = pick[m]
+        Ga = out
+    return Ga
+
+
+def _winpad(A, oy, ox, n, p):
+    """A[oy-p:oy+n+p, ox-p:ox+n+p], repetindo a borda fora do raster."""
+    H_, W_ = A.shape
+    ya, yb, xa, xb = oy - p, oy + n + p, ox - p, ox + n + p
+    sub = A[max(ya, 0):min(yb, H_), max(xa, 0):min(xb, W_)]
+    return np.pad(sub, ((max(0, -ya), max(0, yb - H_)), (max(0, -xa), max(0, xb - W_))), mode="edge")
+
+
+def ground_edges(Ga, LNa, oy, ox, n, HH, wx0, wy0):
+    """Pecas de borda do chao z0 de uma celula, vetorizado: {(x,y): [tiles]} para por logo acima do piso.
+    - natural invade o vizinho (grama sobre calcada/terra, mata sobre grama, agua sobre grama): blends 1-4/8-15
+    - asfalto em degrau de 1 quadrado: meia-peca de asfalto + meio-fio diagonal
+    - meio-fio: no quadrado N/W da divisa asfalto x alto, peca da CURB_LUT (vanilla)
+    - faixas pintadas: bordas N/W encadeadas (sem tracinho solto na diagonal)"""
+    W2 = _winpad(Ga, oy, ox, n, 2)
+    A = W2 == G_ASPH
+    bld = W2 == 255
+    wat = W2 == G_WATER
+    R = ~A & ~bld & ~wat
+    nat = np.isin(W2, NAT_G)
+    wood = W2 == G_WOOD
+
+    def sh(M, dy, dx, p=1):        # vizinho (dy,dx) do miolo com margem p-1
+        h_, w_ = M.shape
+        return M[p + dy:h_ - p + dy, p + dx:w_ - p + dx]
+
+    # degrau diagonal (margem 1): R com exatamente 2 lados vizinhos de asfalto
+    aN, aS, aW, aE = sh(A, -1, 0), sh(A, 1, 0), sh(A, 0, -1), sh(A, 0, 1)
+    R1 = sh(R, 0, 0)
+    K = np.zeros(R1.shape, np.uint8)
+    K[R1 & aN & aW & ~aS & ~aE] = 1
+    K[R1 & aS & aE & ~aN & ~aW] = 2
+    K[R1 & aS & aW & ~aN & ~aE] = 3
+    K[R1 & aN & aE & ~aS & ~aW] = 4
+    out = {}
+
+    def put(M, f):
+        ys, xs = np.nonzero(M)
+        for y, x in zip(ys.tolist(), xs.tolist()):
+            v = f(y, x)
+            out.setdefault((x, y), []).extend(v if isinstance(v, list) else [v])
+
+    c = (slice(1, -1), slice(1, -1))
+    Kc = K[c]
+    # 1) natural invadindo o vizinho (mascara cardinal do invasor -> pecas da BLEND_LUT; 8-11 sorteia 12-15)
+    bit = lambda M: (sh(M, -1, 0, 2).astype(np.uint8) | sh(M, 0, 1, 2) * 2 | sh(M, 1, 0, 2) * 4 | sh(M, 0, -1, 2) * 8)
+    natc, woodc, Ac, Rc = sh(nat, 0, 0, 2), sh(wood, 0, 0, 2), sh(A, 0, 0, 2), sh(R, 0, 0, 2)
+    mwood = bit(wood)
+    for src, rec, kind in ((wat, natc, "agua"), (nat, (Rc | Ac) & ~natc, "nat"), (wood, natc & ~woodc, "mata")):
+        m = bit(src)
+        m[~rec] = 0
+        ys, xs = np.nonzero(m)
+        for y, x in zip(ys.tolist(), xs.tolist()):
+            mm = int(m[y, x])
+            if kind == "agua":
+                base = "blends_natural_02_"; f = 0
+            else:
+                base = "blends_natural_01_"
+                f = 16 if kind == "mata" or mwood[y, x] & mm else 32
+            hh = HH[y][x]
+            out.setdefault((x, y), []).extend(f"{base}{f + (k + 4 if k >= 8 and hh & 1 else k)}" for k in BLEND_LUT[mm])
+    # 2) degrau de asfalto: meia-peca + meio-fio diagonal
+    put(Kc > 0, lambda y, x: f"blends_street_01_{ASPH_FAM + int(Kc[y, x])}")
+    put((Kc == 1) | (Kc == 2), lambda y, x: CURB_DIAG[int(Kc[y, x])])
+    # 3) meio-fio reto/canto: vizinho em degrau conta como asfalto so pelo lado em que a meia-peca e asfalto;
+    #    para o asfalto, predio/agua ao lado tambem nao pede meio-fio
+    Ke, Ks, Kse = sh(K, 0, 1), sh(K, 1, 0), sh(K, 1, 1)
+    hiE, hiS, hiSE = (np.where(Ac, ~sh(R, dy, dx, 2), sh(A, dy, dx, 2)) for dy, dx in ((0, 1), (1, 0), (1, 1)))
+    eA = hiE | (Ke == 1) | (Ke == 3)
+    sA = hiS | (Ks == 1) | (Ks == 4)
+    seA = hiSE | (Kse == 1)
+    code = np.where(Ac, 8, 0) + eA * 4 + seA * 2 + sA * 1
+    code[~(Ac | Rc) | (Kc > 0)] = 16
+    keys = [("A" if i & 8 else "R") + f"{(i >> 2) & 1}{(i >> 1) & 1}{i & 1}" for i in range(16)]
+    pcs = [[f"street_curbs_01_{p}" for p in CURB_LUT.get(k, [])] for k in keys] + [[]]
+    curb = np.array([bool(p) for p in pcs], bool)[code]
+    put(curb, lambda y, x: pcs[int(code[y, x])])
+    # 4) faixas pintadas: linha em x na borda N, em y na borda W; so trecho reto (o vanilla nao pinta diagonal,
+    #    e ligar o degrau virava zigue-zague)
+    L2 = _winpad(LNa, oy, ox, n, 2)
+    jj, ii = np.mgrid[0:n + 4, 0:n + 4]
+    on = (L2 > 0) & ((L2 < 3) | (((np.where(L2 == 3, ii + wx0, jj + wy0) - 2) // 3) % 2 == 0)) & A
+    Lx, Ly = on & ((L2 == 1) | (L2 == 3)), on & ((L2 == 2) | (L2 == 4))
+    eN = sh(Lx, 0, 0) & (sh(Lx, 0, 1) | sh(Lx, 0, -1))
+    eW = sh(Ly, 0, 0) & (sh(Ly, 1, 0) | sh(Ly, -1, 0))
+    pc = eN[c].astype(np.uint8) | eW[c] * 2
+    pc[~Ac | curb] = 0
+    put(pc > 0, lambda y, x: f"street_trafficlines_01_{LINE_PC[int(pc[y, x])]}")
+    return out
 
 
 def load_sources(d, extra=None):
@@ -1349,19 +1506,30 @@ def build_rasters(rx0, ry0):
                 r_ = POI_SNAP
                 win = Ba[max(0, yi - r_):yi + r_ + 1, max(0, xi - r_):xi + r_ + 1]
                 ys_, xs_ = np.nonzero(win)
-                if not len(xs_):
-                    continue
                 d_ = (ys_ + max(0, yi - r_) - yi) ** 2 + (xs_ + max(0, xi - r_) - xi) ** 2
-                j_ = int(d_.argmin())
-                if d_[j_] > r_ * r_:
-                    continue
-                bi = int(win[ys_[j_], xs_[j_]])
+                j_ = int(d_.argmin()) if len(xs_) else -1
+                if j_ >= 0 and d_[j_] <= r_ * r_:
+                    bi = int(win[ys_[j_], xs_[j_]])
+                    xi, yi = int(xs_[j_]) + max(0, xi - r_), int(ys_[j_]) + max(0, yi - r_)   # ponto no predio
+                else:   # o predio perto caiu (lasca/fino/via publica): loja pequena no lugar livre mais perto
+                    kq = kiosk_tardio(Ba, Ga, CNa, pub, blds, xi, yi, pt, (3, int(k)))
+                    if not kq:
+                        continue
+                    bi, xi, yi = kq
             b_ = blds[bi]
+            if b_["tags"].get("src") == "poi" and any(
+                    (q[2].get("shop"), q[2].get("amenity")) != (pt.get("shop"), am_) for q in b_.get("pois") or ()):
+                kq = kiosk_tardio(Ba, Ga, CNa, pub, blds, xi, yi, pt, (3, int(k)))   # loja criada e de 1 POI so
+                if kq:
+                    bi, xi, yi = kq
+                    b_ = blds[bi]
             b_.setdefault("pois", []).append((xi, yi, pt))
             # o POI "principal" do predio: o 1o com loja/servico (nao sobrescreve um que ja nomeia o predio)
             if b_["poi"] is None or (not (b_["poi"].get("shop") or b_["poi"].get("amenity")) and
                                      (pt.get("shop") or pt.get("amenity"))):
                 b_["poi"] = pt
+    poi_areas(S, box, off, Ba, Ga, CNa, pub, blds)            # lote OSM de loja/servico/escola e predio de parque
+    posto_predios(Ba, blds, canop, CNa)         # predio no lote do posto vira a loja de 1 andar
     ZNa = np.array(ZN, dtype=np.uint8)
     nb = len(blds)
     tot = np.bincount(Ba.ravel(), minlength=nb)
@@ -1386,6 +1554,8 @@ def build_rasters(rx0, ry0):
     plan_extras(Ba, Lv, Ga, blds)
     plan_specials(Ba, Lv, Ga, blds)
     PST = plan_postos(Ba, Ga, blds, canop, CNa, fuel_sources(S, box, off), fuel_sources(S, box, off, True))
+    plan_muro_escola(Ba, Ga, PST)
+    Ga = smooth_ground(Ga, Ba, PST)   # degrau de 1 quadrado some antes do autotile de bordas
     Ga[Ba > 0] = 255   # chao sob predio (o piso vem do predio)
     # arvores reais (GeoSampa) fora de predio e de asfalto
     TR = np.zeros((H, W), bool)
@@ -1395,14 +1565,51 @@ def build_rasters(rx0, ry0):
         tx = (TXY[sel, 0] - rx0).astype(np.int32); ty = (TXY[sel, 1] - ry0).astype(np.int32)
         TR[ty, tx] = True
         TR &= (Ba == 0) & (Ga != G_ASPH) & ~PST
+        for qx, qy, qw, qh in G.get("pfarea", ()):
+            TR[qy:qy + qh, qx:qx + qw] = False
     return Ga, LNa, Ba, Lv, blds, masp, roads, TR
 
 
 POI_SNAP = 6        # tiles: POI na calcada ainda nomeia o predio da frente
+FEIRA_ROOMS = ("producestorage", "hotdogstand", "producestorage")   # hortifruti, pastel, hortifruti
+
+
+def _prefabs():
+    """prefabs recortados do mapa vanilla (scripts/prefab.py): tiles, moveis, containers e comodos prontos."""
+    d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prefabs")
+    out = {}
+    if os.path.isdir(d):
+        for f in sorted(os.listdir(d)):
+            if f.endswith(".json"):
+                j = json.load(open(os.path.join(d, f)))
+                j["sq"] = {tuple(map(int, k.split(","))): v for k, v in j["sq"].items()}
+                out[f[:-5]] = j
+    return out
+
+
+PREFABS = _prefabs()
+
+
+def _sem_marca(pfs):
+    """posto de SP nao tem Fossoil/Gas2Go: paredes com a pintura da marca viram parede comercial clara vanilla
+    (walls_commercial_01 base 48, mesmo papel W/N/canto/pilar/janela/porta) e logo/faixa/letreiro da marca sai.
+    Moveis, piso e bombas ficam (interior e de outro no; bomba e so cor, sem nome)."""
+    c = "walls_commercial_01_"
+    fo, g2 = "location_shop_fossoil_01_", "location_shop_gas2go_01_"
+    troca = {fo + "0": [c + "57", WIN_N], fo + "2": [c + "56", WIN_W], fo + "4": [c + "50"], fo + "5": [c + "49"],
+             fo + "6": [c + "48"], fo + "7": [c + "51"], fo + "8": [c + "58"], fo + "9": [c + "59"],
+             g2 + "0": [c + "48"], g2 + "1": [c + "49"], g2 + "2": [c + "50"], g2 + "3": [c + "51"],
+             g2 + "10": [c + "58"], g2 + "11": [c + "59"]}
+    tira = {fo + str(i) for i in (30, 40, 41, 42, 44, 45, 53)} | {g2 + str(i) for i in range(32, 54) if i not in (38, 39)}
+    for pf in pfs.values():
+        for k, ts in pf["sq"].items():
+            pf["sq"][k] = [n for t in ts if t not in tira for n in troca.get(t, [t])]
+
+
+_sem_marca(PREFABS)
 KIOSK_SHOPS = {"newsagent", "kiosk", "lottery", "ticket", "tobacco"}
 SMALL_AMEN = {"restaurant", "fast_food", "cafe", "bar", "pub", "bank", "pharmacy", "ice_cream",
               "bureau_de_change", "post_office", "dentist", "doctors", "veterinary"}
-FEIRA_ROOMS = ("juicestand", "grocery", "hotdogstand")     # barracas 4x4 da feira (amenity=marketplace)
 
 
 def synth_kiosks(S, rx0, ry0, W, H, ob, gs, CNa, Ga, pub):
@@ -1529,7 +1736,7 @@ POSTO_R = 30        # quadrados: ponto de posto a menos disso de uma cobertura =
 
 def synth_canopies(Ba, Ga, canop, CNa, pts):
     """posto marcado no OSM (ponto/area) sem cobertura desenhada: cria cobertura no maior retangulo livre
-    (sem predio, rua, agua nem calcada) perto do ponto, para o posto existir no mapa (bombas vanilla fossoil)."""
+    (sem predio, rua, agua nem calcada) perto do ponto, para o posto existir no mapa."""
     H_, W_ = Ba.shape
     n0 = len(canop)
     for px, py, br in pts:
@@ -1539,6 +1746,31 @@ def synth_canopies(Ba, Ga, canop, CNa, pts):
         ya, yb, xa, xb = max(0, y - POSTO_R), min(H_, y + POSTO_R + 1), max(0, x - POSTO_R), min(W_, x + POSTO_R + 1)
         if CNa[ya:yb, xa:xb].any():
             continue
+        # sem cobertura e sem predio perto: posto vanilla inteiro (loja + cobertura) no lote livre mais perto
+        pf = PREFABS.get(POSTO_PF)
+        if pf and not (Ba[max(0, y - 12):y + 13, max(0, x - 12):x + 13] > 0).any():
+            pw, ph = pf["w"], pf["h"]
+            bad = (Ba > 0) | np.isin(Ga, (G_ASPH, G_WATER)) | (CNa > 0)
+            for qx, qy, qw, qh in G["pfarea"]:
+                bad[qy - 1:qy + qh + 1, qx - 1:qx + qw + 1] = True
+            best = None
+            for dy in range(-POSTO_R, POSTO_R + 1, 2):
+                for dx in range(-POSTO_R, POSTO_R + 1, 2):
+                    x0, y0 = x + dx - pw // 2, y + dy - ph // 2
+                    d = dx * dx + dy * dy
+                    if (best and d >= best[0]) or x0 < 1 or y0 < 1 or x0 + pw >= W_ - 1 or y0 + ph >= H_ - 1:
+                        continue
+                    if not bad[y0:y0 + ph, x0:x0 + pw].any():
+                        best = (d, x0, y0)
+            if os.environ.get("ONLY") and not best:
+                print("  posto sem predio e sem lote", pw, "x", ph, "em", G["rx0"] + x, G["ry0"] + y)
+            if best:
+                _, x0, y0 = best
+                G["pfarea"].append((x0, y0, pw, ph))
+                stamp_prefab(x0, y0, POSTO_PF)
+                if os.environ.get("ONLY"):
+                    print("  posto vanilla em", G["rx0"] + x0, G["ry0"] + y0)
+                continue
         r = 14
         ya, yb, xa, xb = max(0, y - r), min(H_, y + r + 1), max(0, x - r), min(W_, x + r + 1)
         g = Ga[ya:yb, xa:xb]
@@ -1561,6 +1793,253 @@ def synth_canopies(Ba, Ga, canop, CNa, pts):
         print("postos sem cobertura no OSM, cobertura criada:", len(canop) - n0)
 
 
+RES_B = ("house", "detached", "apartments", "residential", "terrace", "semidetached_house", "bungalow", "dormitory")
+POSTO_LOJA_B = ("yes", "commercial", "retail", "roof", "kiosk", "service")
+# muro de escola publica de SP (vanilla, fencing_01): frente para a rua = grade sobre mureta de concreto (com poste a
+# cada 3), divisa com vizinho = muro de concreto. Indices conferidos montando a linha: W, N, canto NW, W/N com poste.
+MURO_ESC = {"grade": ("fencing_01_50", "fencing_01_49", "fencing_01_52", "fencing_01_51", "fencing_01_48"),
+            "muro": ("fencing_01_40", "fencing_01_41", "fencing_01_42", "fencing_01_40", "fencing_01_41")}
+
+
+def area_crop(ring, holes, off, W_, H_):
+    """poligono OSM -> (y0, x0, mascara recortada no bbox), em coordenada de raster; None fora do bloco."""
+    r = ring - off
+    x0, y0 = max(0, int(r[:, 0].min())), max(0, int(r[:, 1].min()))
+    x1, y1 = min(W_, int(r[:, 0].max()) + 2), min(H_, int(r[:, 1].max()) + 2)
+    if x1 - x0 < 2 or y1 - y0 < 2 or len(r) < 3:
+        return None
+    im = Image.new("L", (x1 - x0, y1 - y0), 0)
+    d = ImageDraw.Draw(im)
+    d.polygon([tuple(p) for p in (r - (x0, y0)).tolist()], fill=1)
+    for h in holes:
+        if len(h) >= 3:
+            d.polygon([tuple(p) for p in (h - off - (x0, y0)).tolist()], fill=0)
+    return y0, x0, np.array(im, bool)
+
+
+def poi_areas(S, box, off, Ba, Ga, CNa, pub, blds):
+    """lote OSM (area sem building) e predio OSM de loja/servico/escola: o predio do mapa que esta >= 50% dentro
+    dele (ou cobre >= 50% dele) recebe o POI; sem nenhum, loja pequena no lugar livre mais perto.
+    Predio dentro de parque/area de lazer sem tag de casa nao e casa: vira centro comunitario (ou o tipo da tag).
+    Guarda os lotes de escola em G['escolas'] para o muro."""
+    H_, W_ = Ba.shape
+    nb = len(blds)
+    tot = np.bincount(Ba.ravel(), minlength=nb)
+    G["escolas"] = []
+    na = npk = nk = 0
+    for st, isb in ((S["OA"], False), (S["OB"], True)):
+        for i in st.sel(*box):
+            t = st.tags[i]
+            am, sh = t.get("amenity"), t.get("shop")
+            park = not isb and (t.get("leisure") == "park" or t.get("landuse") == "recreation_ground")
+            poi = bool(sh and sh not in ("vacant", "no")) or am in AMEN_ROOMS or am in CIVIC_MIX or am == "marketplace"
+            if not (park or poi) or (isb and t.get("building") == "roof"):
+                continue
+            c = area_crop(st.rings[i][0], st.rings[i][1:], off, W_, H_)
+            if c is None:
+                continue
+            y0, x0, m = c
+            if am in ("school", "kindergarten") and not isb:
+                G["escolas"].append(c)
+            sub = Ba[y0:y0 + m.shape[0], x0:x0 + m.shape[1]]
+            ins = np.bincount(sub[m].ravel(), minlength=nb)[:nb]   # loja criada aqui mesmo (>= nb) ja tem POI
+            ins[0] = 0
+            hit = np.nonzero((ins * 2 > tot) | (ins * 2 > m.sum()))[0].tolist()
+            if poi and not hit and ins.any() and am != "marketplace":   # lote dividido: o que mais ocupa (feira e na rua)
+                hit = [int(ins.argmax())]
+            for bi in hit:
+                b = blds[bi]
+                if b["kind"] == "masp" or (park and not poi and b["tags"].get("building") in RES_B):
+                    continue
+                bt = b["tags"]
+                tagged = b.get("poi") or bt.get("amenity") or bt.get("shop") or bt.get("leisure")
+                if poi and (t.get("name"), sh, am) not in {(q[2].get("name"), q[2].get("shop"), q[2].get("amenity"))
+                                                           for q in b.get("pois") or ()}:
+                    ys, xs = np.nonzero((sub == bi) & m)
+                    b.setdefault("pois", []).append((int(xs.mean()) + x0, int(ys.mean()) + y0, t))
+                    if not tagged:
+                        b["poi"] = t
+                        na += 1
+                    tagged = True
+                if park:
+                    if not tagged:
+                        b["tags"] = dict(bt, amenity="community_centre")
+                        npk += 1
+                    if b["rooms"] in ("res", "apt"):
+                        b["kind"] = b["rooms"] = "com"
+            if poi and not hit and (sh or am in SMALL_AMEN or am == "marketplace"):
+                ys, xs = np.nonzero(m)
+                nk += bool(kiosk_tardio(Ba, Ga, CNa, pub, blds, int(xs.mean()) + x0, int(ys.mean()) + y0, t,
+                                        (4 + isb, int(i))))
+    if os.environ.get("ONLY"):
+        print("POI de area/predio OSM em predio:", na, "| loja criada:", nk, "| predio de parque -> centro comunitario:",
+              npk, "| lotes de escola:", len(G["escolas"]))
+
+
+def kiosk_tardio(Ba, Ga, CNa, pub, blds, xi, yi, pt, fid):
+    """POI sem predio no mapa final (o do OSM/GeoSampa caiu como lasca, fino ou via publica): loja de 1 andar
+    (banca 4x4 / loja 6x6) no lugar livre mais perto, ate POI_SNAP. -> (predio, x, y) ou None."""
+    H_, W_ = Ba.shape
+    sh = pt.get("shop")
+    # mascaras so na janela em volta do POI (no raster inteiro custava ~3 np.isin por POI)
+    R = POI_SNAP + 12
+    wy, wx = max(0, yi - R), max(0, xi - R)
+    sl = (slice(wy, min(H_, yi + R + 1)), slice(wx, min(W_, xi + R + 1)))
+    Gw, aw = Ga[sl], (np.isin(Ga[sl], (G_ASPH, G_WATER)) | (CNa[sl] > 0))
+    hard = pub[sl] | aw
+    rua = pt.get("amenity") == "marketplace"     # feira livre fecha a rua de verdade (como em synth_kiosks)
+    for n, bad in ((4 if sh in KIOSK_SHOPS else 6, hard | (Gw == G_SIDE)), (4, hard),
+                   (4, aw),     # patio/estacionamento servem
+                   (4, (Gw == G_WATER) if rua else aw)):
+        best = None
+        rr = POI_SNAP + 2 if bad is not hard and n == 4 else POI_SNAP   # ultima tentativa: borda ainda a <= 6
+        for dy in range(-rr, rr + 1):
+            for dx in range(-rr, rr + 1):
+                x0, y0 = xi + dx - n // 2, yi + dy - n // 2
+                if x0 < 2 or y0 < 2 or x0 + n >= W_ - 2 or y0 + n >= H_ - 2:
+                    continue
+                d = dx * dx + dy * dy
+                if best and d >= best[0]:
+                    continue
+                if Ba[y0 - 1:y0 + n + 1, x0 - 1:x0 + n + 1].any() or bad[y0 - wy:y0 - wy + n, x0 - wx:x0 - wx + n].any():
+                    continue
+                best = (d, x0, y0)
+        if best:
+            _, x0, y0 = best
+            bi = len(blds)
+            Ba[y0:y0 + n, x0:x0 + n] = bi
+            blds.append({"lv": 1, "kind": "com", "rooms": "com", "poi": pt, "pois": [(x0 + n // 2, y0 + n // 2, pt)],
+                         "tags": {"building": "kiosk" if n == 4 else "retail", "building:levels": "1", "src": "poi"},
+                         "h": h32(fid[0], fid[1] & 0x7FFFFFFF, 77), "fid": fid, "keep": False, "obel": False})
+            return bi, x0 + n // 2, y0 + n // 2
+    return None
+
+
+def posto_predios(Ba, blds, canop, CNa):
+    """predio OSM com fuel, ou sem tag, encostado (<= 3) na cobertura do posto: e a loja de conveniencia, 1 andar,
+    nunca sobrado/predio residencial. O que ele cobre da cobertura volta a ser patio aberto."""
+    nb = len(blds)
+    tot = np.bincount(Ba.ravel(), minlength=nb)
+    n = 0
+    for j in range(len(canop)):
+        m = CNa == j + 1
+        ys, xs = np.nonzero(m)
+        if not len(xs):
+            continue
+        x0, x1 = max(0, int(xs.min()) - 3), int(xs.max()) + 4
+        y0, y1 = max(0, int(ys.min()) - 3), int(ys.max()) + 4
+        sub, ms = Ba[y0:y1, x0:x1], m[y0:y1, x0:x1]
+        dm = ms.copy()
+        for _ in range(3):
+            d2 = dm.copy()
+            d2[1:] |= dm[:-1]; d2[:-1] |= dm[1:]; d2[:, 1:] |= dm[:, :-1]; d2[:, :-1] |= dm[:, 1:]
+            dm = d2
+        for bi in np.unique(sub[dm]).tolist():
+            if not bi or tot[bi] > 800:
+                continue
+            b = blds[bi]
+            bt = b["tags"]
+            fuel = bt.get("amenity") == "fuel" or (b.get("poi") or {}).get("amenity") == "fuel"
+            semtag = bt.get("building", "yes") in POSTO_LOJA_B and not bt.get("name") and \
+                not bt.get("amenity") and not bt.get("shop") and "leisure" not in bt
+            if b["kind"] == "masp" or not (fuel or semtag):
+                continue
+            sub[(sub == bi) & ms] = 0
+            n += b["lv"] > 1 or b["rooms"] != "com"
+            b["lv"] = 1
+            b["kind"] = b["rooms"] = "com"
+            b["tags"] = dict(bt, amenity="fuel")
+    if os.environ.get("ONLY"):
+        print("predio no lote do posto -> loja de 1 andar:", n)
+
+
+def plan_muro_escola(Ba, Ga, PST):
+    """muro no contorno do lote amenity=school/kindergarten (G['escolas']): grade na frente, concreto na divisa, sem cruzar
+    predio, rua, agua nem posto; portao de 2 quadrados a cada 24 ao longo do muro."""
+    xsq = G["xsq"]
+    H_, W_ = Ba.shape
+    n = 0
+    for y0, x0, mc in G.get("escolas", ()):
+        L = np.zeros((mc.shape[0] + 2, mc.shape[1] + 2), bool)
+        # lote OSM que invade rua/calcada: o muro fica na divisa com a calcada, nao some
+        gc = Ga[y0:y0 + mc.shape[0], x0:x0 + mc.shape[1]]
+        L[1:-1, 1:-1] = mc & ~np.isin(gc, (G_ASPH, G_WATER, G_SIDE))
+        Y0, X0 = y0 - 1, x0 - 1
+        walls = {}
+        ys, xs = np.nonzero(L[:, 1:] != L[:, :-1])          # parede W do quadrado (x+1, y)
+        for y, x in zip((ys + Y0).tolist(), (xs + X0 + 1).tolist()):
+            walls[(x, y)] = walls.get((x, y), 0) | 1
+        ys, xs = np.nonzero(L[1:, :] != L[:-1, :])          # parede N do quadrado (x, y+1)
+        for y, x in zip((ys + Y0 + 1).tolist(), (xs + X0).tolist()):
+            walls[(x, y)] = walls.get((x, y), 0) | 2
+        for (x, y), f in walls.items():
+            if not (1 <= x < W_ - 1 and 1 <= y < H_ - 1) or Ba[y, x] or PST[y, x]:
+                continue
+            ok = 0
+            for bit, (qx, qy), along in ((1, (x - 1, y), y), (2, (x, y - 1), x)):
+                if not f & bit or Ba[qy, qx] or PST[qy, qx] or (along // 2) % 12 == 0:
+                    continue
+                if {int(Ga[y, x]), int(Ga[qy, qx])} & {G_ASPH, G_WATER}:
+                    continue
+                ok |= bit
+            if ok:
+                frente = np.isin(Ga[max(0, y - 2):y + 3, max(0, x - 2):x + 3], (G_ASPH, G_SIDE)).any()
+                tp = MURO_ESC["grade" if frente else "muro"]
+                i = {1: 0, 2: 1, 3: 2}[ok]
+                if i < 2 and (y if i == 0 else x) % 3 == 0:
+                    i += 3                       # poste da grade
+                xsq.setdefault((x, y, 0), []).append(tp[i])
+                n += 1
+    if os.environ.get("ONLY") and G.get("escolas"):
+        print("muro de escola:", n, "quadrados em", len(G["escolas"]), "lotes")
+
+
+def stamp_prefab(fx, fy, nm):
+    """carimba um prefab vanilla em coordenada de raster: tiles em G['xsq'] (com patio proprio limpa o chao do
+    gen), comodos em G['xrooms'] agrupados no predio vanilla de origem (G['xbld'])."""
+    pf = PREFABS[nm]
+    xsq, xclr, xrooms = G["xsq"], G["xclr"], G["xrooms"]
+    H_, W_ = G["Ba"].shape if "Ba" in G and G["Ba"] is not None else (1 << 30, 1 << 30)
+    for (dx, dy, dz), ts in pf["sq"].items():
+        x, y = fx + dx, fy + dy
+        if 0 <= x < W_ and 0 <= y < H_:
+            if pf.get("floor") and dz == 0:
+                xclr.add((x, y, 0))
+            xsq.setdefault((x, y, dz), []).extend(ts)
+    for k, (rname, rz, rects, *bid) in enumerate(pf["rooms"]):
+        xrooms.append((rname, rz, {(fx + rx + i, fy + ry + j) for rx, ry, rw, rh in rects
+                                   for i in range(rw) for j in range(rh)}))
+        G["xbld"][len(xrooms) - 1] = ("pf", fx, fy, bid[0] if bid and bid[0] >= 0 else -1 - k)
+
+
+LOJA_PF = ("loja_posto", "loja_posto_p")          # so a loja de conveniencia do posto vanilla (fossoil, gasstore, deposito, banheiros)
+POSTO_PF = "posto_fossoil"      # posto vanilla completo (loja com interior + cobertura + bombas + patio)
+
+
+def posto_loja(Ba, Ga, CNa, used, x0, y0, x1, y1):
+    """carimba a maior loja de posto vanilla (LOJA_PF) que caiba em lote livre a ate 10 da cobertura."""
+    H_, W_ = Ba.shape
+    bad = (Ba > 0) | np.isin(Ga, (G_ASPH, G_WATER)) | (CNa > 0) | used
+    for qx, qy, qw, qh in G["pfarea"]:
+        bad[max(0, qy - 1):qy + qh + 1, max(0, qx - 1):qx + qw + 1] = True
+    for nm in (n for n in LOJA_PF if n in PREFABS):
+        pw, ph = PREFABS[nm]["w"], PREFABS[nm]["h"]
+        best = None
+        for qy in range(max(1, y0 - ph - 10), min(H_ - ph - 1, y1 + 11)):
+            for qx in range(max(1, x0 - pw - 10), min(W_ - pw - 1, x1 + 11)):
+                d = max(x0 - (qx + pw), qx - x1, 0) + max(y0 - (qy + ph), qy - y1, 0)
+                if (best and d >= best[0]) or bad[qy:qy + ph, qx:qx + pw].any():
+                    continue
+                best = (d, qx, qy, nm)
+        if best:
+            _, qx, qy, _ = best
+            G["pfarea"].append((qx, qy, pw, ph))
+            used[qy:qy + ph, qx:qx + pw] = True
+            stamp_prefab(qx, qy, nm)
+            return best
+    return None
+
+
 def plan_postos(Ba, Ga, blds, canop, CNa, srcs, todos=()):
     """posto aberto sob cada cobertura do OSM: piso de pedra, bombas vanilla, pilares, cobertura z1 na cor da
     bandeira (borda) e branca (miolo), totem na calcada e letreiro na loja mais perto. Devolve mascara (sem arvore)."""
@@ -1580,7 +2059,21 @@ def plan_postos(Ba, Ga, blds, canop, CNa, srcs, todos=()):
         ys, xs = np.nonzero(m)
         if len(xs) < 6:
             continue
+        # cobertura e retangulo: o poligono OSM (girado/recortado pela loja) rasterizado sai em escada.
+        # Vale o maior retangulo livre na caixa dele (sem predio, rua, calcada, agua); sobra vira patio.
         x0, x1, y0, y1 = int(xs.min()), int(xs.max()), int(ys.min()), int(ys.max())
+        fr = (Ba[y0:y1 + 1, x0:x1 + 1] == 0) & ~np.isin(Ga[y0:y1 + 1, x0:x1 + 1], (G_ASPH, G_WATER, G_SIDE))
+        fr &= (CNa[y0:y1 + 1, x0:x1 + 1] == 0) | (CNa[y0:y1 + 1, x0:x1 + 1] == j + 1)
+        rc = max_rect(fr)
+        if not rc or (rc[2] - rc[0]) * (rc[3] - rc[1]) * 2 < len(xs):
+            rc = max_rect(m[y0:y1 + 1, x0:x1 + 1])
+        if rc and (rc[2] - rc[0]) >= 3 and (rc[3] - rc[1]) >= 3:
+            Ga[m] = G_PAVE                       # patio onde o poligono passava
+            used |= m
+            m = np.zeros_like(m)
+            m[y0 + rc[0]:y0 + rc[2], x0 + rc[1]:x0 + rc[3]] = True
+            ys, xs = np.nonzero(m)
+            x0, x1, y0, y1 = int(xs.min()), int(xs.max()), int(ys.min()), int(ys.max())
         cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
         br = fuel_brand(t)
         if br is None:
@@ -1639,15 +2132,25 @@ def plan_postos(Ba, Ga, blds, canop, CNa, srcs, todos=()):
                 break
         if tot:
             used[tot[2], tot[1]] = True
-        # letreiro: predio mais perto (ate 8 quadrados da cobertura), se nao for publico/rede
+        # letreiro: so na conveniencia do proprio lote (predio de posto: tag/POI fuel, ja de 1 andar por
+        # posto_predios) a ate 8 quadrados; sem ela a testeira da cobertura basta (nada de galpao vizinho)
         ya, yb, xa, xb = max(0, y0 - 8), min(H_, y1 + 9), max(0, x0 - 8), min(W_, x1 + 9)
         sub = Ba[ya:yb, xa:xb]
         if sub.any():
             yy, xx = np.nonzero(sub)
             d = np.maximum(np.maximum(x0 - (xx + xa), (xx + xa) - x1), np.maximum(y0 - (yy + ya), (yy + ya) - y1))
-            bi = int(sub[yy[d.argmin()], xx[d.argmin()]])
-            if 0 < bi < nb and blds[bi].get("posto") is None and blds[bi]["lv"] <= 2:
-                blds[bi]["posto"] = br
+            for q in np.argsort(d, kind="stable").tolist():
+                bi = int(sub[yy[q], xx[q]])
+                b_ = blds[bi] if 0 < bi < nb else None
+                if b_ and b_.get("posto") is None and b_["lv"] <= 1 and (
+                        b_["tags"].get("amenity") == "fuel" or (b_.get("poi") or {}).get("amenity") == "fuel"):
+                    b_["posto"] = br
+                    break
+        else:   # posto sem predio perto: loja de conveniencia vanilla (interior completo) ao lado, a maior que couber
+            best = posto_loja(Ba, Ga, CNa, used, x0, y0, x1, y1)
+            G["nloja"] = G.get("nloja", 0) + bool(best)
+            if os.environ.get("ONLY"):
+                print("  posto sem predio em", G["rx0"] + x0, G["ry0"] + y0, "->", best[3] if best else "sem lugar")
     if os.environ.get("ONLY") and canop:
         print("postos:", len(canop), "coberturas, bandeiras BR/Shell/Ipiranga/ALE/sem:", stat)
     return used
@@ -1797,6 +2300,7 @@ def plan_specials(Ba, Lv, Ga, blds):
     H_, W_ = Ba.shape
     GX, GY = rx0 + CX0 * CS, ry0 + CY0 * CS
     xsq, xclr, xrooms, heli = {}, set(), [], set()
+    G["xbld"], G["pfarea"] = {}, []
     pts = {"heli": [], "camp": [], "portal": [], "cars": [], "dungeon": []}
 
     def core(x, y):
@@ -2183,6 +2687,388 @@ def plan_jails(Ba, blds, bb, stairs):
     return out
 
 
+# plantas por tipo (rodada 3 dos interiores): no lugar da grade de 14, como nos predios vanilla.
+# supermercado = salao aberto + faixa de fundo (estoque/escritorio/banheiro); restaurante = salao + cozinha
+# e banheiro ao fundo; escola = salas dos dois lados de um corredor; delegacia = recepcao na frente + salas
+# e celas; loja pequena = salao com estoque/banheiro no fundo. Coordenadas do raster; a frente e o lado
+# com mais rua/calcada. Devolve {bi: dict(x0, y0, Z, names, doors, extra, zmax)}.
+LAY_KITCHEN = {"restaurantdining": "restaurantkitchen", "cafe": "cafekitchen", "burgerkitchen": "burgerkitchen",
+               "pizzakitchen": "pizzakitchen"}
+_LAY_TABLE = "v:location_restaurant_pileocrepe_01|Light Wood Restaurant|Table"
+_LAY_CHAIR = "v:location_restaurant_pileocrepe_01|Pile o' Crepe|Chair"
+# paleta vanilla (delegacia de Muldraugh, cozinhas de restaurante)
+_V_ = "v:"
+LAY_KIT_WALL = [_V_ + "appliances_refrigeration_01|Industrial|Fridge", _V_ + "fixtures_counters_01|Steel|Counter",
+                _V_ + "appliances_cooking_01|Industrial|Oven", _V_ + "fixtures_counters_01|Steel|Counter", "stove",
+                _V_ + "fixtures_counters_01|Steel|Counter", _V_ + "fixtures_sinks_01|Large Industrial|Sink",
+                _V_ + "fixtures_counters_01|Steel|Counter", _V_ + "fixtures_counters_01|Steel|Counter",
+                _V_ + "trashcontainers_01|Grey Garbage|Bin"]
+LAY_STOOL = _V_ + "location_restaurant_bar_01||Bar Stool"
+LAY_DESK = _V_ + "fixtures_counters_01|Dark|Counter"
+LAY_PC = _V_ + "appliances_com_01|Desktop|Computer"
+LAY_OCHAIR = _V_ + "furniture_seating_indoor_01|Black Office|Chair"
+_LAY_SIDES = {"N": ((0, -1), "S"), "S": ((0, 1), "N"), "W": ((-1, 0), "E"), "E": ((1, 0), "W")}  # frente -> fundo
+
+
+def lay_kind(b, area):
+    if b["kind"] == "masp" or b.get("obel") or b.get("hosp") or b.get("mil") or len(b.get("pois") or ()) >= 2:
+        return None
+    t = btags(b)
+    a, s = t.get("amenity"), t.get("shop")
+    if a == "police":
+        return "police" if area >= 24 else None
+    if a in ("school", "university", "college"):
+        return "school" if area >= 80 else None
+    if a in AMEN_ROOMS and AMEN_ROOMS[a] in LAY_KITCHEN:
+        return "rest" if area >= 30 else None
+    if s in SHOP_ROOMS:
+        if SHOP_ROOMS[s] == "grocery" and (s in ("supermarket", "wholesale") or area >= 200):
+            return "super" if area >= 60 else None
+        if area <= 400:
+            return "shop"
+    return None
+
+
+def plan_layouts(Ba, Ga, blds, bb, stairs, jails):
+    GX, GY = G["rx0"] + CX0 * CS, G["ry0"] + CY0 * CS
+    H_, W_ = Ba.shape
+    out = {}
+    for i in range(1, len(blds)):
+        if bb[i, 2] < 0:
+            continue
+        b = blds[i]
+        x0, y0, x1, y1 = (int(v) for v in bb[i])
+        if x0 < 1 or y0 < 1 or x1 >= W_ - 1 or y1 >= H_ - 1:
+            continue
+        M = Ba[y0:y1 + 1, x0:x1 + 1] == i
+        area = int(M.sum())
+        kind = lay_kind(b, area)
+        if not kind:
+            continue
+        L = _lay_one(i, b, kind, M, x0, y0, Ba, Ga, stairs.get(i), jails.get(i), GX, GY)
+        if L:
+            out[i] = L
+    return out
+
+
+def _lay_one(bi, b, kind, M, x0, y0, Ba, Ga, st, jail, GX, GY):
+    h, w = M.shape
+    # frente: lado com mais rua/calcada/piso encostado
+    best, front = -1, "S"
+    for f, ((dx, dy), _) in _LAY_SIDES.items():
+        sub = Ba[y0 + dy:y0 + dy + h, x0 + dx:x0 + dx + w]
+        g = Ga[y0 + dy:y0 + dy + h, x0 + dx:x0 + dx + w]
+        edge = M & (sub != bi)
+        sc = int(sum(int(edge[g == c].sum()) * v for c, v in OUT_SCORE.items() if v >= 2))
+        if sc > best:
+            best, front = sc, f
+    back = _LAY_SIDES[front][1]
+    yy, xx = np.mgrid[0:h, 0:w]
+    if front == "N":
+        d, u, D, Wd = yy, xx, h, w
+    elif front == "S":
+        d, u, D, Wd = h - 1 - yy, xx, h, w
+    elif front == "W":
+        d, u, D, Wd = xx, yy, w, h
+    else:
+        d, u, D, Wd = w - 1 - xx, yy, w, h
+    Z = np.zeros((h, w), np.int16)
+    names, pairs, extra, extra_up = {}, [], {}, {}
+    Z[M] = 1
+    base = room_name(b, 0, (0, 0))
+    fx = FACE[front]                      # movel encostado na frente olha para dentro
+    zmax = 0
+
+    def band(z_id, m):
+        Z[M & m] = z_id
+
+    def cut_u(lo, hi, n_min, width):      # fatias de ~width ao longo de u em [lo, hi)
+        n = max(1, round((hi - lo) / width))
+        if (hi - lo) / n < n_min:
+            n = max(1, (hi - lo) // n_min)
+        e = [lo + round(k * (hi - lo) / n) for k in range(n + 1)]
+        return list(zip(e[:-1], e[1:]))
+
+    def at(dd, uu):                       # (d, u) -> raster
+        if front == "N":
+            return x0 + uu, y0 + dd
+        if front == "S":
+            return x0 + uu, y0 + h - 1 - dd
+        if front == "W":
+            return x0 + dd, y0 + uu
+        return x0 + w - 1 - dd, y0 + uu
+
+    def face_to(T, C):                    # direcao de C para T
+        return "E" if T[0] > C[0] else "W" if T[0] < C[0] else "S" if T[1] > C[1] else "N"
+
+    def fget(k, f_):
+        F = FURN[k]
+        return F.get(f_) or F.get("S") or next(iter(F.values()))
+
+    def tables(g, dmax=None, lim=12, step=4, sides=((0, -1), (0, 1), (-1, 0), (1, 0))):
+        """mesas em grade com cadeiras viradas para a mesa; passo 4 deixa 1 vao de circulacao"""
+        inn = Z == g
+        inn = inn & np.roll(inn, 1, 0) & np.roll(inn, -1, 0) & np.roll(inn, 1, 1) & np.roll(inn, -1, 1)
+        sel = inn & (d % step == 1) & (u % step == 1)
+        if dmax is not None:
+            sel &= d < dmax
+        ys_, xs_ = np.nonzero(sel)
+        out = []
+        for y_, x_ in zip(ys_[:lim], xs_[:lim]):
+            dd_, uu_ = int(d[y_, x_]), int(u[y_, x_])
+            T = at(dd_, uu_)
+            out.append((T, FURN[_LAY_TABLE]["S"], None))
+            for dd2, du in sides:
+                C = at(dd_ + dd2, uu_ + du)
+                out.append((C, FURN[_LAY_CHAIR][face_to(T, C)], None))
+        return out
+
+    def along_walls(g, seq, every=1, lim=40):
+        """itens encostados nas paredes da zona g, seguindo a parede, virados para dentro"""
+        out, i_ = [], 0
+        ys_, xs_ = np.nonzero(Z == g)
+        cand = []
+        for y_, x_ in zip(ys_, xs_):
+            for side, (dx_, dy_) in (("N", (0, -1)), ("W", (-1, 0)), ("S", (0, 1)), ("E", (1, 0))):
+                yy_, xx_ = y_ + dy_, x_ + dx_
+                if not (0 <= yy_ < h and 0 <= xx_ < w) or Z[yy_, xx_] != g:
+                    cand.append((int(d[y_, x_]), int(u[y_, x_]), x_, y_, side)); break
+        cand.sort(key=lambda e: (e[4], e[0], e[1]))
+        for k_, (_, _, x_, y_, side) in enumerate(cand):
+            if k_ % every or len(out) >= lim:
+                continue
+            out.append(((x0 + int(x_), y0 + int(y_)), fget(seq[i_ % len(seq)], FACE[side]), None)); i_ += 1
+        return out
+
+    if kind == "super":
+        names[1] = "grocery"
+        sd = 5 if D >= 18 else 4 if D >= 11 else 0
+        if sd:
+            m = d >= D - sd
+            band(2, m); names[2] = "grocerystorage"; pairs.append((1, 2))
+            if Wd >= 10:
+                band(3, m & (u < 4)); names[3] = "bathroom"; pairs.append((1, 3))
+            if Wd >= 16:
+                band(4, m & (u >= 4) & (u < 9)); names[4] = "office"; pairs.append((2, 4))
+        # fileira de caixas na entrada: balcao de 2 com caixa registradora, um a cada 4 tiles
+        ck = []
+        for uu in range(2, Wd - 3, 4):
+            ck += [(2, uu, REGISTER), (2, uu + 1, None)]
+        extra[1] = [(at(dd, uu), FURN["counter"][fx], r_ and r_[fx]) for dd, uu, r_ in ck[:12] if D >= 8]
+    elif kind == "rest":
+        names[1] = base
+        kd = 5 if D >= 14 else 4 if D >= 9 else 0
+        if kd:
+            m = d >= D - kd
+            band(2, m); names[2] = LAY_KITCHEN.get(base, "restaurantkitchen"); pairs.append((1, 2))
+            if base == "burgerkitchen":
+                names[1] = "restaurantdining"
+            if Wd >= 9:
+                band(3, m & (u < 3)); names[3] = "bathroom"; pairs.append((1, 3))
+            # balcao do salao encostado na parede da cozinha, deixando 3 tiles livres na ponta da porta
+            dd = D - kd - 1
+            u0 = 3 if Wd >= 9 else 0
+            row = [uu for uu in range(u0 + 1, Wd - 1) if uu < u0 + 1 + max(3, (Wd - u0) // 2)]
+            extra[1] = [(at(dd, uu), FURN["counter"][FACE[back]], REGISTER[FACE[back]] if k_ == 1 else None)
+                        for k_, uu in enumerate(row)]
+            extra[1] += [(at(dd - 1, uu), FURN[LAY_STOOL]["S"], None) for k_, uu in enumerate(row) if k_ != 1]
+            extra[2] = along_walls(2, LAY_KIT_WALL)              # cozinha: bancadas continuas + fogao/forno/pia
+        extra.setdefault(1, []).extend(tables(1, D - kd - 3 if kd else None))   # salao: mesa + 4 cadeiras
+    elif kind == "school":
+        zmax = 9
+        nid = [1]
+
+        def new(n0, nup):
+            nid[0] += 1; names[nid[0]] = (n0, nup); return nid[0]
+        names[1] = ("hall", "hall")
+        if D >= 13:
+            a_ = (D - 3) // 2
+            bands = [(0, a_), (a_ + 3, D)]
+            band(1, (d >= a_) & (d < a_ + 3))
+        elif D >= 8:
+            bands = [(2, D)]
+            band(1, d < 2)
+        else:
+            bands = [(0, D)]
+        first = True
+        for (lo, hi) in bands:
+            segs = cut_u(0, Wd, 5, 8)
+            ncaf = 0                                     # refeitorio no fundo: 2 fatias se couber, 1 em predio menor
+            if lo == bands[-1][0] and hi - lo >= 4:
+                ncaf = 2 if len(segs) >= 4 else 1 if (len(segs) >= 2 and len(bands) > 1) or len(segs) >= 4 else 0
+            for si, (ua, ub) in enumerate(segs):
+                m = (d >= lo) & (d < hi) & (u >= ua) & (u < ub)
+                if lo == 0 and first and si == len(segs) // 2 and len(segs) >= 3:
+                    g = new("office", "office")          # secretaria, na frente do meio
+                elif si == 0 and lo == bands[0][0]:
+                    g = new("bathroom", "bathroom")
+                elif ncaf and si >= len(segs) - ncaf:
+                    g = new("cafeteria", "classroom")    # refeitorio (2 fatias do fundo, junta abaixo)
+                else:
+                    g = new("classroom", "classroom")
+                band(g, m)
+                pairs.append((1, g) if len(bands) > 1 or D >= 8 else (g, g))
+            first = False
+        caf = [g for g, n in names.items() if n[0] == "cafeteria"]
+        for g in caf[1:]:                                # refeitorio: uma sala so
+            Z[Z == g] = caf[0]; del names[g]
+        for g, n in names.items():                       # carteiras em grade (2 do contorno, 1 de corredor)
+            if "classroom" not in n:
+                continue
+            inn = Z == g
+            for _ in range(2):
+                inn = inn & np.roll(inn, 1, 0) & np.roll(inn, -1, 0) & np.roll(inn, 1, 1) & np.roll(inn, -1, 1)
+            ys_, xs_ = np.nonzero(inn & (d % 2 == 1) & (u % 2 == 0))
+            grid = [(at(int(d[y_, x_]), int(u[y_, x_])), FURN["bench"][fx], None) for y_, x_ in zip(ys_[:16], xs_[:16])]
+            if n[0] == "classroom":
+                extra[g] = grid
+            elif n[0] == "cafeteria":
+                extra[g] = tables(g, lim=10)
+            if n[1] == "classroom":
+                extra_up[g] = grid
+    elif kind == "police":
+        names[1] = "lobby"
+        if D >= 10:
+            band(1, d < 5)
+            lo = 5
+            if D >= 16:
+                band(2, (d >= 5) & (d < 7)); names[2] = "hall"; lo = 7; pairs.append((1, 2))
+            seq = ["policeoffice", "policelocker", "interrogationroom", "policegunstorage", "policeoffice",
+                   "evidenceroom", "policestorage"]
+            segs = cut_u(0, Wd, 4, 6)
+            for si, (ua, ub) in enumerate(segs):
+                g = 10 + si
+                band(g, (d >= lo) & (u >= ua) & (u < ub))
+                names[g] = "bathroom" if si == len(segs) - 1 and len(segs) >= 3 else seq[si % len(seq)]
+                pairs.append((2 if lo == 7 else 1, g))
+            # balcao da recepcao: fileira no meio da recepcao, aberta nas pontas
+            row = [uu for uu in range(2, Wd - 2) if abs(uu - Wd // 2) > 1]
+            extra[1] = [(at(2, uu), FURN[LAY_DESK][fx], REGISTER[fx] if k_ == 0 else LAY_PC and
+                         FURN[LAY_PC][fx] if k_ % 3 == 1 else None) for k_, uu in enumerate(row[:8])]
+            extra[1] += [(at(3, uu), FURN[LAY_OCHAIR][face_to(at(2, uu), at(3, uu))], None)
+                         for k_, uu in enumerate(row[:8]) if k_ % 3 == 1]
+            for g in [g for g in names if g >= 10]:
+                n_ = names[g]
+                if n_ == "policeoffice":                 # mesas com computador + cadeira, arquivos na parede
+                    inn = Z == g
+                    inn = inn & np.roll(inn, 1, 0) & np.roll(inn, -1, 0) & np.roll(inn, 1, 1) & np.roll(inn, -1, 1)
+                    ys_, xs_ = np.nonzero(inn & (d % 3 == 0) & (u % 3 == 1))
+                    lst = []
+                    for y_, x_ in zip(ys_[:6], xs_[:6]):
+                        dd_, uu_ = int(d[y_, x_]), int(u[y_, x_])
+                        T, C = at(dd_, uu_), at(dd_ + 1, uu_)
+                        lst += [(T, FURN[LAY_DESK][fx], FURN[LAY_PC][fx]),
+                                (C, FURN[LAY_OCHAIR][face_to(T, C)], None)]
+                    extra[g] = lst + along_walls(g, ["filing"], every=2, lim=6)
+                elif n_ in ("policelocker", "policegunstorage", "evidenceroom"):   # fileiras de armarios
+                    extra[g] = along_walls(g, ["locker"] if n_ == "policelocker" else ["mlocker", "locker", "filing"])
+                elif n_ == "interrogationroom":          # mesa + 2 cadeiras no meio
+                    extra[g] = tables(g, lim=1, step=3, sides=((0, -1), (0, 1)))
+        elif D >= 5 and Wd >= 4:                         # posto pequeno: recepcao com balcao + sala do fundo
+            k0 = 3 if D >= 7 else 2
+            band(10, d >= k0); names[10] = "policestorage" if D * Wd < 60 else "policelocker"; pairs.append((1, 10))
+            extra[1] = [(at(k0 - 1, uu), FURN["counter"][FACE[back]], REGISTER[FACE[back]] if uu == 1 else None)
+                        for uu in range(1, Wd - 1) if uu != Wd // 2][:6]
+        if jail:                                         # celas da plan_jails: fora dos comodos e das paredes
+            S = grid_of(b)
+            jx, jy = jail[0] * S - GX + jail[3] - x0, jail[1] * S - GY + jail[4] - y0
+            jw = jail_layout(S, jail[2])[-1][1]
+            ys_, xs_ = np.nonzero(M)
+            inj = (xs_ - jx >= 0) & (xs_ - jx <= jw) & (ys_ - jy >= 0) & (ys_ - jy < 5)
+            Z[ys_[inj], xs_[inj]] = -1
+            cor = (xs_ - jx >= 0) & (xs_ - jx <= jw) & (ys_ - jy >= 5) & (ys_ - jy < 7)
+            Z[ys_[cor], xs_[cor]] = 30; names[30] = "hall"
+    elif kind == "shop":
+        names[1] = base
+        if D >= 9 and Wd >= 4:
+            m = d >= D - 3
+            stn = base + "storage" if base + "storage" in TPL else base.replace("store", "storestorage") \
+                if base.replace("store", "storestorage") in TPL else "storage"
+            band(2, m); names[2] = stn; pairs.append((1, 2))
+            if Wd >= 8:
+                band(3, m & (u < 3)); names[3] = "bathroom"; pairs.append((2, 3))
+        # vitrine: expositores encostados na fachada, longe da porta (a porta e decidida na celula)
+        extra[1] = [(at(0, uu), FURN["display"][fx], None) for uu in range(1, Wd - 1, 3) if Wd >= 5][:4]
+    # zonas minusculas (forma irregular) voltam para o salao
+    for g in [g for g in np.unique(Z) if g > 1]:
+        if int((Z == g).sum()) < 6:
+            Z[Z == g] = 1
+    if kind != "school":
+        names = {g: (n, n) for g, n in names.items()}
+    zs = [int(g) for g in np.unique(Z) if g > 0]
+    if len(zs) < 2 and kind not in ("super", "shop", "rest"):
+        return None
+    for g in zs:
+        names.setdefault(g, names.get(1, (base, base)))
+    doors = _lay_doors(Z, x0, y0, pairs, st)
+    def clip(E):
+        return {g: [(X, Y, s1, s2) for (X, Y), s1, s2 in lst
+                    if 0 <= Y - y0 < h and 0 <= X - x0 < w and Z[Y - y0, X - x0] == g] for g, lst in E.items()}
+    return {"x0": x0, "y0": y0, "Z": Z, "names": names, "doors": doors, "extra": clip(extra),
+            "extra_up": clip(extra_up), "zmax": zmax}
+
+
+def _lay_doors(Z, x0, y0, pairs, st):
+    """uma porta por par pedido (no meio da parede comum, longe das quinas) e, depois, uma para cada zona
+    que ficou sem caminho ate o salao (arvore a partir da zona 1)."""
+    zone = st_zone(st) if st else frozenset()
+    edges = collections.defaultdict(list)       # (a, b) -> [(X, Y, lado)]
+    a_, b_ = Z[:, :-1], Z[:, 1:]                 # lado W do tile da direita
+    for y, x in zip(*np.nonzero((a_ != b_) & (a_ > 0) & (b_ > 0))):
+        p = tuple(sorted((int(a_[y, x]), int(b_[y, x]))))
+        edges[p].append((x0 + int(x) + 1, y0 + int(y), "W"))
+    a_, b_ = Z[:-1, :], Z[1:, :]
+    for y, x in zip(*np.nonzero((a_ != b_) & (a_ > 0) & (b_ > 0))):
+        p = tuple(sorted((int(a_[y, x]), int(b_[y, x]))))
+        edges[p].append((x0 + int(x), y0 + int(y) + 1, "N"))
+    doors = set()
+    linked = collections.defaultdict(set)
+
+    def put(p):
+        es = edges.get(p)
+        if not es:
+            return False
+        es_set = set(es)
+        ok = [e for e in es if (e[0], e[1]) not in zone and
+              all(q in es_set for q in (((e[0], e[1] - 1, "W"), (e[0], e[1] + 1, "W")) if e[2] == "W"
+                                         else ((e[0] - 1, e[1], "N"), (e[0] + 1, e[1], "N"))))]
+        ok = ok or [e for e in es if (e[0], e[1]) not in zone]
+        if not ok:
+            return False
+        ok.sort()
+        doors.add(ok[len(ok) // 2])
+        linked[p[0]].add(p[1]); linked[p[1]].add(p[0])
+        return True
+    for p in pairs:
+        p = tuple(sorted(p))
+        if p[0] != p[1]:
+            put(p)
+    zs = sorted(int(g) for g in np.unique(Z) if g > 0)
+    root = 1 if 1 in zs else zs[0]
+    for _ in range(len(zs)):
+        seen, stack = {root}, [root]
+        while stack:
+            g = stack.pop()
+            for h_ in linked[g]:
+                if h_ not in seen:
+                    seen.add(h_); stack.append(h_)
+        miss = [g for g in zs if g not in seen]
+        if not miss:
+            break
+        prog = False
+        for g in miss:
+            for p in sorted((p for p in edges if g in p and (p[0] in seen or p[1] in seen)),
+                            key=lambda p: -len(edges[p])):
+                if put(p):
+                    prog = True
+                    break
+            if prog:
+                break
+        if not prog:
+            break
+    return doors
+
+
 CAT = ["", "Residential", "CommunityServices", "Hospitality", "Industrial", "Medical",
        "RestaurantsAndEntertainment", "RetailAndCommercial"]
 MED_A = {"hospital", "clinic", "doctors", "dentist", "pharmacy", "veterinary"}
@@ -2247,6 +3133,7 @@ def write_cell(args):
         w_[(y0p - (oy - 1)):(y0p - (oy - 1)) + a_.shape[0], (x0p - (ox - 1)):(x0p - (ox - 1)) + a_.shape[1]] = a_
         return w_
     BALw, BCw = win(G["BAL"], np.uint8), win(G["BC"], bool)
+    SGN = G.get("signs", {})
     lads = {(lx - ox, ly - oy): v for (lx, ly), v in G["ladders"].items()
             if 0 <= lx - ox < CS and 0 <= ly - oy < CS}
     maxz = int(Lw[1:-1, 1:-1].max()) if Lw.size else 0
@@ -2302,18 +3189,7 @@ def write_cell(args):
                 continue
             c = grow[x]
             if c == G_ASPH:
-                add(x, y, 0, ASPHALT[hh & 7])
-                nb = {"N": gwl[y][x + 1], "S": gwl[y + 2][x + 1], "W": gwl[y + 1][x], "E": gwl[y + 1][x + 2]}
-                curb = next((d for d in ("N", "S", "W", "E") if nb[d] in (G_SIDE, G_PAVE)), None)
-                if curb:
-                    add(x, y, 0, CURB[curb])
-                else:
-                    v = lnl[y][x]
-                    dashed = v >= 3
-                    if dashed:
-                        v -= 2
-                    if v and (not dashed or ((wx if v == 1 else wy) // 3) % 2 == 0):
-                        add(x, y, 0, LINE_X if v == 1 else LINE_Y)
+                add(x, y, 0, ASPHALT[hh & 7])     # meio-fio e faixas: ground_edges (abaixo)
             elif c == G_SIDE:
                 add(x, y, 0, SIDEWALK[(hh >> 3) & 7])
                 touches = G_ASPH in (gwl[y][x + 1], gwl[y + 2][x + 1], gwl[y + 1][x], gwl[y + 1][x + 2])
@@ -2339,37 +3215,12 @@ def write_cell(args):
             else:
                 add(x, y, 0, GRASS[hh & 3])   # terra sorteada no meio da grama virava quadrado escuro (xadrez)
 
-    # ---- curvas: grama/agua invadem o vizinho com overlay de canto (meio a meio) ou de borda
-    NAT = {G_PARK: 32, G_GRASS: 32, G_WOOD: 16}
-    HH3 = h32_grid(ox + GX, oy + GY, CS, 3)
-    for y in range(CS):
-        for x in range(CS):
-            if Bl[y + 1][x + 1]:
-                continue
-            c = gl[y][x]
-            nb = {"N": gwl[y][x + 1], "S": gwl[y + 2][x + 1], "W": gwl[y + 1][x], "E": gwl[y + 1][x + 2]}
-            if c in (G_SIDE, G_PAVE, G_YARD) and sum(v == G_ASPH for v in nb.values()) == 2:
-                ds_ = {d for d, v in nb.items() if v == G_ASPH}
-                k_ = next((v for pr, v in BLEND_IDX.items() if set(pr) == ds_), None)
-                if k_ is not None:      # degrau da via na diagonal vira meio a meio (curva)
-                    sq.setdefault((x, y, 0), []).insert(1, T(f"blends_street_01_{ASPH_FAM + k_}"))
-            if c in (G_SIDE, G_PAVE, G_YARD, G_ASPH):
-                fams = [(d, NAT[v]) for d, v in nb.items() if v in NAT]
-                ts = "blends_natural_01"
-            elif c in (G_PARK, G_GRASS, G_WOOD, G_DEF):
-                fams = [(d, 0) for d, v in nb.items() if v == G_WATER]
-                ts = "blends_natural_02"
-            else:
-                continue
-            if not fams:
-                continue
-            ds = {d for d, _ in fams}
-            f = max(f_ for _, f_ in fams)
-            hh = HH3[y][x]
-            k = next((v for pr, v in BLEND_IDX.items() if set(pr) <= ds), None)
-            if k is None:
-                k = BLEND_EDGE[next(iter(sorted(ds)))][hh & 1]
-            sq.setdefault((x, y, 0), []).insert(1, T(f"{ts}_{f + k}"))
+    # ---- bordas: blends, meio-fio (reto/canto/diagonal) e faixas, autotile vetorizado (ground_edges)
+    for (x, y), ts_ in ground_edges(Ga, LNa, oy, ox, CS, h32_grid(ox + GX, oy + GY, CS, 3), ox + GX, oy + GY).items():
+        if Bl[y + 1][x + 1]:
+            continue
+        l_ = sq.setdefault((x, y, 0), [])
+        l_[1:1] = [T(t) for t in ts_]
 
     # ---- predios, andar a andar
     rooms = []                       # (name, z, rects)
@@ -2389,6 +3240,19 @@ def write_cell(args):
                     del opening[key]
             for (lx, ly), (lsd, _) in lads.items():      # escada de servico: parede lisa, sem porta
                 opening.pop((lx, ly, lsd), None)
+            # loja de rua: vitrine (vidro do chao ao teto, vanilla) dos dois lados de cada porta externa do terreo
+            vit = set()
+            for (vx, vy, vs), op_ in opening.items():
+                if op_ != "door":
+                    continue
+                vb = blds[int(Id[vy + 1, vx + 1] or (Id[vy + 1, vx] if vs == "W" else Id[vy, vx + 1]))]
+                if vb["kind"] == "masp" or vb.get("obel") or not (
+                        vb.get("pois") or vb["tags"].get("shop") or vb["tags"].get("amenity") in SMALL_AMEN):
+                    continue
+                for d_ in (-1, 1):
+                    q_ = (vx, vy + d_, "W") if vs == "W" else (vx + d_, vy, "N")
+                    if q_ not in opening:
+                        vit.add(q_)
         # bordas: wallW[y,x] entre (x-1,y) e (x,y); wallN entre (x,y-1) e (x,y)  (coords com borda)
         eW = Id[:, 1:] != Id[:, :-1]           # shape (CS+2, CS+1): coluna j = borda entre j e j+1
         eN = Id[1:, :] != Id[:-1, :]
@@ -2457,7 +3321,10 @@ def write_cell(args):
                     out_ = (Y, X) if inside == 0 else (Y, X - 1)
                     if exterior_w and 0 < z < min(FULL, b.get("acc", FULL)) and BCw[out_] and BALw[out_] > z:
                         door = True                        # porta da varanda
-                    win = exterior_w and not door and not b.get("obel") and ((wy + GY) % 3 == 1 or b["kind"] == "masp")
+                    if z == 0 and exterior_w and not door and (x, y, "W") in vit:
+                        add(x, y, z, VITRINE[0]); continue
+                    win = exterior_w and not door and not b.get("obel") and ((wy + GY) % 3 == 1 or b["kind"] == "masp") \
+                        and not (z == 1 and (wx, wy) in SGN)
                     add(x, y, z, f"{sh}_{bs + (10 if door else 8 if win else 0)}")
                     if exterior_w and inside == 0 and z > 0 and not door and not win and not BALw[Y, X] and \
                             b["rooms"] != "ind" and not b.get("obel") and (x, y) not in lads and h32(wx + GX, wy + GY, z, 11) % 9 == 0:
@@ -2475,7 +3342,10 @@ def write_cell(args):
                     out_ = (Y, X) if inside == 0 else (Y - 1, X)
                     if exterior_n and 0 < z < min(FULL, b.get("acc", FULL)) and BCw[out_] and BALw[out_] > z:
                         door = True
-                    win = exterior_n and not door and not b.get("obel") and ((wx + GX) % 3 == 1 or b["kind"] == "masp")
+                    if z == 0 and exterior_n and not door and (x, y, "N") in vit:
+                        add(x, y, z, VITRINE[1]); continue
+                    win = exterior_n and not door and not b.get("obel") and ((wx + GX) % 3 == 1 or b["kind"] == "masp") \
+                        and not (z == 1 and (wx, wy) in SGN)
                     add(x, y, z, f"{sh}_{bs + 1 + (10 if door else 8 if win else 0)}")
                     if exterior_n and inside == 0 and z > 0 and not door and not win and not BALw[Y, X] and \
                             b["rooms"] != "ind" and not b.get("obel") and (x, y) not in lads and h32(wx + GX, wy + GY, z, 11) % 9 == 0:
@@ -2505,6 +3375,14 @@ def write_cell(args):
             _ix = _od[_a:_b]
             ys, xs = np.divmod(_ix, Id.shape[1] - 2)
             gx = ((xs + ox + GX) // S).tolist(); gy = ((ys + oy + GY) // S).tolist()
+            LY = G.get("lays", {}).get(bi)
+            if LY and z > LY["zmax"]:
+                LY = None
+            if LY:                                # planta do tipo (plan_layouts): zona no lugar do bloco
+                Zl, lx0, ly0 = LY["Z"], LY["x0"] - ox, LY["y0"] - oy
+                zh, zw = Zl.shape
+                zof = lambda xx, yy: int(Zl[yy - ly0, xx - lx0]) if 0 <= yy - ly0 < zh and 0 <= xx - lx0 < zw else 0
+                gx = ["L"] * len(xs); gy = Zl[ys - ly0, xs - lx0].tolist()
             xs, ys = xs.tolist(), ys.tolist()
             sh, bs = int_wall(b)
             st = stairs.get(bi)
@@ -2513,8 +3391,14 @@ def write_cell(args):
                 wx, wy = x + ox, y + oy
                 if st and (wx, wy) in st_zone(st):
                     continue
-                wW = bool(((wx + GX) % S == 0) and Idl[y + 1][x] == bi) if x > 0 else False
-                wN = bool(((wy + GY) % S == 0) and Idl[y][x + 1] == bi) if y > 0 else False
+                if LY:
+                    g_ = wgy
+                    gw_, gn_ = zof(x - 1, y), zof(x, y - 1)
+                    wW = g_ > 0 and gw_ > 0 and gw_ != g_
+                    wN = g_ > 0 and gn_ > 0 and gn_ != g_
+                else:
+                    wW = bool(((wx + GX) % S == 0) and Idl[y + 1][x] == bi) if x > 0 else False
+                    wN = bool(((wy + GY) % S == 0) and Idl[y][x + 1] == bi) if y > 0 else False
                 if b["kind"] == "masp" or b.get("obel"):
                     wW = wN = False
                 if not (wW or wN):
@@ -2522,8 +3406,12 @@ def write_cell(args):
                 # nao sobrepor parede externa
                 if eWl[y + 1][x] or eNl[y][x + 1]:
                     continue
-                dW = wW and ((wy + GY) % S) == S // 2
-                dN = wN and ((wx + GX) % S) == S // 2 and not (z == 0 and jails.get(bi, ())[:2] == (wgx, wgy))
+                if LY:
+                    dW = wW and (wx, wy, "W") in LY["doors"]
+                    dN = wN and (wx, wy, "N") in LY["doors"]
+                else:
+                    dW = wW and ((wy + GY) % S) == S // 2
+                    dN = wN and ((wx + GX) % S) == S // 2 and not (z == 0 and jails.get(bi, ())[:2] == (wgx, wgy))
                 if wW and wN:
                     add(x, y, z, f"{sh}_{bs + 2}")
                 elif wW:
@@ -2542,20 +3430,45 @@ def write_cell(args):
             keys = {}
             for (x, y, k1, k2) in zip(xs, ys, gx, gy):
                 keys.setdefault((k1, k2), []).append((x, y))
+            service_rooms = {}
+            if not LY and z == 0 and btags(b).get("shop") == "supermarket" and len(b.get("pois") or ()) < 2:
+                eligible = [k for k, cs in keys.items() if len(cs) >= 9 and
+                            max(p[0] for p in cs) - min(p[0] for p in cs) >= 2 and
+                            max(p[1] for p in cs) - min(p[1] for p in cs) >= 2]
+                if len(eligible) >= 4:
+                    eligible.sort(key=lambda k: (len(keys[k]), k))
+                    service_rooms = dict(zip(eligible[:3], ("bathroom", "office", "storage")))
             for k, cells_ in keys.items():
                 if b["kind"] == "masp" and z < MASP_Z0:
                     continue
-                if z == 0 and jails.get(bi, ())[:2] == k:
+                if LY and k[1] <= 0:              # cela (desenhada pela put_jail) / fora do predio
+                    continue
+                if not LY and z == 0 and jails.get(bi, ())[:2] == k:
                     jk = jails[bi]; jw = jail_layout(S, jk[2])[-1][1]
                     cells_ = [(x_, y_) for x_, y_ in cells_
                               if not (0 <= (x_ + ox + GX) % S - jk[3] <= jw and 0 <= (y_ + oy + GY) % S - jk[4] < 5)]
                     if not cells_:
                         continue
                 rects = to_rects(cells_)
-                rname = room_name(b, z, k)
+                rname = LY["names"][k[1]][0 if z == 0 else 1] if LY else service_rooms.get(k) or room_name(b, z, k)
                 stz = {(a_ - ox, b_ - oy) for a_, b_ in st_zone(st)} if st else set()
                 same = lambda xx, yy, bi=bi, k=k, S=S: Idl[yy + 1][xx + 1] == bi and \
                     ((xx + ox + GX) // S, (yy + oy + GY) // S) == k
+                if LY:
+                    same = lambda xx, yy, g=k[1], zof=zof: zof(xx, yy) == g
+                    k = (7919, k[1])              # chave inteira para os hashes de piso/mobilia
+                    EXl = LY["extra"] if z == 0 else LY.get("extra_up", {})
+                    if EXl:                       # caixas, balcao, vitrine, mesas, carteiras: fixos da planta
+                        CC = set(cells_)
+                        for X_, Y_, s1, s2 in EXl.get(k[1], ()):
+                            q = (X_ - ox, Y_ - oy)
+                            if q not in CC or q in stz or any((q[0] + a_, q[1] + b_, z) in dsq
+                                                              for a_, b_ in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1))):
+                                continue
+                            add(q[0], q[1], z, s1)
+                            if s2:
+                                add(q[0], q[1], z, s2)
+                            stz.add(q); nfurn += 1
                 if b["kind"] == "masp":            # pinacoteca: acervo em grade, sem mobilia comum
                     for x_, y_ in cells_:
                         spr = masp_art(x_ + ox + GX, y_ + oy + GY)
@@ -2654,10 +3567,12 @@ def write_cell(args):
                 sq.pop((lx, ly, pz), None)
             for n in ts:
                 add(lx, ly, pz, n)
-    for rname, rz, cells_ in G["xrooms"]:
+    for ri, (rname, rz, cells_) in enumerate(G["xrooms"]):
         loc = [(px - ox, py - oy) for px, py in cells_ if 0 <= px - ox < CS and 0 <= py - oy < CS]
         if loc:
-            if rz < 0:   # subsolo precisa de predio proprio: comodo orfao nunca e "visto" e fica preto
+            if ri in G.get("xbld", {}):   # prefab vanilla: comodos do mesmo predio vanilla num predio so
+                bld_rooms.setdefault(G["xbld"][ri], []).append(len(rooms))
+            elif rz < 0:   # subsolo precisa de predio proprio: comodo orfao nunca e "visto" e fica preto
                 bld_rooms.setdefault(("x", rname, len(rooms)), []).append(len(rooms))
             rooms.append((rname, rz, to_rects(loc)))
     return finish_cell(cx, cy, sq, names, rooms, bld_rooms, maxz)
@@ -2758,6 +3673,25 @@ IND_ROOMS = ["warehouse", "factory", "metalfabrication", "factorystorage", "weld
              "carpentryworkshop", "warehouse", "metalshop", "mechanic", "storageunit"]
 POLICE_ROOMS = ["policeoffice", "policelocker", "policeoffice", "evidenceroom", "policegunstorage",
                 "policestorage"]
+CIVIC_MIX = {   # (terreo, andares): como no vanilla, o predio civico nao e um comodo so
+    "fire_station": (["firestorage", "firestorage", "kitchen", "bathroom", "office"],
+                     ["bedroom", "bedroom", "bathroom", "office"]),
+    "hotel": (["lobby", "office", "kitchen", "laundry"], ["motelroom", "motelroom", "motelroom", "storage"]),
+    "motel": (["lobby", "motelroom", "motelroom", "laundry"], ["motelroom"]),
+    "townhall": (["lobby", "office", "office", "breakroom"], ["office", "office", "breakroom"]),
+    "courthouse": (["lobby", "office", "breakroom"], ["office", "breakroom"]),
+    "library": (["library", "library", "office"], ["library", "office"]),
+    "post_office": (["post", "post", "poststorage"], ["poststorage", "office"]),
+    "bus_station": (["lobby", "waitingroom", "office"], ["office"]),
+    "train_station": (["lobby", "waitingroom", "office"], ["office"]),
+    # escola publica: salas, secretaria, banheiros, refeitorio e quadra (gym) no terreo; salas em cima
+    "school": (["classroom", "classroom", "office", "bathroom", "cafeteria", "classroom", "gym", "cafeteriakitchen"],
+               ["classroom", "classroom", "bathroom", "classroom", "office"]),
+    "kindergarten": (["daycare", "daycare", "kitchen", "bathroom", "office", "daycare"], ["daycare", "bathroom"]),
+    # predio de parque/praca sem tag de casa: centro comunitario (salao, banheiros, copa, administracao)
+    "community_centre": (["hall", "bathroom", "kitchen", "office", "hall"], ["hall", "office"]),
+    "toilets": (["bathroom"], ["bathroom"]),
+}
 BLD_ROOMS = {"hotel": "motelroom", "motel": "motelroom", "garage": "garagestorage", "garages": "garagestorage",
              "greenhouse": "greenhouse", "barn": "barn", "farm_auxiliary": "barn", "church": "church",
              "chapel": "church", "school": "classroom", "kindergarten": "daycare", "hospital": "hospitalroom",
@@ -2817,7 +3751,7 @@ AMEN_ROOMS = {"restaurant": "restaurantdining", "fast_food": "burgerkitchen", "c
               "townhall": "office", "courthouse": "office", "community_centre": "hall", "veterinary": "medical",
               "car_wash": "mechanic", "vehicle_inspection": "mechanic", "food_court": "restaurantdining",
               "arts_centre": "theatre", "social_facility": "hall", "college": "classroom",
-              "bureau_de_change": "office"}
+              "bureau_de_change": "office", "toilets": "bathroom"}
 for _k, _v in _SHOP_EXTRA.items():
     SHOP_ROOMS.setdefault(_k, _v)
 
@@ -2829,23 +3763,31 @@ def room_poi(b, z, k):
         return b.get("poi")
     S = grid_of(b)
     cx, cy = (k[0] + .5) * S - G["rx0"] - CX0 * CS, (k[1] + .5) * S - G["ry0"] - CY0 * CS
+    # cada loja garante 1 comodo: o do seu ponto (ja dentro do predio) ou o livre mais perto; o resto, a mais perto
+    pk = b.get("_pk")
+    if pk is None or pk[0] != S:
+        ox_, oy_ = G["rx0"] + CX0 * CS, G["ry0"] + CY0 * CS
+        Ba = G["Ba"]
+        bi = next((int(Ba[p[1], p[0]]) for p in ps if 0 <= p[1] < Ba.shape[0] and 0 <= p[0] < Ba.shape[1]
+                   and Ba[p[1], p[0]]), 0)
+        own = {}
+        if bi:
+            ys, xs = np.nonzero(Ba == bi)
+            cells = set(zip(((xs + ox_) // S).tolist(), ((ys + oy_) // S).tolist()))
+            for p in sorted(ps, key=lambda p: 0 if (p[2].get("shop") or p[2].get("amenity") in AMEN_ROOMS) else 1):
+                free = cells - set(own)
+                if not free:
+                    break
+                kx, ky = (p[0] + ox_) // S, (p[1] + oy_) // S
+                own[min(free, key=lambda c: ((c[0] - kx) ** 2 + (c[1] - ky) ** 2, c))] = p[2]
+        pk = b["_pk"] = (S, own)
+    if tuple(k) in pk[1]:
+        return pk[1][tuple(k)]
     best = min(ps, key=lambda p: ((p[0] - cx) ** 2 + (p[1] - cy) ** 2, 0 if (p[2].get("shop") or
                                                                               p[2].get("amenity") in AMEN_ROOMS) else 1))
     return best[2]
 
 
-CIVIC_MIX = {   # (terreo, andares): como no vanilla, o predio civico nao e um comodo so
-    "fire_station": (["firestorage", "firestorage", "kitchen", "bathroom", "office"],
-                     ["bedroom", "bedroom", "bathroom", "office"]),
-    "hotel": (["lobby", "office", "kitchen", "laundry"], ["motelroom", "motelroom", "motelroom", "storage"]),
-    "motel": (["lobby", "motelroom", "motelroom", "laundry"], ["motelroom"]),
-    "townhall": (["lobby", "office", "office", "breakroom"], ["office", "office", "breakroom"]),
-    "courthouse": (["lobby", "office", "breakroom"], ["office", "breakroom"]),
-    "library": (["library", "library", "office"], ["library", "office"]),
-    "post_office": (["post", "post", "poststorage"], ["poststorage", "office"]),
-    "bus_station": (["lobby", "waitingroom", "office"], ["office"]),
-    "train_station": (["lobby", "waitingroom", "office"], ["office"]),
-}
 HOSP_ROOMS_0 = ("waitingroom", "medical", "hospitalroom", "medicaloffice", "medicalstorage", "medical")
 HOSP_ROOMS_UP = ("hospitalroom", "hospitalroom", "medical", "hospitalroom", "laboratory", "hospitalroom",
                  "hospitalstorage", "medicaloffice")
@@ -2869,6 +3811,10 @@ def room_name(b, z, k):
         civ = CIVIC_MIX["hotel"]
     if civ:
         rr = civ[0] if z == 0 else civ[1]
+        if z == 0 and t.get("amenity") in ("school", "kindergarten") and any(
+                int((p[0] + G["rx0"] + CX0 * CS) // grid_of(b)) == k[0] and
+                int((p[1] + G["ry0"] + CY0 * CS) // grid_of(b)) == k[1] for p in b.get("pois") or ()):
+            return rr[0]                # o comodo do ponto da escola e sala de aula/creche
         return rr[(k[0] * 3 + k[1] + z) % len(rr)]
     if b.get("mil"):
         return "armystorage" if (k[0] + k[1] + z) % 3 else "office"
@@ -2877,6 +3823,12 @@ def room_name(b, z, k):
         return rr[(k[0] * 3 + k[1] + z) % len(rr)]
     if t.get("leisure") in ("fitness_centre", "sports_centre") and z == 0:
         return "gym"
+    if z == 0 and b["rooms"] in ("res", "ind"):   # casa/galpao com loja marcada (ponto ou tag): o terreo e a loja
+        for q in (poi or {}, t):
+            if q.get("shop") in SHOP_ROOMS:
+                return SHOP_ROOMS[q["shop"]]
+            if q.get("amenity") in AMEN_ROOMS:
+                return AMEN_ROOMS[q["amenity"]]
     if b["rooms"] == "ind":
         if t.get("shop") in SHOP_ROOMS and z == 0:
             return SHOP_ROOMS[t["shop"]]
@@ -3053,9 +4005,10 @@ def _process_block(bk):
     PG.micro("celulas", f"bloco {bi_}_{bj_}", "planejando escadas, celas, letreiros", 0.15)
     stairs = plan_stairs(Ba, Lv, blds, bb, masp)
     jails = plan_jails(Ba, blds, bb, stairs)
+    lays = plan_layouts(Ba, Ga, blds, bb, stairs, jails)
     signs = plan_signs(Ga, Ba, blds, bb, masp)
     G.update(Ga=Ga, LNa=LNa, Ba=Ba, Lv=Lv, blds=blds, stairs=stairs, masp=masp, TR=TR, ntree=int(TR.sum()),
-             jails=jails, signs=signs,
+             jails=jails, signs=signs, lays=lays,
              bb={masp: tuple(int(v) for v in bb[masp])} if masp else {})
     res = []
     for c in block_cells(bk):

@@ -1,0 +1,6226 @@
+{
+"w": 30,
+"floor": true,
+"solid": 1097,
+"h": 43,
+"src": "50_11 100,193",
+"sq": {
+"0,0,0": [
+"blends_street_01_102"
+],
+"0,1,0": [
+"blends_street_01_103"
+],
+"0,2,0": [
+"blends_street_01_101"
+],
+"0,3,0": [
+"blends_street_01_96"
+],
+"0,4,0": [
+"blends_street_01_103"
+],
+"0,5,0": [
+"blends_street_01_96"
+],
+"0,6,0": [
+"blends_street_01_102"
+],
+"1,0,0": [
+"blends_street_01_103"
+],
+"1,1,0": [
+"blends_street_01_101"
+],
+"1,2,0": [
+"blends_street_01_103"
+],
+"1,3,0": [
+"blends_street_01_103"
+],
+"1,4,0": [
+"blends_street_01_96"
+],
+"1,5,0": [
+"blends_street_01_102"
+],
+"1,6,0": [
+"blends_street_01_96"
+],
+"2,0,0": [
+"blends_street_01_101"
+],
+"2,1,0": [
+"blends_street_01_103"
+],
+"2,2,0": [
+"blends_street_01_101"
+],
+"2,3,0": [
+"blends_street_01_96"
+],
+"2,4,0": [
+"blends_street_01_96"
+],
+"2,5,0": [
+"blends_street_01_96"
+],
+"2,6,0": [
+"blends_street_01_101"
+],
+"3,0,0": [
+"blends_street_01_103"
+],
+"3,1,0": [
+"blends_street_01_102"
+],
+"3,2,0": [
+"blends_street_01_102"
+],
+"3,3,0": [
+"blends_street_01_103"
+],
+"3,4,0": [
+"blends_street_01_96"
+],
+"3,5,0": [
+"blends_street_01_102"
+],
+"3,6,0": [
+"blends_street_01_96"
+],
+"0,7,0": [
+"blends_street_01_96"
+],
+"0,8,0": [
+"blends_street_01_103"
+],
+"0,9,0": [
+"blends_street_01_102"
+],
+"0,10,0": [
+"blends_street_01_103"
+],
+"0,11,0": [
+"blends_street_01_103"
+],
+"0,12,0": [
+"blends_street_01_102"
+],
+"0,13,0": [
+"blends_street_01_101"
+],
+"0,14,0": [
+"blends_street_01_103"
+],
+"1,7,0": [
+"blends_street_01_102"
+],
+"1,8,0": [
+"blends_street_01_102"
+],
+"1,9,0": [
+"blends_street_01_96"
+],
+"1,10,0": [
+"blends_street_01_103"
+],
+"1,11,0": [
+"blends_street_01_103"
+],
+"1,12,0": [
+"blends_street_01_101"
+],
+"1,13,0": [
+"blends_street_01_101"
+],
+"1,14,0": [
+"blends_street_01_102"
+],
+"2,7,0": [
+"blends_street_01_103"
+],
+"2,8,0": [
+"blends_street_01_101"
+],
+"2,9,0": [
+"blends_street_01_101"
+],
+"2,10,0": [
+"blends_street_01_101"
+],
+"2,11,0": [
+"blends_street_01_96"
+],
+"2,12,0": [
+"blends_street_01_102"
+],
+"2,13,0": [
+"blends_street_01_101"
+],
+"2,14,0": [
+"blends_street_01_103"
+],
+"3,7,0": [
+"blends_street_01_96"
+],
+"3,8,0": [
+"blends_street_01_101"
+],
+"3,9,0": [
+"blends_street_01_103"
+],
+"3,10,0": [
+"blends_street_01_96"
+],
+"3,11,0": [
+"blends_street_01_96"
+],
+"3,12,0": [
+"blends_street_01_96"
+],
+"3,13,0": [
+"blends_street_01_102"
+],
+"3,14,0": [
+"blends_street_01_96"
+],
+"0,15,0": [
+"blends_street_01_96"
+],
+"0,16,0": [
+"blends_street_01_96"
+],
+"0,17,0": [
+"blends_street_01_103"
+],
+"0,18,0": [
+"blends_street_01_102"
+],
+"0,19,0": [
+"blends_street_01_101"
+],
+"0,20,0": [
+"blends_street_01_96"
+],
+"0,21,0": [
+"blends_street_01_102"
+],
+"0,22,0": [
+"blends_street_01_101"
+],
+"1,15,0": [
+"blends_street_01_102"
+],
+"1,16,0": [
+"blends_street_01_101"
+],
+"1,17,0": [
+"blends_street_01_103"
+],
+"1,18,0": [
+"blends_street_01_96"
+],
+"1,19,0": [
+"blends_street_01_101"
+],
+"1,20,0": [
+"blends_street_01_96"
+],
+"1,21,0": [
+"blends_street_01_102"
+],
+"1,22,0": [
+"blends_street_01_102",
+"street_curbs_01_3"
+],
+"2,15,0": [
+"blends_street_01_96"
+],
+"2,16,0": [
+"blends_street_01_96"
+],
+"2,17,0": [
+"blends_street_01_103"
+],
+"2,18,0": [
+"blends_street_01_102"
+],
+"2,19,0": [
+"blends_street_01_103"
+],
+"2,20,0": [
+"blends_street_01_96"
+],
+"2,21,0": [
+"blends_street_01_96"
+],
+"2,22,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"3,15,0": [
+"blends_street_01_102"
+],
+"3,16,0": [
+"blends_street_01_102"
+],
+"3,17,0": [
+"blends_street_01_102"
+],
+"3,18,0": [
+"blends_street_01_101"
+],
+"3,19,0": [
+"blends_street_01_96"
+],
+"3,20,0": [
+"blends_street_01_102"
+],
+"3,21,0": [
+"blends_street_01_96"
+],
+"3,22,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"0,23,0": [
+"blends_street_01_102"
+],
+"0,24,0": [
+"blends_street_01_102"
+],
+"0,25,0": [
+"blends_street_01_103"
+],
+"0,26,0": [
+"blends_street_01_96"
+],
+"0,27,0": [
+"blends_street_01_102"
+],
+"0,28,0": [
+"blends_street_01_103"
+],
+"0,29,0": [
+"blends_street_01_96"
+],
+"0,30,0": [
+"blends_street_01_102"
+],
+"1,23,0": [
+"blends_street_01_96",
+"street_curbs_01_11"
+],
+"1,24,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"1,25,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"1,26,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"1,27,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"1,28,0": [
+"blends_street_01_96",
+"street_curbs_01_11"
+],
+"1,29,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"1,30,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"2,23,0": [
+"blends_street_01_54"
+],
+"2,24,0": [
+"blends_street_01_54"
+],
+"2,25,0": [
+"blends_street_01_54"
+],
+"2,26,0": [
+"blends_street_01_53"
+],
+"2,27,0": [
+"blends_street_01_48"
+],
+"2,28,0": [
+"blends_street_01_48"
+],
+"2,29,0": [
+"blends_street_01_55"
+],
+"2,30,0": [
+"blends_street_01_48"
+],
+"3,23,0": [
+"blends_street_01_48"
+],
+"3,24,0": [
+"blends_street_01_53"
+],
+"3,25,0": [
+"blends_street_01_53"
+],
+"3,26,0": [
+"blends_street_01_55"
+],
+"3,27,0": [
+"blends_street_01_55"
+],
+"3,28,0": [
+"blends_street_01_53"
+],
+"3,29,0": [
+"blends_street_01_54"
+],
+"3,30,0": [
+"blends_street_01_55"
+],
+"0,31,0": [
+"blends_street_01_101"
+],
+"0,32,0": [
+"blends_street_01_101"
+],
+"0,33,0": [
+"blends_street_01_101"
+],
+"0,34,0": [
+"blends_street_01_103"
+],
+"0,35,0": [
+"blends_street_01_96"
+],
+"0,36,0": [
+"blends_street_01_101"
+],
+"0,37,0": [
+"blends_street_01_101"
+],
+"0,38,0": [
+"blends_street_01_101"
+],
+"1,31,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"1,32,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"1,33,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"1,34,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"1,35,0": [
+"blends_street_01_101",
+"street_curbs_01_4"
+],
+"1,36,0": [
+"blends_street_01_102"
+],
+"1,37,0": [
+"blends_street_01_96"
+],
+"1,38,0": [
+"blends_street_01_102"
+],
+"2,31,0": [
+"blends_street_01_55"
+],
+"2,32,0": [
+"blends_street_01_55"
+],
+"2,33,0": [
+"blends_street_01_48"
+],
+"2,34,0": [
+"blends_street_01_53"
+],
+"2,35,0": [
+"blends_street_01_55",
+"street_curbs_01_8"
+],
+"2,36,0": [
+"blends_street_01_101"
+],
+"2,37,0": [
+"blends_street_01_102"
+],
+"2,38,0": [
+"blends_street_01_101"
+],
+"3,31,0": [
+"blends_street_01_48"
+],
+"3,32,0": [
+"blends_street_01_54"
+],
+"3,33,0": [
+"blends_street_01_48"
+],
+"3,34,0": [
+"blends_street_01_53"
+],
+"3,35,0": [
+"blends_street_01_54",
+"street_curbs_01_8"
+],
+"3,36,0": [
+"blends_street_01_103"
+],
+"3,37,0": [
+"blends_street_01_96"
+],
+"3,38,0": [
+"blends_street_01_96"
+],
+"0,39,0": [
+"blends_street_01_101"
+],
+"0,40,0": [
+"blends_street_01_103"
+],
+"0,41,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"0,42,0": [
+"blends_street_01_48"
+],
+"1,39,0": [
+"blends_street_01_96"
+],
+"1,40,0": [
+"blends_street_01_102"
+],
+"1,41,0": [
+"blends_street_01_96",
+"street_curbs_01_10"
+],
+"1,42,0": [
+"blends_street_01_54"
+],
+"2,39,0": [
+"blends_street_01_96"
+],
+"2,40,0": [
+"blends_street_01_101"
+],
+"2,41,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"2,42,0": [
+"blends_street_01_48"
+],
+"3,39,0": [
+"blends_street_01_101"
+],
+"3,40,0": [
+"blends_street_01_102"
+],
+"3,41,0": [
+"blends_street_01_101",
+"street_curbs_01_10",
+"lighting_outdoor_01_45",
+"street_curbs_01_10"
+],
+"3,42,0": [
+"blends_street_01_53"
+],
+"4,0,0": [
+"blends_street_01_96"
+],
+"4,1,0": [
+"blends_street_01_102"
+],
+"4,2,0": [
+"blends_street_01_102"
+],
+"4,3,0": [
+"blends_street_01_101"
+],
+"4,4,0": [
+"blends_street_01_101"
+],
+"4,5,0": [
+"blends_street_01_96"
+],
+"4,6,0": [
+"blends_street_01_101"
+],
+"5,0,0": [
+"blends_street_01_102"
+],
+"5,1,0": [
+"blends_street_01_101"
+],
+"5,2,0": [
+"blends_street_01_103"
+],
+"5,3,0": [
+"blends_street_01_103"
+],
+"5,4,0": [
+"blends_street_01_96"
+],
+"5,5,0": [
+"blends_street_01_103"
+],
+"5,6,0": [
+"blends_street_01_102"
+],
+"6,0,0": [
+"blends_street_01_101"
+],
+"6,1,0": [
+"blends_street_01_103"
+],
+"6,2,0": [
+"blends_street_01_103"
+],
+"6,3,0": [
+"blends_street_01_102"
+],
+"6,4,0": [
+"blends_street_01_103"
+],
+"6,5,0": [
+"blends_street_01_102"
+],
+"6,6,0": [
+"blends_street_01_96"
+],
+"7,0,0": [
+"blends_street_01_101"
+],
+"7,1,0": [
+"blends_street_01_101"
+],
+"7,2,0": [
+"blends_street_01_103"
+],
+"7,3,0": [
+"blends_street_01_101"
+],
+"7,4,0": [
+"blends_street_01_102"
+],
+"7,5,0": [
+"blends_street_01_101"
+],
+"7,6,0": [
+"blends_street_01_103"
+],
+"8,0,0": [
+"blends_street_01_101"
+],
+"8,1,0": [
+"blends_street_01_103"
+],
+"8,2,0": [
+"blends_street_01_96"
+],
+"8,3,0": [
+"blends_street_01_101"
+],
+"8,4,0": [
+"blends_street_01_103"
+],
+"8,5,0": [
+"blends_street_01_96"
+],
+"8,6,0": [
+"blends_street_01_103"
+],
+"9,0,0": [
+"blends_street_01_102"
+],
+"9,1,0": [
+"blends_street_01_96"
+],
+"9,2,0": [
+"blends_street_01_102"
+],
+"9,3,0": [
+"blends_street_01_103"
+],
+"9,4,0": [
+"blends_street_01_102"
+],
+"9,5,0": [
+"blends_street_01_96"
+],
+"9,6,0": [
+"blends_street_01_101",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"10,0,0": [
+"blends_street_01_102"
+],
+"10,1,0": [
+"blends_street_01_103"
+],
+"10,2,0": [
+"blends_street_01_96"
+],
+"10,3,0": [
+"blends_street_01_103"
+],
+"10,4,0": [
+"blends_street_01_102"
+],
+"10,5,0": [
+"blends_street_01_101"
+],
+"10,6,0": [
+"blends_street_01_101",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"11,0,0": [
+"blends_street_01_103"
+],
+"11,1,0": [
+"blends_street_01_102"
+],
+"11,2,0": [
+"blends_street_01_96"
+],
+"11,3,0": [
+"blends_street_01_102"
+],
+"11,4,0": [
+"blends_street_01_103"
+],
+"11,5,0": [
+"blends_street_01_102"
+],
+"11,6,0": [
+"blends_street_01_96",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"10,6,1": [
+"lighting_indoor_03_16"
+],
+"11,6,1": [
+"lighting_indoor_03_18"
+],
+"7,5,2": [
+"location_shop_fossoil_01_38"
+],
+"7,6,2": [
+"location_shop_fossoil_01_38"
+],
+"8,5,2": [
+"location_shop_fossoil_01_38"
+],
+"8,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"9,5,2": [
+"location_shop_fossoil_01_38"
+],
+"9,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"10,5,2": [
+"location_shop_fossoil_01_38"
+],
+"10,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"11,5,2": [
+"location_shop_fossoil_01_38"
+],
+"11,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"4,7,0": [
+"blends_street_01_103"
+],
+"4,8,0": [
+"blends_street_01_103"
+],
+"4,9,0": [
+"blends_street_01_101"
+],
+"4,10,0": [
+"blends_street_01_96"
+],
+"4,11,0": [
+"blends_street_01_101"
+],
+"4,12,0": [
+"blends_street_01_102"
+],
+"4,13,0": [
+"blends_street_01_96"
+],
+"4,14,0": [
+"blends_street_01_102"
+],
+"5,7,0": [
+"blends_street_01_96"
+],
+"5,8,0": [
+"blends_street_01_103"
+],
+"5,9,0": [
+"blends_street_01_102"
+],
+"5,10,0": [
+"blends_street_01_103"
+],
+"5,11,0": [
+"blends_street_01_96"
+],
+"5,12,0": [
+"blends_street_01_102"
+],
+"5,13,0": [
+"blends_street_01_102"
+],
+"5,14,0": [
+"blends_street_01_96"
+],
+"6,7,0": [
+"blends_street_01_102"
+],
+"6,8,0": [
+"blends_street_01_96"
+],
+"6,9,0": [
+"blends_street_01_103"
+],
+"6,10,0": [
+"blends_street_01_102"
+],
+"6,11,0": [
+"blends_street_01_101"
+],
+"6,12,0": [
+"blends_street_01_102"
+],
+"6,13,0": [
+"blends_street_01_103"
+],
+"6,14,0": [
+"blends_street_01_101"
+],
+"7,7,0": [
+"blends_street_01_101"
+],
+"7,8,0": [
+"blends_street_01_102"
+],
+"7,9,0": [
+"blends_street_01_102"
+],
+"7,10,0": [
+"blends_street_01_101"
+],
+"7,11,0": [
+"blends_street_01_102"
+],
+"7,12,0": [
+"blends_street_01_96"
+],
+"7,13,0": [
+"blends_street_01_96"
+],
+"7,14,0": [
+"blends_street_01_102"
+],
+"8,7,0": [
+"floors_interior_carpet_01_12",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_2"
+],
+"8,8,0": [
+"blends_street_01_96",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_1"
+],
+"8,9,0": [
+"blends_street_01_96"
+],
+"8,10,0": [
+"blends_street_01_96"
+],
+"8,11,0": [
+"blends_street_01_96"
+],
+"8,12,0": [
+"blends_street_01_96"
+],
+"8,13,0": [
+"blends_street_01_101"
+],
+"8,14,0": [
+"floors_interior_carpet_01_12",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_2"
+],
+"9,7,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_0",
+"street_curbs_01_8"
+],
+"9,8,0": [
+"blends_street_01_96",
+"location_shop_fossoil_01_7",
+"overlay_grime_wall_01_3"
+],
+"9,9,0": [
+"blends_street_01_102"
+],
+"9,10,0": [
+"blends_street_01_96"
+],
+"9,11,0": [
+"blends_street_01_103"
+],
+"9,12,0": [
+"blends_street_01_103"
+],
+"9,13,0": [
+"blends_street_01_96",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"9,14,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_0",
+"street_curbs_01_8"
+],
+"10,7,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_15",
+"street_curbs_01_8",
+"location_shop_fossoil_01_15"
+],
+"10,8,0": [
+"blends_street_01_103"
+],
+"10,9,0": [
+"blends_street_01_103"
+],
+"10,10,0": [
+"blends_street_01_103"
+],
+"10,11,0": [
+"blends_street_01_102"
+],
+"10,12,0": [
+"blends_street_01_102"
+],
+"10,13,0": [
+"blends_street_01_96",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"10,14,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_15",
+"street_curbs_01_8",
+"location_shop_fossoil_01_15"
+],
+"11,7,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_14",
+"street_curbs_01_8",
+"location_shop_fossoil_01_14"
+],
+"11,8,0": [
+"blends_street_01_103"
+],
+"11,9,0": [
+"blends_street_01_102"
+],
+"11,10,0": [
+"blends_street_01_101"
+],
+"11,11,0": [
+"blends_street_01_103"
+],
+"11,12,0": [
+"blends_street_01_96"
+],
+"11,13,0": [
+"blends_street_01_102",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"11,14,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_14",
+"street_curbs_01_8",
+"location_shop_fossoil_01_14"
+],
+"8,7,1": [
+"floors_interior_carpet_01_12",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_2"
+],
+"8,8,1": [
+"location_shop_fossoil_01_5"
+],
+"8,14,1": [
+"floors_interior_carpet_01_12",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_2"
+],
+"9,7,1": [
+"location_shop_fossoil_01_6"
+],
+"9,8,1": [
+"location_shop_fossoil_01_7"
+],
+"9,14,1": [
+"location_shop_fossoil_01_6"
+],
+"10,9,1": [
+"lighting_indoor_03_16"
+],
+"10,13,1": [
+"lighting_indoor_03_16"
+],
+"11,9,1": [
+"lighting_indoor_03_18"
+],
+"11,13,1": [
+"lighting_indoor_03_18"
+],
+"7,7,2": [
+"location_shop_fossoil_01_38"
+],
+"7,8,2": [
+"location_shop_fossoil_01_38"
+],
+"7,9,2": [
+"location_shop_fossoil_01_38"
+],
+"7,10,2": [
+"location_shop_fossoil_01_38"
+],
+"7,11,2": [
+"location_shop_fossoil_01_38"
+],
+"7,12,2": [
+"location_shop_fossoil_01_38"
+],
+"7,13,2": [
+"location_shop_fossoil_01_38"
+],
+"7,14,2": [
+"location_shop_fossoil_01_38"
+],
+"8,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"8,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"8,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"8,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"8,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"8,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"8,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"8,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"9,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"9,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"9,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"9,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"9,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"9,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"9,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"9,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"10,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"10,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"10,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"10,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"10,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"10,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"10,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"10,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"11,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"11,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"11,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"11,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"11,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"11,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"11,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"11,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"4,15,0": [
+"blends_street_01_101"
+],
+"4,16,0": [
+"blends_street_01_101"
+],
+"4,17,0": [
+"blends_street_01_102"
+],
+"4,18,0": [
+"blends_street_01_102"
+],
+"4,19,0": [
+"blends_street_01_102",
+"blends_street_01_10"
+],
+"4,20,0": [
+"blends_street_01_101",
+"blends_street_01_10"
+],
+"4,21,0": [
+"blends_street_01_102"
+],
+"4,22,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"5,15,0": [
+"blends_street_01_101"
+],
+"5,16,0": [
+"blends_street_01_102"
+],
+"5,17,0": [
+"blends_street_01_96"
+],
+"5,18,0": [
+"blends_street_01_96",
+"blends_street_01_11"
+],
+"5,19,0": [
+"blends_street_01_0"
+],
+"5,20,0": [
+"blends_street_01_0"
+],
+"5,21,0": [
+"blends_street_01_101",
+"blends_street_01_8"
+],
+"5,22,0": [
+"blends_street_01_103",
+"street_curbs_01_10"
+],
+"6,15,0": [
+"blends_street_01_103"
+],
+"6,16,0": [
+"blends_street_01_102"
+],
+"6,17,0": [
+"blends_street_01_102"
+],
+"6,18,0": [
+"blends_street_01_102"
+],
+"6,19,0": [
+"blends_street_01_103",
+"blends_street_01_9"
+],
+"6,20,0": [
+"blends_street_01_103",
+"blends_street_01_9"
+],
+"6,21,0": [
+"blends_street_01_96"
+],
+"6,22,0": [
+"blends_street_01_96",
+"street_curbs_01_10"
+],
+"7,15,0": [
+"blends_street_01_103"
+],
+"7,16,0": [
+"blends_street_01_103"
+],
+"7,17,0": [
+"blends_street_01_102"
+],
+"7,18,0": [
+"blends_street_01_103"
+],
+"7,19,0": [
+"blends_street_01_103"
+],
+"7,20,0": [
+"blends_street_01_96"
+],
+"7,21,0": [
+"blends_street_01_96"
+],
+"7,22,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"8,15,0": [
+"blends_street_01_102",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_1"
+],
+"8,16,0": [
+"blends_street_01_96"
+],
+"8,17,0": [
+"blends_street_01_103"
+],
+"8,18,0": [
+"blends_street_01_102"
+],
+"8,19,0": [
+"blends_street_01_102"
+],
+"8,20,0": [
+"blends_street_01_103"
+],
+"8,21,0": [
+"blends_street_01_102"
+],
+"8,22,0": [
+"blends_street_01_102",
+"street_curbs_01_10"
+],
+"9,15,0": [
+"blends_street_01_101",
+"location_shop_fossoil_01_7",
+"overlay_grime_wall_01_3"
+],
+"9,16,0": [
+"blends_street_01_96"
+],
+"9,17,0": [
+"blends_street_01_102"
+],
+"9,18,0": [
+"blends_street_01_96"
+],
+"9,19,0": [
+"blends_street_01_103"
+],
+"9,20,0": [
+"blends_street_01_102"
+],
+"9,21,0": [
+"blends_street_01_102"
+],
+"9,22,0": [
+"blends_street_01_102",
+"street_curbs_01_10"
+],
+"10,15,0": [
+"blends_street_01_96"
+],
+"10,16,0": [
+"blends_street_01_96"
+],
+"10,17,0": [
+"blends_street_01_101"
+],
+"10,18,0": [
+"blends_street_01_101"
+],
+"10,19,0": [
+"blends_street_01_103"
+],
+"10,20,0": [
+"blends_street_01_96"
+],
+"10,21,0": [
+"blends_street_01_101"
+],
+"10,22,0": [
+"blends_street_01_96",
+"street_curbs_01_10"
+],
+"11,15,0": [
+"blends_street_01_96"
+],
+"11,16,0": [
+"blends_street_01_96"
+],
+"11,17,0": [
+"blends_street_01_102"
+],
+"11,18,0": [
+"blends_street_01_103"
+],
+"11,19,0": [
+"blends_street_01_101"
+],
+"11,20,0": [
+"blends_street_01_103"
+],
+"11,21,0": [
+"blends_street_01_101"
+],
+"11,22,0": [
+"blends_street_01_102",
+"street_curbs_01_10"
+],
+"7,17,1": [
+"location_shop_fossoil_01_40"
+],
+"8,15,1": [
+"location_shop_fossoil_01_5"
+],
+"8,17,1": [
+"location_shop_fossoil_01_40"
+],
+"9,15,1": [
+"location_shop_fossoil_01_7"
+],
+"9,17,1": [
+"location_shop_fossoil_01_40"
+],
+"10,16,1": [
+"lighting_indoor_03_16"
+],
+"10,17,1": [
+"location_shop_fossoil_01_40"
+],
+"11,16,1": [
+"lighting_indoor_03_18"
+],
+"11,17,1": [
+"location_shop_fossoil_01_40"
+],
+"7,15,2": [
+"location_shop_fossoil_01_38"
+],
+"7,16,2": [
+"location_shop_fossoil_01_38"
+],
+"8,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"8,16,2": [
+"location_shop_fossoil_01_38"
+],
+"9,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"9,16,2": [
+"location_shop_fossoil_01_38"
+],
+"10,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"10,16,2": [
+"location_shop_fossoil_01_38"
+],
+"11,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"11,16,2": [
+"location_shop_fossoil_01_38"
+],
+"4,23,0": [
+"blends_street_01_48"
+],
+"4,24,0": [
+"blends_street_01_53"
+],
+"4,25,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_18",
+"location_shop_accessories_01_26",
+"location_shop_fossoil_01_19"
+],
+"4,26,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_19",
+"location_shop_fossoil_01_11"
+],
+"4,27,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_19",
+"location_shop_accessories_01_11"
+],
+"4,28,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_37"
+],
+"4,29,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_36"
+],
+"4,30,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_22",
+"overlay_grime_wall_01_18",
+"location_shop_fossoil_01_33",
+"fixtures_bathroom_01_17"
+],
+"5,23,0": [
+"blends_street_01_54"
+],
+"5,24,0": [
+"blends_street_01_55"
+],
+"5,25,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41"
+],
+"5,26,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"5,27,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"5,28,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"5,29,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"5,30,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_21",
+"overlay_grime_wall_01_17"
+],
+"6,23,0": [
+"blends_street_01_54"
+],
+"6,24,0": [
+"blends_street_01_48"
+],
+"6,25,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41",
+"trash_01_12"
+],
+"6,26,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,27,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_8"
+],
+"6,28,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,29,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,30,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_21",
+"overlay_grime_wall_01_17"
+],
+"7,23,0": [
+"blends_street_01_54"
+],
+"7,24,0": [
+"blends_street_01_55"
+],
+"7,25,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"7,26,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,27,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_9"
+],
+"7,28,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,29,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,30,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_21",
+"overlay_grime_wall_01_17",
+"walls_decoration_01_10",
+"fixtures_sinks_01_14"
+],
+"8,23,0": [
+"blends_street_01_54"
+],
+"8,24,0": [
+"blends_street_01_48"
+],
+"8,25,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"8,26,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"8,27,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_10"
+],
+"8,28,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"8,29,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"8,30,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"appliances_refrigeration_01_17"
+],
+"9,23,0": [
+"blends_street_01_54"
+],
+"9,24,0": [
+"blends_street_01_48"
+],
+"9,25,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41"
+],
+"9,26,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,27,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_11"
+],
+"9,28,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,29,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,30,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,23,0": [
+"blends_street_01_55"
+],
+"10,24,0": [
+"blends_street_01_55"
+],
+"10,25,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41"
+],
+"10,26,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,27,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,28,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,29,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,30,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"11,23,0": [
+"blends_street_01_54"
+],
+"11,24,0": [
+"blends_street_01_54"
+],
+"11,25,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17",
+"location_shop_generic_01_79"
+],
+"11,26,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_78"
+],
+"11,27,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_79"
+],
+"11,28,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_78"
+],
+"11,29,0": [
+"floors_interior_tilesandwood_01_19",
+"trash_01_5"
+],
+"11,30,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"4,25,1": [
+"roofs_04_55"
+],
+"4,26,1": [
+"roofs_04_55"
+],
+"4,27,1": [
+"roofs_04_55"
+],
+"4,28,1": [
+"roofs_04_55"
+],
+"4,29,1": [
+"roofs_04_55"
+],
+"4,30,1": [
+"roofs_04_55"
+],
+"5,25,1": [
+"roofs_04_55"
+],
+"5,26,1": [
+"roofs_04_55"
+],
+"5,27,1": [
+"roofs_04_55"
+],
+"5,28,1": [
+"roofs_04_55"
+],
+"5,29,1": [
+"roofs_04_55"
+],
+"5,30,1": [
+"roofs_04_55"
+],
+"6,25,1": [
+"roofs_04_55"
+],
+"6,26,1": [
+"roofs_04_55"
+],
+"6,27,1": [
+"roofs_04_55"
+],
+"6,28,1": [
+"roofs_04_55"
+],
+"6,29,1": [
+"roofs_04_55"
+],
+"6,30,1": [
+"roofs_04_55"
+],
+"7,25,1": [
+"roofs_04_55"
+],
+"7,26,1": [
+"roofs_04_55"
+],
+"7,27,1": [
+"roofs_04_55"
+],
+"7,28,1": [
+"roofs_04_55"
+],
+"7,29,1": [
+"roofs_04_55"
+],
+"7,30,1": [
+"roofs_04_55"
+],
+"8,25,1": [
+"roofs_04_55"
+],
+"8,26,1": [
+"roofs_04_55"
+],
+"8,27,1": [
+"roofs_04_55"
+],
+"8,28,1": [
+"roofs_04_55"
+],
+"8,29,1": [
+"roofs_04_55"
+],
+"8,30,1": [
+"roofs_04_55"
+],
+"9,25,1": [
+"roofs_04_55"
+],
+"9,26,1": [
+"roofs_04_55"
+],
+"9,27,1": [
+"roofs_04_55",
+"trash_01_10"
+],
+"9,28,1": [
+"roofs_04_55"
+],
+"9,29,1": [
+"roofs_04_55"
+],
+"9,30,1": [
+"roofs_04_55"
+],
+"10,25,1": [
+"roofs_04_55"
+],
+"10,26,1": [
+"roofs_04_55"
+],
+"10,27,1": [
+"roofs_04_55"
+],
+"10,28,1": [
+"roofs_04_55"
+],
+"10,29,1": [
+"roofs_04_55"
+],
+"10,30,1": [
+"roofs_04_55"
+],
+"11,25,1": [
+"roofs_04_55"
+],
+"11,26,1": [
+"roofs_04_55"
+],
+"11,27,1": [
+"roofs_04_55"
+],
+"11,28,1": [
+"roofs_04_55"
+],
+"11,29,1": [
+"roofs_04_55"
+],
+"11,30,1": [
+"roofs_04_55"
+],
+"4,31,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_20",
+"overlay_grime_wall_01_16",
+"fixtures_bathroom_01_45",
+"fixtures_bathroom_01_5"
+],
+"4,32,0": [
+"floors_exterior_street_01_17",
+"walls_garage_01_38",
+"overlay_grime_wall_01_18",
+"furniture_shelving_01_25"
+],
+"4,33,0": [
+"floors_exterior_street_01_17",
+"walls_garage_01_36",
+"overlay_grime_wall_01_16",
+"furniture_shelving_01_24"
+],
+"4,34,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_22",
+"overlay_grime_wall_01_18",
+"location_shop_fossoil_01_33",
+"fixtures_bathroom_01_17"
+],
+"4,35,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_20",
+"overlay_grime_wall_01_16",
+"fixtures_bathroom_01_45",
+"fixtures_bathroom_01_5"
+],
+"4,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_38",
+"overlay_grime_wall_01_2",
+"overlay_grime_wall_01_22",
+"location_business_machinery_01_37"
+],
+"4,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15",
+"walls_garage_01_39",
+"overlay_grime_wall_01_3",
+"location_business_machinery_01_37"
+],
+"4,38,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_37"
+],
+"5,31,0": [
+"floors_interior_tilesandwood_01_19",
+"fixtures_bathroom_01_48",
+"fixtures_bathroom_01_46"
+],
+"5,32,0": [
+"floors_exterior_street_01_17",
+"walls_garage_01_37",
+"overlay_grime_wall_01_17",
+"lighting_indoor_01_7"
+],
+"5,33,0": [
+"floors_exterior_street_01_17"
+],
+"5,34,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_21",
+"overlay_grime_wall_01_17"
+],
+"5,35,0": [
+"floors_interior_tilesandwood_01_19",
+"fixtures_bathroom_01_48",
+"fixtures_bathroom_01_46"
+],
+"5,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"5,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"5,38,0": [
+"floors_exterior_street_01_16"
+],
+"6,31,0": [
+"floors_interior_tilesandwood_01_19",
+"lighting_indoor_01_6"
+],
+"6,32,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_18",
+"fixtures_bathroom_01_21"
+],
+"6,33,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_8",
+"overlay_grime_wall_01_26",
+"fixtures_doors_01_52"
+],
+"6,34,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_21",
+"overlay_grime_wall_01_17",
+"lighting_indoor_01_0"
+],
+"6,35,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"industry_02_34"
+],
+"6,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_14"
+],
+"6,38,0": [
+"floors_exterior_street_01_16"
+],
+"7,31,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,32,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_9",
+"overlay_grime_wall_01_27",
+"fixtures_doors_01_25"
+],
+"7,33,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,34,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_31",
+"overlay_grime_wall_01_27",
+"fixtures_doors_01_25"
+],
+"7,35,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_decoration_01_24",
+"fixtures_sinks_01_30"
+],
+"7,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_21",
+"overlay_grime_wall_01_1",
+"industry_02_34"
+],
+"7,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"7,38,0": [
+"floors_exterior_street_01_16"
+],
+"8,31,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"appliances_refrigeration_01_16"
+],
+"8,32,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_7",
+"overlay_grime_wall_01_19"
+],
+"8,33,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"8,34,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"appliances_refrigeration_01_17"
+],
+"8,35,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"appliances_refrigeration_01_16"
+],
+"8,36,0": [
+"floors_exterior_street_01_16",
+"street_decoration_01_14",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"8,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"8,38,0": [
+"floors_exterior_street_01_16"
+],
+"9,31,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,32,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,33,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,34,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,35,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"9,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_14"
+],
+"9,38,0": [
+"floors_exterior_street_01_16"
+],
+"10,31,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,32,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,33,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,34,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,35,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"10,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"10,38,0": [
+"floors_exterior_street_01_16"
+],
+"11,31,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"11,32,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"11,33,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"11,34,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"11,35,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"11,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"lighting_indoor_01_0"
+],
+"11,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"11,38,0": [
+"floors_exterior_street_01_16"
+],
+"4,31,1": [
+"roofs_04_55"
+],
+"4,32,1": [
+"roofs_04_55"
+],
+"4,33,1": [
+"roofs_04_55"
+],
+"4,34,1": [
+"roofs_04_55"
+],
+"4,35,1": [
+"roofs_04_55"
+],
+"4,36,1": [
+"ceilings_01_0"
+],
+"4,37,1": [
+"ceilings_01_0"
+],
+"4,38,1": [
+"ceilings_01_0"
+],
+"5,31,1": [
+"roofs_04_55",
+"rooftop_furniture_22"
+],
+"5,32,1": [
+"roofs_04_55"
+],
+"5,33,1": [
+"roofs_04_55"
+],
+"5,34,1": [
+"roofs_04_55"
+],
+"5,35,1": [
+"roofs_04_55"
+],
+"5,36,1": [
+"ceilings_01_0"
+],
+"5,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"5,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"6,31,1": [
+"roofs_04_55"
+],
+"6,32,1": [
+"roofs_04_55"
+],
+"6,33,1": [
+"roofs_04_55"
+],
+"6,34,1": [
+"roofs_04_55"
+],
+"6,35,1": [
+"roofs_04_55"
+],
+"6,36,1": [
+"ceilings_01_0"
+],
+"6,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"6,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"7,31,1": [
+"roofs_04_55"
+],
+"7,32,1": [
+"roofs_04_55"
+],
+"7,33,1": [
+"roofs_04_55"
+],
+"7,34,1": [
+"roofs_04_55"
+],
+"7,35,1": [
+"roofs_04_55"
+],
+"7,36,1": [
+"ceilings_01_0"
+],
+"7,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"7,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"8,31,1": [
+"roofs_04_55"
+],
+"8,32,1": [
+"roofs_04_55"
+],
+"8,33,1": [
+"roofs_04_55"
+],
+"8,34,1": [
+"roofs_04_55"
+],
+"8,35,1": [
+"roofs_04_55"
+],
+"8,36,1": [
+"ceilings_01_0"
+],
+"8,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"8,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"9,31,1": [
+"roofs_04_55"
+],
+"9,32,1": [
+"roofs_04_55"
+],
+"9,33,1": [
+"roofs_04_55"
+],
+"9,34,1": [
+"roofs_04_55"
+],
+"9,35,1": [
+"roofs_04_55"
+],
+"9,36,1": [
+"ceilings_01_0"
+],
+"9,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"9,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"10,31,1": [
+"roofs_04_55"
+],
+"10,32,1": [
+"roofs_04_55"
+],
+"10,33,1": [
+"roofs_04_55"
+],
+"10,34,1": [
+"roofs_04_55"
+],
+"10,35,1": [
+"roofs_04_55"
+],
+"10,36,1": [
+"ceilings_01_0"
+],
+"10,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"10,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"11,31,1": [
+"roofs_04_55"
+],
+"11,32,1": [
+"roofs_04_55",
+"rooftop_furniture_1",
+"rooftop_furniture_15"
+],
+"11,33,1": [
+"roofs_04_55",
+"rooftop_furniture_13"
+],
+"11,34,1": [
+"roofs_04_55"
+],
+"11,35,1": [
+"roofs_04_55"
+],
+"11,36,1": [
+"ceilings_01_0"
+],
+"11,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"11,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"4,39,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_37"
+],
+"4,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15",
+"location_business_machinery_01_37"
+],
+"4,41,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_36",
+"overlay_grime_wall_01_0",
+"location_business_machinery_01_37"
+],
+"4,42,0": [
+"blends_street_01_53",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"5,39,0": [
+"floors_exterior_street_01_16"
+],
+"5,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"5,41,0": [
+"floors_exterior_street_01_16"
+],
+"5,42,0": [
+"blends_street_01_48",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"6,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"6,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_14"
+],
+"6,41,0": [
+"floors_exterior_street_01_16"
+],
+"6,42,0": [
+"blends_street_01_54",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"7,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"7,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"7,41,0": [
+"floors_exterior_street_01_16"
+],
+"7,42,0": [
+"blends_street_01_48",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"8,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"8,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"8,41,0": [
+"floors_exterior_street_01_16"
+],
+"8,42,0": [
+"blends_street_01_55",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"9,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"9,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_14"
+],
+"9,41,0": [
+"floors_exterior_street_01_16"
+],
+"9,42,0": [
+"blends_street_01_54",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"10,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"10,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"10,41,0": [
+"floors_exterior_street_01_16"
+],
+"10,42,0": [
+"blends_street_01_53",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"11,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"11,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"11,41,0": [
+"floors_exterior_street_01_16"
+],
+"11,42,0": [
+"blends_street_01_48",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"4,39,1": [
+"ceilings_01_0"
+],
+"4,40,1": [
+"ceilings_01_0"
+],
+"4,41,1": [
+"ceilings_01_0",
+"roofs_04_56"
+],
+"5,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"5,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"5,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"6,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"6,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"6,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"7,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"7,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"7,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"8,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"8,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"8,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"9,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"9,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"9,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"10,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"10,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"10,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"11,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"11,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"11,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"12,0,0": [
+"blends_street_01_103"
+],
+"12,1,0": [
+"blends_street_01_103"
+],
+"12,2,0": [
+"blends_street_01_103"
+],
+"12,3,0": [
+"blends_street_01_101"
+],
+"12,4,0": [
+"blends_street_01_101"
+],
+"12,5,0": [
+"blends_street_01_101"
+],
+"12,6,0": [
+"blends_street_01_103",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"13,0,0": [
+"blends_street_01_102"
+],
+"13,1,0": [
+"blends_street_01_102"
+],
+"13,2,0": [
+"blends_street_01_101"
+],
+"13,3,0": [
+"blends_street_01_96"
+],
+"13,4,0": [
+"blends_street_01_101"
+],
+"13,5,0": [
+"blends_street_01_96"
+],
+"13,6,0": [
+"blends_street_01_96",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"14,0,0": [
+"blends_street_01_101"
+],
+"14,1,0": [
+"blends_street_01_101"
+],
+"14,2,0": [
+"blends_street_01_103"
+],
+"14,3,0": [
+"blends_street_01_101"
+],
+"14,4,0": [
+"blends_street_01_103"
+],
+"14,5,0": [
+"blends_street_01_96"
+],
+"14,6,0": [
+"blends_street_01_96",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"15,0,0": [
+"blends_street_01_102"
+],
+"15,1,0": [
+"blends_street_01_96"
+],
+"15,2,0": [
+"blends_street_01_102"
+],
+"15,3,0": [
+"blends_street_01_103"
+],
+"15,4,0": [
+"blends_street_01_103"
+],
+"15,5,0": [
+"blends_street_01_102"
+],
+"15,6,0": [
+"blends_street_01_103",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"16,0,0": [
+"blends_street_01_102"
+],
+"16,1,0": [
+"blends_street_01_101"
+],
+"16,2,0": [
+"blends_street_01_103"
+],
+"16,3,0": [
+"blends_street_01_96"
+],
+"16,4,0": [
+"blends_street_01_101"
+],
+"16,5,0": [
+"blends_street_01_103"
+],
+"16,6,0": [
+"blends_street_01_103",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"17,0,0": [
+"blends_street_01_102"
+],
+"17,1,0": [
+"blends_street_01_101"
+],
+"17,2,0": [
+"blends_street_01_103"
+],
+"17,3,0": [
+"blends_street_01_102"
+],
+"17,4,0": [
+"blends_street_01_103"
+],
+"17,5,0": [
+"blends_street_01_102"
+],
+"17,6,0": [
+"blends_street_01_96",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"18,0,0": [
+"blends_street_01_101"
+],
+"18,1,0": [
+"blends_street_01_103"
+],
+"18,2,0": [
+"blends_street_01_96"
+],
+"18,3,0": [
+"blends_street_01_96"
+],
+"18,4,0": [
+"blends_street_01_103"
+],
+"18,5,0": [
+"blends_street_01_102"
+],
+"18,6,0": [
+"blends_street_01_102"
+],
+"19,0,0": [
+"blends_street_01_103"
+],
+"19,1,0": [
+"blends_street_01_101"
+],
+"19,2,0": [
+"blends_street_01_96"
+],
+"19,3,0": [
+"blends_street_01_96"
+],
+"19,4,0": [
+"blends_street_01_101"
+],
+"19,5,0": [
+"blends_street_01_96"
+],
+"19,6,0": [
+"blends_street_01_102"
+],
+"12,6,1": [
+"lighting_indoor_03_17"
+],
+"15,6,1": [
+"lighting_indoor_03_16"
+],
+"16,6,1": [
+"lighting_indoor_03_18"
+],
+"17,6,1": [
+"lighting_indoor_03_17"
+],
+"12,5,2": [
+"location_shop_fossoil_01_38"
+],
+"12,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"13,5,2": [
+"location_shop_fossoil_01_38"
+],
+"13,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"14,5,2": [
+"location_shop_fossoil_01_38"
+],
+"14,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"15,5,2": [
+"location_shop_fossoil_01_38"
+],
+"15,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"16,5,2": [
+"location_shop_fossoil_01_38"
+],
+"16,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"17,5,2": [
+"location_shop_fossoil_01_38"
+],
+"17,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"18,5,2": [
+"location_shop_fossoil_01_38"
+],
+"18,6,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"19,5,2": [
+"location_shop_fossoil_01_38"
+],
+"19,6,2": [
+"location_shop_fossoil_01_38"
+],
+"12,7,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"street_curbs_01_8"
+],
+"12,8,0": [
+"blends_street_01_103"
+],
+"12,9,0": [
+"blends_street_01_96"
+],
+"12,10,0": [
+"blends_street_01_101"
+],
+"12,11,0": [
+"blends_street_01_101"
+],
+"12,12,0": [
+"blends_street_01_103"
+],
+"12,13,0": [
+"blends_street_01_103",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"12,14,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"street_curbs_01_8"
+],
+"13,7,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_33",
+"street_curbs_01_8"
+],
+"13,8,0": [
+"blends_street_01_102"
+],
+"13,9,0": [
+"blends_street_01_96"
+],
+"13,10,0": [
+"blends_street_01_102"
+],
+"13,11,0": [
+"blends_street_01_102"
+],
+"13,12,0": [
+"blends_street_01_102"
+],
+"13,13,0": [
+"blends_street_01_101",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"13,14,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_33",
+"street_curbs_01_8"
+],
+"14,7,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"street_curbs_01_8"
+],
+"14,8,0": [
+"blends_street_01_96"
+],
+"14,9,0": [
+"blends_street_01_101"
+],
+"14,10,0": [
+"blends_street_01_102"
+],
+"14,11,0": [
+"blends_street_01_102"
+],
+"14,12,0": [
+"blends_street_01_102"
+],
+"14,13,0": [
+"blends_street_01_101",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"14,14,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"street_curbs_01_8"
+],
+"15,7,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_15",
+"street_curbs_01_8",
+"location_shop_fossoil_01_15"
+],
+"15,8,0": [
+"blends_street_01_96"
+],
+"15,9,0": [
+"blends_street_01_96"
+],
+"15,10,0": [
+"blends_street_01_96"
+],
+"15,11,0": [
+"blends_street_01_96"
+],
+"15,12,0": [
+"blends_street_01_103"
+],
+"15,13,0": [
+"blends_street_01_101",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"15,14,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_15",
+"street_curbs_01_8",
+"location_shop_fossoil_01_15"
+],
+"16,7,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_14",
+"street_curbs_01_8",
+"location_shop_fossoil_01_14"
+],
+"16,8,0": [
+"blends_street_01_103"
+],
+"16,9,0": [
+"blends_street_01_103"
+],
+"16,10,0": [
+"blends_street_01_102"
+],
+"16,11,0": [
+"blends_street_01_103"
+],
+"16,12,0": [
+"blends_street_01_101"
+],
+"16,13,0": [
+"blends_street_01_103",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"16,14,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"location_shop_fossoil_01_14",
+"street_curbs_01_8",
+"location_shop_fossoil_01_14"
+],
+"17,7,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"street_curbs_01_8"
+],
+"17,8,0": [
+"blends_street_01_101"
+],
+"17,9,0": [
+"blends_street_01_103"
+],
+"17,10,0": [
+"blends_street_01_102"
+],
+"17,11,0": [
+"blends_street_01_103"
+],
+"17,12,0": [
+"blends_street_01_96"
+],
+"17,13,0": [
+"blends_street_01_101",
+"street_curbs_01_10",
+"street_curbs_01_10"
+],
+"17,14,0": [
+"blends_street_01_0",
+"street_curbs_01_8",
+"street_curbs_01_8"
+],
+"18,7,0": [
+"floors_interior_carpet_01_12",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_2"
+],
+"18,8,0": [
+"blends_street_01_102",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_1"
+],
+"18,9,0": [
+"blends_street_01_102"
+],
+"18,10,0": [
+"blends_street_01_96"
+],
+"18,11,0": [
+"blends_street_01_103"
+],
+"18,12,0": [
+"blends_street_01_101"
+],
+"18,13,0": [
+"blends_street_01_103"
+],
+"18,14,0": [
+"floors_interior_carpet_01_12",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_2"
+],
+"19,7,0": [
+"blends_street_01_103",
+"street_curbs_01_0",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_0"
+],
+"19,8,0": [
+"blends_street_01_101",
+"location_shop_fossoil_01_7",
+"overlay_grime_wall_01_3"
+],
+"19,9,0": [
+"blends_street_01_101"
+],
+"19,10,0": [
+"blends_street_01_103"
+],
+"19,11,0": [
+"blends_street_01_103"
+],
+"19,12,0": [
+"blends_street_01_103"
+],
+"19,13,0": [
+"blends_street_01_101"
+],
+"19,14,0": [
+"blends_street_01_103",
+"street_curbs_01_0",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_0"
+],
+"12,9,1": [
+"lighting_indoor_03_17"
+],
+"12,13,1": [
+"lighting_indoor_03_17"
+],
+"15,9,1": [
+"lighting_indoor_03_16"
+],
+"15,13,1": [
+"lighting_indoor_03_16"
+],
+"16,9,1": [
+"lighting_indoor_03_18"
+],
+"16,13,1": [
+"lighting_indoor_03_18"
+],
+"17,9,1": [
+"lighting_indoor_03_17"
+],
+"17,13,1": [
+"lighting_indoor_03_17"
+],
+"18,7,1": [
+"floors_interior_carpet_01_12",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_2"
+],
+"18,8,1": [
+"location_shop_fossoil_01_5"
+],
+"18,14,1": [
+"floors_interior_carpet_01_12",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_2"
+],
+"19,7,1": [
+"location_shop_fossoil_01_6"
+],
+"19,8,1": [
+"location_shop_fossoil_01_7"
+],
+"19,14,1": [
+"location_shop_fossoil_01_6"
+],
+"12,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"12,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"12,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"12,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"12,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"12,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"12,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"12,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"13,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"13,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"13,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"13,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"13,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"13,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"13,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"13,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"14,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"14,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"14,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"14,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"14,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"14,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"14,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"14,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"15,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"15,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"15,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"15,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"15,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"15,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"15,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"15,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"16,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"16,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"16,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"16,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"16,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"16,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"16,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"16,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"17,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"17,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"17,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"17,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"17,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"17,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"17,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"17,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"18,7,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"18,8,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"18,9,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"18,10,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"18,11,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"18,12,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"18,13,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"18,14,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"19,7,2": [
+"location_shop_fossoil_01_38"
+],
+"19,8,2": [
+"location_shop_fossoil_01_38"
+],
+"19,9,2": [
+"location_shop_fossoil_01_38"
+],
+"19,10,2": [
+"location_shop_fossoil_01_38"
+],
+"19,11,2": [
+"location_shop_fossoil_01_38"
+],
+"19,12,2": [
+"location_shop_fossoil_01_38"
+],
+"19,13,2": [
+"location_shop_fossoil_01_38"
+],
+"19,14,2": [
+"location_shop_fossoil_01_38"
+],
+"12,15,0": [
+"blends_street_01_102"
+],
+"12,16,0": [
+"blends_street_01_96"
+],
+"12,17,0": [
+"blends_street_01_101"
+],
+"12,18,0": [
+"blends_street_01_96"
+],
+"12,19,0": [
+"blends_street_01_102"
+],
+"12,20,0": [
+"blends_street_01_103"
+],
+"12,21,0": [
+"blends_street_01_102"
+],
+"12,22,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"13,15,0": [
+"blends_street_01_102"
+],
+"13,16,0": [
+"blends_street_01_101"
+],
+"13,17,0": [
+"blends_street_01_102"
+],
+"13,18,0": [
+"blends_street_01_103"
+],
+"13,19,0": [
+"blends_street_01_103"
+],
+"13,20,0": [
+"blends_street_01_101"
+],
+"13,21,0": [
+"blends_street_01_101"
+],
+"13,22,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"14,15,0": [
+"blends_street_01_103"
+],
+"14,16,0": [
+"blends_street_01_101"
+],
+"14,17,0": [
+"blends_street_01_101"
+],
+"14,18,0": [
+"blends_street_01_101"
+],
+"14,19,0": [
+"blends_street_01_102"
+],
+"14,20,0": [
+"blends_street_01_96"
+],
+"14,21,0": [
+"blends_street_01_96"
+],
+"14,22,0": [
+"blends_street_01_102",
+"street_curbs_01_10"
+],
+"15,15,0": [
+"blends_street_01_103"
+],
+"15,16,0": [
+"blends_street_01_96"
+],
+"15,17,0": [
+"blends_street_01_103"
+],
+"15,18,0": [
+"blends_street_01_103"
+],
+"15,19,0": [
+"blends_street_01_103"
+],
+"15,20,0": [
+"blends_street_01_101"
+],
+"15,21,0": [
+"blends_street_01_103"
+],
+"15,22,0": [
+"blends_street_01_103",
+"street_curbs_01_10"
+],
+"16,15,0": [
+"blends_street_01_103"
+],
+"16,16,0": [
+"blends_street_01_101"
+],
+"16,17,0": [
+"blends_street_01_101"
+],
+"16,18,0": [
+"blends_street_01_96"
+],
+"16,19,0": [
+"blends_street_01_101"
+],
+"16,20,0": [
+"blends_street_01_102"
+],
+"16,21,0": [
+"blends_street_01_101"
+],
+"16,22,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"17,15,0": [
+"blends_street_01_103"
+],
+"17,16,0": [
+"blends_street_01_102"
+],
+"17,17,0": [
+"blends_street_01_103"
+],
+"17,18,0": [
+"blends_street_01_96"
+],
+"17,19,0": [
+"blends_street_01_103"
+],
+"17,20,0": [
+"blends_street_01_96"
+],
+"17,21,0": [
+"blends_street_01_101"
+],
+"17,22,0": [
+"blends_street_01_96",
+"street_curbs_01_10"
+],
+"18,15,0": [
+"blends_street_01_102",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_1"
+],
+"18,16,0": [
+"blends_street_01_102"
+],
+"18,17,0": [
+"blends_street_01_101"
+],
+"18,18,0": [
+"blends_street_01_103"
+],
+"18,19,0": [
+"blends_street_01_101"
+],
+"18,20,0": [
+"blends_street_01_101"
+],
+"18,21,0": [
+"blends_street_01_101"
+],
+"18,22,0": [
+"blends_street_01_103",
+"street_curbs_01_10"
+],
+"19,15,0": [
+"blends_street_01_101",
+"location_shop_fossoil_01_7",
+"overlay_grime_wall_01_3"
+],
+"19,16,0": [
+"blends_street_01_103"
+],
+"19,17,0": [
+"blends_street_01_103"
+],
+"19,18,0": [
+"blends_street_01_96"
+],
+"19,19,0": [
+"blends_street_01_101"
+],
+"19,20,0": [
+"blends_street_01_101"
+],
+"19,21,0": [
+"blends_street_01_96"
+],
+"19,22,0": [
+"blends_street_01_102",
+"street_curbs_01_10"
+],
+"12,16,1": [
+"lighting_indoor_03_17"
+],
+"12,17,1": [
+"location_shop_fossoil_01_40"
+],
+"13,17,1": [
+"location_shop_fossoil_01_40"
+],
+"14,17,1": [
+"location_shop_fossoil_01_40"
+],
+"15,16,1": [
+"lighting_indoor_03_16"
+],
+"15,17,1": [
+"location_shop_fossoil_01_40"
+],
+"16,16,1": [
+"lighting_indoor_03_18"
+],
+"16,17,1": [
+"location_shop_fossoil_01_40"
+],
+"17,16,1": [
+"lighting_indoor_03_17"
+],
+"17,17,1": [
+"location_shop_fossoil_01_40"
+],
+"18,15,1": [
+"location_shop_fossoil_01_5"
+],
+"18,17,1": [
+"location_shop_fossoil_01_40"
+],
+"19,15,1": [
+"location_shop_fossoil_01_7"
+],
+"19,17,1": [
+"location_shop_fossoil_01_40"
+],
+"12,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"12,16,2": [
+"location_shop_fossoil_01_38"
+],
+"13,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"13,16,2": [
+"location_shop_fossoil_01_38"
+],
+"14,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"14,16,2": [
+"location_shop_fossoil_01_38"
+],
+"15,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"15,16,2": [
+"location_shop_fossoil_01_38"
+],
+"16,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"16,16,2": [
+"location_shop_fossoil_01_38"
+],
+"17,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"17,16,2": [
+"location_shop_fossoil_01_38"
+],
+"18,15,2": [
+"location_shop_fossoil_01_38",
+"location_shop_fossoil_01_39"
+],
+"18,16,2": [
+"location_shop_fossoil_01_38"
+],
+"19,15,2": [
+"location_shop_fossoil_01_38"
+],
+"19,16,2": [
+"location_shop_fossoil_01_38"
+],
+"12,23,0": [
+"blends_street_01_54"
+],
+"12,24,0": [
+"blends_street_01_53"
+],
+"12,25,0": [
+"blends_street_01_54",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"street_decoration_01_38"
+],
+"12,26,0": [
+"blends_street_01_53",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_45",
+"appliances_refrigeration_01_21"
+],
+"12,27,0": [
+"blends_street_01_55",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_44",
+"appliances_refrigeration_01_20"
+],
+"12,28,0": [
+"blends_street_01_48",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_33"
+],
+"12,29,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17",
+"location_shop_fossoil_01_32",
+"lighting_indoor_01_0"
+],
+"12,30,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"13,23,0": [
+"blends_street_01_53"
+],
+"13,24,0": [
+"blends_street_01_54"
+],
+"13,25,0": [
+"blends_street_01_55"
+],
+"13,26,0": [
+"blends_street_01_55"
+],
+"13,27,0": [
+"blends_street_01_48"
+],
+"13,28,0": [
+"blends_street_01_54"
+],
+"13,29,0": [
+"floors_interior_tilesandwood_01_19",
+"floors_rugs_01_52",
+"location_shop_fossoil_01_9",
+"overlay_grime_wall_01_27",
+"location_shop_fossoil_01_61"
+],
+"13,30,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"14,23,0": [
+"blends_street_01_55"
+],
+"14,24,0": [
+"blends_street_01_48"
+],
+"14,25,0": [
+"blends_street_01_54"
+],
+"14,26,0": [
+"blends_street_01_48"
+],
+"14,27,0": [
+"blends_street_01_55"
+],
+"14,28,0": [
+"blends_street_01_54"
+],
+"14,29,0": [
+"floors_interior_tilesandwood_01_19",
+"floors_rugs_01_53",
+"location_shop_fossoil_01_9",
+"overlay_grime_wall_01_27",
+"location_shop_fossoil_01_61",
+"lighting_indoor_01_25"
+],
+"14,30,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,23,0": [
+"blends_street_01_55"
+],
+"15,24,0": [
+"blends_street_01_54"
+],
+"15,25,0": [
+"blends_street_01_48"
+],
+"15,26,0": [
+"blends_street_01_48"
+],
+"15,27,0": [
+"blends_street_01_55"
+],
+"15,28,0": [
+"blends_street_01_54"
+],
+"15,29,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"15,30,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"16,23,0": [
+"blends_street_01_55"
+],
+"16,24,0": [
+"blends_street_01_53"
+],
+"16,25,0": [
+"blends_street_01_53"
+],
+"16,26,0": [
+"blends_street_01_48"
+],
+"16,27,0": [
+"blends_street_01_55"
+],
+"16,28,0": [
+"blends_street_01_55"
+],
+"16,29,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41"
+],
+"16,30,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"17,23,0": [
+"blends_street_01_53"
+],
+"17,24,0": [
+"blends_street_01_53"
+],
+"17,25,0": [
+"blends_street_01_53"
+],
+"17,26,0": [
+"blends_street_01_55"
+],
+"17,27,0": [
+"blends_street_01_48"
+],
+"17,28,0": [
+"blends_street_01_48"
+],
+"17,29,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41"
+],
+"17,30,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"18,23,0": [
+"blends_street_01_53"
+],
+"18,24,0": [
+"blends_street_01_53"
+],
+"18,25,0": [
+"blends_street_01_53"
+],
+"18,26,0": [
+"blends_street_01_55"
+],
+"18,27,0": [
+"blends_street_01_53"
+],
+"18,28,0": [
+"blends_street_01_48",
+"lighting_outdoor_01_44"
+],
+"18,29,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17",
+"location_community_school_01_32"
+],
+"18,30,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"19,23,0": [
+"blends_street_01_48"
+],
+"19,24,0": [
+"blends_street_01_54"
+],
+"19,25,0": [
+"blends_street_01_54"
+],
+"19,26,0": [
+"blends_street_01_54"
+],
+"19,27,0": [
+"blends_street_01_53"
+],
+"19,28,0": [
+"blends_street_01_54"
+],
+"19,29,0": [
+"blends_street_01_55",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16"
+],
+"19,30,0": [
+"blends_street_01_55",
+"location_shop_fossoil_01_2",
+"overlay_grime_wall_01_40"
+],
+"12,29,1": [
+"roofs_04_55"
+],
+"12,30,1": [
+"roofs_04_55"
+],
+"13,29,1": [
+"roofs_04_55"
+],
+"13,30,1": [
+"roofs_04_55"
+],
+"14,29,1": [
+"roofs_04_55"
+],
+"14,30,1": [
+"roofs_04_55"
+],
+"15,29,1": [
+"roofs_04_55"
+],
+"15,30,1": [
+"roofs_04_55"
+],
+"16,29,1": [
+"roofs_04_55"
+],
+"16,30,1": [
+"roofs_04_55"
+],
+"17,29,1": [
+"roofs_04_55"
+],
+"17,30,1": [
+"roofs_04_55"
+],
+"18,29,1": [
+"roofs_04_55"
+],
+"18,30,1": [
+"roofs_04_55"
+],
+"12,31,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"12,32,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"12,33,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_20",
+"location_shop_generic_01_122"
+],
+"12,34,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"12,35,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_29"
+],
+"12,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"industry_02_34"
+],
+"12,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_14"
+],
+"12,38,0": [
+"floors_exterior_street_01_16"
+],
+"13,31,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"13,32,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"13,33,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_21"
+],
+"13,34,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"13,35,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_29"
+],
+"13,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"13,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"13,38,0": [
+"floors_exterior_street_01_16"
+],
+"14,31,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"14,32,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"14,33,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_21",
+"location_shop_accessories_01_1"
+],
+"14,34,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"14,35,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_29"
+],
+"14,36,0": [
+"floors_exterior_street_01_16",
+"street_decoration_01_14",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"14,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"14,38,0": [
+"floors_exterior_street_01_16"
+],
+"15,31,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,32,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,33,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_22"
+],
+"15,34,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,35,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"industry_02_34"
+],
+"15,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_14"
+],
+"15,38,0": [
+"floors_exterior_street_01_16"
+],
+"16,31,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"16,32,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"16,33,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"16,34,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"16,35,0": [
+"floors_interior_tilesandwood_01_19",
+"location_community_medical_01_10"
+],
+"16,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"industry_02_34"
+],
+"16,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"16,38,0": [
+"floors_exterior_street_01_16"
+],
+"17,31,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_0"
+],
+"17,32,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"17,33,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_0"
+],
+"17,34,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"17,35,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"17,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_5",
+"overlay_grime_wall_01_1"
+],
+"17,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"17,38,0": [
+"floors_exterior_street_01_16"
+],
+"18,31,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"18,32,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"18,33,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"18,34,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"18,35,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"18,36,0": [
+"floors_exterior_street_01_16",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"location_business_machinery_01_37"
+],
+"18,37,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15",
+"location_business_machinery_01_37"
+],
+"18,38,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_37"
+],
+"19,31,0": [
+"blends_street_01_55",
+"location_shop_fossoil_01_2",
+"overlay_grime_wall_01_40"
+],
+"19,32,0": [
+"blends_street_01_48",
+"location_shop_fossoil_01_2",
+"overlay_grime_wall_01_40"
+],
+"19,33,0": [
+"blends_street_01_48",
+"location_shop_fossoil_01_2",
+"overlay_grime_wall_01_40"
+],
+"19,34,0": [
+"blends_street_01_48",
+"location_shop_fossoil_01_2",
+"overlay_grime_wall_01_40"
+],
+"19,35,0": [
+"blends_street_01_48",
+"street_curbs_01_8",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"street_curbs_01_8"
+],
+"19,36,0": [
+"blends_street_01_96",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16"
+],
+"19,37,0": [
+"blends_street_01_96",
+"location_shop_fossoil_01_7",
+"location_shop_fossoil_01_41",
+"overlay_grime_wall_01_19"
+],
+"19,38,0": [
+"blends_street_01_101",
+"location_shop_fossoil_01_41"
+],
+"12,31,1": [
+"roofs_04_55"
+],
+"12,32,1": [
+"roofs_04_55",
+"rooftop_furniture_1"
+],
+"12,33,1": [
+"roofs_04_55"
+],
+"12,34,1": [
+"roofs_04_55"
+],
+"12,35,1": [
+"roofs_04_55"
+],
+"12,36,1": [
+"ceilings_01_0"
+],
+"12,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"12,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"13,31,1": [
+"roofs_04_55"
+],
+"13,32,1": [
+"roofs_04_55",
+"industry_02_143"
+],
+"13,33,1": [
+"roofs_04_55"
+],
+"13,34,1": [
+"roofs_04_55"
+],
+"13,35,1": [
+"roofs_04_55"
+],
+"13,36,1": [
+"ceilings_01_0"
+],
+"13,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"13,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"14,31,1": [
+"roofs_04_55"
+],
+"14,32,1": [
+"roofs_04_55"
+],
+"14,33,1": [
+"roofs_04_55"
+],
+"14,34,1": [
+"roofs_04_55"
+],
+"14,35,1": [
+"roofs_04_55"
+],
+"14,36,1": [
+"ceilings_01_0"
+],
+"14,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"14,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"15,31,1": [
+"roofs_04_55"
+],
+"15,32,1": [
+"roofs_04_55"
+],
+"15,33,1": [
+"roofs_04_55"
+],
+"15,34,1": [
+"roofs_04_55"
+],
+"15,35,1": [
+"roofs_04_55"
+],
+"15,36,1": [
+"ceilings_01_0"
+],
+"15,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"15,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"16,31,1": [
+"roofs_04_55"
+],
+"16,32,1": [
+"roofs_04_55"
+],
+"16,33,1": [
+"roofs_04_55"
+],
+"16,34,1": [
+"roofs_04_55"
+],
+"16,35,1": [
+"roofs_04_55"
+],
+"16,36,1": [
+"ceilings_01_0"
+],
+"16,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"16,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"17,31,1": [
+"roofs_04_55"
+],
+"17,32,1": [
+"roofs_04_55"
+],
+"17,33,1": [
+"roofs_04_55"
+],
+"17,34,1": [
+"roofs_04_55"
+],
+"17,35,1": [
+"roofs_04_55"
+],
+"17,36,1": [
+"ceilings_01_0"
+],
+"17,37,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"17,38,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"18,31,1": [
+"roofs_04_55"
+],
+"18,32,1": [
+"roofs_04_55"
+],
+"18,33,1": [
+"roofs_04_55"
+],
+"18,34,1": [
+"roofs_04_55"
+],
+"18,35,1": [
+"roofs_04_55"
+],
+"18,36,1": [
+"ceilings_01_0",
+"roofs_04_61"
+],
+"18,37,1": [
+"ceilings_01_0",
+"roofs_04_37"
+],
+"18,38,1": [
+"ceilings_01_0",
+"roofs_04_37"
+],
+"12,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"12,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_14"
+],
+"12,41,0": [
+"floors_exterior_street_01_16"
+],
+"12,42,0": [
+"blends_street_01_54",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"13,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"13,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"13,41,0": [
+"floors_exterior_street_01_16"
+],
+"13,42,0": [
+"blends_street_01_55",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"14,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"14,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"14,41,0": [
+"floors_exterior_street_01_16"
+],
+"14,42,0": [
+"blends_street_01_48",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"15,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"15,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_14"
+],
+"15,41,0": [
+"floors_exterior_street_01_16"
+],
+"15,42,0": [
+"blends_street_01_55",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"16,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"16,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"16,41,0": [
+"floors_exterior_street_01_16"
+],
+"16,42,0": [
+"blends_street_01_55",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"17,39,0": [
+"floors_exterior_street_01_18",
+"industry_01_12"
+],
+"17,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15"
+],
+"17,41,0": [
+"floors_exterior_street_01_16"
+],
+"17,42,0": [
+"blends_street_01_54",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"18,39,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_37"
+],
+"18,40,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_15",
+"location_business_machinery_01_37"
+],
+"18,41,0": [
+"floors_exterior_street_01_16",
+"location_business_machinery_01_37"
+],
+"18,42,0": [
+"blends_street_01_48",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"19,39,0": [
+"blends_street_01_96",
+"location_shop_fossoil_01_41"
+],
+"19,40,0": [
+"blends_street_01_101",
+"location_shop_fossoil_01_41"
+],
+"19,41,0": [
+"blends_street_01_96",
+"street_curbs_01_10",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"lighting_outdoor_01_41",
+"street_curbs_01_10"
+],
+"19,42,0": [
+"blends_street_01_54",
+"location_shop_fossoil_01_7",
+"overlay_grime_wall_01_19"
+],
+"12,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"12,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"12,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"13,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"13,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"13,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"14,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"14,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"14,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"15,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"15,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"15,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"16,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"16,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"16,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"17,39,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"17,40,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"17,41,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"18,39,1": [
+"ceilings_01_0",
+"roofs_04_37"
+],
+"18,40,1": [
+"ceilings_01_0",
+"roofs_04_37"
+],
+"18,41,1": [
+"ceilings_01_0",
+"roofs_04_40"
+],
+"20,0,0": [
+"blends_street_01_103"
+],
+"20,1,0": [
+"blends_street_01_102"
+],
+"20,2,0": [
+"blends_street_01_96",
+"blends_street_01_10"
+],
+"20,3,0": [
+"blends_street_01_96"
+],
+"20,4,0": [
+"blends_street_01_101"
+],
+"20,5,0": [
+"blends_street_01_96"
+],
+"20,6,0": [
+"blends_street_01_103"
+],
+"21,0,0": [
+"blends_street_01_101",
+"blends_street_01_10"
+],
+"21,1,0": [
+"blends_street_01_102",
+"blends_street_01_2"
+],
+"21,2,0": [
+"blends_street_01_0"
+],
+"21,3,0": [
+"blends_street_01_102",
+"blends_street_01_8",
+"blends_streetoverlays_01_18"
+],
+"21,4,0": [
+"blends_street_01_96"
+],
+"21,5,0": [
+"blends_street_01_103"
+],
+"21,6,0": [
+"blends_street_01_96"
+],
+"22,0,0": [
+"blends_street_01_0"
+],
+"22,1,0": [
+"blends_street_01_0"
+],
+"22,2,0": [
+"blends_street_01_101",
+"blends_street_01_1",
+"blends_street_01_4"
+],
+"22,3,0": [
+"blends_street_01_102"
+],
+"22,4,0": [
+"blends_street_01_103"
+],
+"22,5,0": [
+"blends_street_01_102"
+],
+"22,6,0": [
+"blends_street_01_96"
+],
+"23,0,0": [
+"blends_street_01_103",
+"blends_street_01_10",
+"blends_street_01_9"
+],
+"23,1,0": [
+"blends_street_01_103",
+"blends_street_01_3"
+],
+"23,2,0": [
+"blends_street_01_0"
+],
+"23,3,0": [
+"blends_street_01_102",
+"blends_street_01_8"
+],
+"23,4,0": [
+"blends_street_01_101"
+],
+"23,5,0": [
+"blends_street_01_102"
+],
+"23,6,0": [
+"blends_street_01_96"
+],
+"24,0,0": [
+"blends_street_01_0"
+],
+"24,1,0": [
+"blends_street_01_102",
+"blends_street_01_11",
+"blends_street_01_8"
+],
+"24,2,0": [
+"blends_street_01_0"
+],
+"24,3,0": [
+"blends_street_01_96",
+"blends_street_01_8"
+],
+"24,4,0": [
+"blends_street_01_103"
+],
+"24,5,0": [
+"blends_street_01_101"
+],
+"24,6,0": [
+"blends_street_01_103"
+],
+"25,0,0": [
+"blends_street_01_101",
+"blends_street_01_9"
+],
+"25,1,0": [
+"blends_street_01_96",
+"blends_streetoverlays_01_1"
+],
+"25,2,0": [
+"blends_street_01_101",
+"blends_street_01_9"
+],
+"25,3,0": [
+"blends_street_01_103"
+],
+"25,4,0": [
+"blends_street_01_96"
+],
+"25,5,0": [
+"blends_street_01_101"
+],
+"25,6,0": [
+"blends_street_01_102"
+],
+"26,0,0": [
+"blends_street_01_103"
+],
+"26,1,0": [
+"blends_street_01_102"
+],
+"26,2,0": [
+"blends_street_01_102"
+],
+"26,3,0": [
+"blends_street_01_102"
+],
+"26,4,0": [
+"blends_street_01_101"
+],
+"26,5,0": [
+"blends_street_01_102"
+],
+"26,6,0": [
+"blends_street_01_96"
+],
+"27,0,0": [
+"blends_street_01_101"
+],
+"27,1,0": [
+"blends_street_01_102"
+],
+"27,2,0": [
+"blends_street_01_96"
+],
+"27,3,0": [
+"blends_street_01_103"
+],
+"27,4,0": [
+"blends_street_01_96"
+],
+"27,5,0": [
+"blends_street_01_101"
+],
+"27,6,0": [
+"blends_street_01_101"
+],
+"20,5,1": [
+"location_shop_fossoil_01_41"
+],
+"20,6,1": [
+"location_shop_fossoil_01_41"
+],
+"20,7,0": [
+"blends_street_01_101"
+],
+"20,8,0": [
+"blends_street_01_96"
+],
+"20,9,0": [
+"blends_street_01_102"
+],
+"20,10,0": [
+"blends_street_01_101"
+],
+"20,11,0": [
+"blends_street_01_101"
+],
+"20,12,0": [
+"blends_street_01_101"
+],
+"20,13,0": [
+"blends_street_01_102"
+],
+"20,14,0": [
+"blends_street_01_102"
+],
+"21,7,0": [
+"blends_street_01_96"
+],
+"21,8,0": [
+"blends_street_01_96"
+],
+"21,9,0": [
+"blends_street_01_96"
+],
+"21,10,0": [
+"blends_street_01_102"
+],
+"21,11,0": [
+"blends_street_01_96"
+],
+"21,12,0": [
+"blends_street_01_101"
+],
+"21,13,0": [
+"blends_street_01_103"
+],
+"21,14,0": [
+"blends_street_01_102"
+],
+"22,7,0": [
+"blends_street_01_101"
+],
+"22,8,0": [
+"blends_street_01_102"
+],
+"22,9,0": [
+"blends_street_01_101"
+],
+"22,10,0": [
+"blends_street_01_96"
+],
+"22,11,0": [
+"blends_street_01_101"
+],
+"22,12,0": [
+"blends_street_01_102"
+],
+"22,13,0": [
+"blends_street_01_96"
+],
+"22,14,0": [
+"blends_street_01_103"
+],
+"23,7,0": [
+"blends_street_01_103"
+],
+"23,8,0": [
+"blends_street_01_101"
+],
+"23,9,0": [
+"blends_street_01_102"
+],
+"23,10,0": [
+"blends_street_01_101"
+],
+"23,11,0": [
+"blends_street_01_101"
+],
+"23,12,0": [
+"blends_street_01_102"
+],
+"23,13,0": [
+"blends_street_01_96"
+],
+"23,14,0": [
+"blends_street_01_101"
+],
+"24,7,0": [
+"blends_street_01_101"
+],
+"24,8,0": [
+"blends_street_01_103"
+],
+"24,9,0": [
+"blends_street_01_96"
+],
+"24,10,0": [
+"blends_street_01_101"
+],
+"24,11,0": [
+"blends_street_01_101"
+],
+"24,12,0": [
+"blends_street_01_96"
+],
+"24,13,0": [
+"blends_street_01_96"
+],
+"24,14,0": [
+"blends_street_01_103"
+],
+"25,7,0": [
+"blends_street_01_102"
+],
+"25,8,0": [
+"blends_street_01_101"
+],
+"25,9,0": [
+"blends_street_01_103"
+],
+"25,10,0": [
+"blends_street_01_102"
+],
+"25,11,0": [
+"blends_street_01_103"
+],
+"25,12,0": [
+"blends_street_01_96"
+],
+"25,13,0": [
+"blends_street_01_96"
+],
+"25,14,0": [
+"blends_street_01_102"
+],
+"26,7,0": [
+"blends_street_01_102"
+],
+"26,8,0": [
+"blends_street_01_102"
+],
+"26,9,0": [
+"blends_street_01_103"
+],
+"26,10,0": [
+"blends_street_01_103"
+],
+"26,11,0": [
+"blends_street_01_103"
+],
+"26,12,0": [
+"blends_street_01_96"
+],
+"26,13,0": [
+"blends_street_01_96"
+],
+"26,14,0": [
+"blends_street_01_101"
+],
+"27,7,0": [
+"blends_street_01_102"
+],
+"27,8,0": [
+"blends_street_01_101"
+],
+"27,9,0": [
+"blends_street_01_96"
+],
+"27,10,0": [
+"blends_street_01_102"
+],
+"27,11,0": [
+"blends_street_01_103"
+],
+"27,12,0": [
+"blends_street_01_102"
+],
+"27,13,0": [
+"blends_street_01_96"
+],
+"27,14,0": [
+"blends_street_01_96"
+],
+"20,7,1": [
+"location_shop_fossoil_01_41"
+],
+"20,8,1": [
+"location_shop_fossoil_01_41"
+],
+"20,9,1": [
+"location_shop_fossoil_01_41"
+],
+"20,10,1": [
+"location_shop_fossoil_01_41"
+],
+"20,11,1": [
+"location_shop_fossoil_01_41"
+],
+"20,12,1": [
+"location_shop_fossoil_01_41"
+],
+"20,13,1": [
+"location_shop_fossoil_01_41"
+],
+"20,14,1": [
+"location_shop_fossoil_01_41"
+],
+"20,15,0": [
+"blends_street_01_103"
+],
+"20,16,0": [
+"blends_street_01_102"
+],
+"20,17,0": [
+"blends_street_01_101"
+],
+"20,18,0": [
+"blends_street_01_101"
+],
+"20,19,0": [
+"blends_street_01_102"
+],
+"20,20,0": [
+"blends_street_01_96"
+],
+"20,21,0": [
+"blends_street_01_102"
+],
+"20,22,0": [
+"blends_street_01_96",
+"street_curbs_01_5"
+],
+"21,15,0": [
+"blends_street_01_96"
+],
+"21,16,0": [
+"blends_street_01_101"
+],
+"21,17,0": [
+"blends_street_01_103"
+],
+"21,18,0": [
+"blends_street_01_102"
+],
+"21,19,0": [
+"blends_street_01_96"
+],
+"21,20,0": [
+"blends_street_01_103"
+],
+"21,21,0": [
+"blends_street_01_103"
+],
+"21,22,0": [
+"blends_street_01_101"
+],
+"22,15,0": [
+"blends_street_01_96"
+],
+"22,16,0": [
+"blends_street_01_102"
+],
+"22,17,0": [
+"blends_street_01_101"
+],
+"22,18,0": [
+"blends_street_01_102"
+],
+"22,19,0": [
+"blends_street_01_96"
+],
+"22,20,0": [
+"blends_street_01_102"
+],
+"22,21,0": [
+"blends_street_01_101"
+],
+"22,22,0": [
+"blends_street_01_103"
+],
+"23,15,0": [
+"blends_street_01_96"
+],
+"23,16,0": [
+"blends_street_01_102"
+],
+"23,17,0": [
+"blends_street_01_96"
+],
+"23,18,0": [
+"blends_street_01_103"
+],
+"23,19,0": [
+"blends_street_01_96"
+],
+"23,20,0": [
+"blends_street_01_101"
+],
+"23,21,0": [
+"blends_street_01_101"
+],
+"23,22,0": [
+"blends_street_01_101"
+],
+"24,15,0": [
+"blends_street_01_101"
+],
+"24,16,0": [
+"blends_street_01_102"
+],
+"24,17,0": [
+"blends_street_01_101"
+],
+"24,18,0": [
+"blends_street_01_102"
+],
+"24,19,0": [
+"blends_street_01_101"
+],
+"24,20,0": [
+"blends_street_01_101"
+],
+"24,21,0": [
+"blends_street_01_102"
+],
+"24,22,0": [
+"blends_street_01_96"
+],
+"25,15,0": [
+"blends_street_01_103"
+],
+"25,16,0": [
+"blends_street_01_103"
+],
+"25,17,0": [
+"blends_street_01_102"
+],
+"25,18,0": [
+"blends_street_01_101"
+],
+"25,19,0": [
+"blends_street_01_102"
+],
+"25,20,0": [
+"blends_street_01_102"
+],
+"25,21,0": [
+"blends_street_01_102"
+],
+"25,22,0": [
+"blends_street_01_96"
+],
+"26,15,0": [
+"blends_street_01_101"
+],
+"26,16,0": [
+"blends_street_01_102"
+],
+"26,17,0": [
+"blends_street_01_96"
+],
+"26,18,0": [
+"blends_street_01_102"
+],
+"26,19,0": [
+"blends_street_01_96"
+],
+"26,20,0": [
+"blends_street_01_96"
+],
+"26,21,0": [
+"blends_street_01_101"
+],
+"26,22,0": [
+"blends_street_01_103",
+"street_curbs_01_3"
+],
+"27,15,0": [
+"blends_street_01_101"
+],
+"27,16,0": [
+"blends_street_01_103"
+],
+"27,17,0": [
+"blends_street_01_103"
+],
+"27,18,0": [
+"blends_street_01_96"
+],
+"27,19,0": [
+"blends_street_01_103"
+],
+"27,20,0": [
+"blends_street_01_96"
+],
+"27,21,0": [
+"blends_street_01_102"
+],
+"27,22,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"20,15,1": [
+"location_shop_fossoil_01_41"
+],
+"20,16,1": [
+"location_shop_fossoil_01_41"
+],
+"20,17,1": [
+"location_shop_fossoil_01_42"
+],
+"20,23,0": [
+"blends_street_01_48",
+"street_curbs_01_9"
+],
+"20,24,0": [
+"blends_street_01_54",
+"street_curbs_01_9"
+],
+"20,25,0": [
+"blends_street_01_55",
+"street_curbs_01_9"
+],
+"20,26,0": [
+"blends_street_01_54",
+"street_curbs_01_9"
+],
+"20,27,0": [
+"blends_street_01_55",
+"street_curbs_01_9"
+],
+"20,28,0": [
+"blends_street_01_54",
+"street_curbs_01_9"
+],
+"20,29,0": [
+"blends_street_01_53",
+"street_curbs_01_9"
+],
+"20,30,0": [
+"blends_street_01_54",
+"street_curbs_01_9"
+],
+"21,23,0": [
+"blends_street_01_96"
+],
+"21,24,0": [
+"blends_street_01_103"
+],
+"21,25,0": [
+"blends_street_01_96"
+],
+"21,26,0": [
+"blends_street_01_101"
+],
+"21,27,0": [
+"blends_street_01_101"
+],
+"21,28,0": [
+"blends_street_01_96"
+],
+"21,29,0": [
+"blends_street_01_96"
+],
+"21,30,0": [
+"blends_street_01_103"
+],
+"22,23,0": [
+"blends_street_01_103"
+],
+"22,24,0": [
+"blends_street_01_102"
+],
+"22,25,0": [
+"blends_street_01_101"
+],
+"22,26,0": [
+"blends_street_01_96"
+],
+"22,27,0": [
+"blends_street_01_102"
+],
+"22,28,0": [
+"blends_street_01_96"
+],
+"22,29,0": [
+"blends_street_01_101"
+],
+"22,30,0": [
+"blends_street_01_103"
+],
+"23,23,0": [
+"blends_street_01_96"
+],
+"23,24,0": [
+"blends_street_01_101"
+],
+"23,25,0": [
+"blends_street_01_96"
+],
+"23,26,0": [
+"blends_street_01_103"
+],
+"23,27,0": [
+"blends_street_01_101"
+],
+"23,28,0": [
+"blends_street_01_96"
+],
+"23,29,0": [
+"blends_street_01_96"
+],
+"23,30,0": [
+"blends_street_01_101"
+],
+"24,23,0": [
+"blends_street_01_102"
+],
+"24,24,0": [
+"blends_street_01_102"
+],
+"24,25,0": [
+"blends_street_01_102"
+],
+"24,26,0": [
+"blends_street_01_103"
+],
+"24,27,0": [
+"blends_street_01_101"
+],
+"24,28,0": [
+"blends_street_01_102"
+],
+"24,29,0": [
+"blends_street_01_96"
+],
+"24,30,0": [
+"blends_street_01_101"
+],
+"25,23,0": [
+"blends_street_01_101"
+],
+"25,24,0": [
+"blends_street_01_96"
+],
+"25,25,0": [
+"blends_street_01_103"
+],
+"25,26,0": [
+"blends_street_01_102"
+],
+"25,27,0": [
+"blends_street_01_101"
+],
+"25,28,0": [
+"blends_street_01_96"
+],
+"25,29,0": [
+"blends_street_01_96"
+],
+"25,30,0": [
+"blends_street_01_103"
+],
+"26,23,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"26,24,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"26,25,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"26,26,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"26,27,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"26,28,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"26,29,0": [
+"blends_street_01_96",
+"street_curbs_01_11"
+],
+"26,30,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"27,23,0": [
+"blends_street_01_48"
+],
+"27,24,0": [
+"blends_street_01_48"
+],
+"20,31,0": [
+"blends_street_01_55",
+"street_curbs_01_9"
+],
+"20,32,0": [
+"blends_street_01_53",
+"street_curbs_01_9"
+],
+"20,33,0": [
+"blends_street_01_55",
+"street_curbs_01_9"
+],
+"20,34,0": [
+"blends_street_01_53",
+"street_curbs_01_9"
+],
+"20,35,0": [
+"blends_street_01_53",
+"street_curbs_01_0"
+],
+"20,36,0": [
+"blends_street_01_102"
+],
+"20,37,0": [
+"blends_street_01_102"
+],
+"20,38,0": [
+"blends_street_01_101"
+],
+"21,31,0": [
+"blends_street_01_101"
+],
+"21,32,0": [
+"blends_street_01_96"
+],
+"21,33,0": [
+"blends_street_01_102"
+],
+"21,34,0": [
+"blends_street_01_101"
+],
+"21,35,0": [
+"blends_street_01_102",
+"trash_01_0"
+],
+"21,36,0": [
+"blends_street_01_103"
+],
+"21,37,0": [
+"blends_street_01_102"
+],
+"21,38,0": [
+"blends_street_01_96"
+],
+"22,31,0": [
+"blends_street_01_101"
+],
+"22,32,0": [
+"blends_street_01_96"
+],
+"22,33,0": [
+"blends_street_01_101"
+],
+"22,34,0": [
+"blends_street_01_101"
+],
+"22,35,0": [
+"blends_street_01_96"
+],
+"22,36,0": [
+"blends_street_01_102"
+],
+"22,37,0": [
+"blends_street_01_96"
+],
+"22,38,0": [
+"blends_street_01_96"
+],
+"23,31,0": [
+"blends_street_01_102"
+],
+"23,32,0": [
+"blends_street_01_101"
+],
+"23,33,0": [
+"blends_street_01_96"
+],
+"23,34,0": [
+"blends_street_01_103"
+],
+"23,35,0": [
+"blends_street_01_103"
+],
+"23,36,0": [
+"blends_street_01_96"
+],
+"23,37,0": [
+"blends_street_01_96"
+],
+"23,38,0": [
+"blends_street_01_103"
+],
+"24,31,0": [
+"blends_street_01_101"
+],
+"24,32,0": [
+"blends_street_01_103"
+],
+"24,33,0": [
+"blends_street_01_96"
+],
+"24,34,0": [
+"blends_street_01_102"
+],
+"24,35,0": [
+"blends_street_01_103"
+],
+"24,36,0": [
+"blends_street_01_96"
+],
+"24,37,0": [
+"blends_street_01_101"
+],
+"24,38,0": [
+"blends_street_01_101"
+],
+"25,31,0": [
+"blends_street_01_101"
+],
+"25,32,0": [
+"blends_street_01_96"
+],
+"25,33,0": [
+"blends_street_01_96"
+],
+"25,34,0": [
+"blends_street_01_96"
+],
+"25,35,0": [
+"blends_street_01_103"
+],
+"25,36,0": [
+"blends_street_01_96"
+],
+"25,37,0": [
+"blends_street_01_96"
+],
+"25,38,0": [
+"blends_street_01_101"
+],
+"26,31,0": [
+"blends_street_01_96",
+"street_curbs_01_11"
+],
+"26,32,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"26,33,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"26,34,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"26,35,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"26,36,0": [
+"blends_street_01_96",
+"street_curbs_01_11"
+],
+"26,37,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"26,38,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"20,39,0": [
+"blends_street_01_103"
+],
+"20,40,0": [
+"blends_street_01_102"
+],
+"20,41,0": [
+"blends_street_01_103",
+"street_curbs_01_10"
+],
+"20,42,0": [
+"blends_street_01_53"
+],
+"21,39,0": [
+"blends_street_01_103"
+],
+"21,40,0": [
+"blends_street_01_102"
+],
+"21,41,0": [
+"blends_street_01_103",
+"street_curbs_01_10"
+],
+"21,42,0": [
+"blends_street_01_54"
+],
+"22,39,0": [
+"blends_street_01_103"
+],
+"22,40,0": [
+"blends_street_01_101"
+],
+"22,41,0": [
+"blends_street_01_103",
+"street_curbs_01_10"
+],
+"22,42,0": [
+"blends_street_01_54"
+],
+"23,39,0": [
+"blends_street_01_103"
+],
+"23,40,0": [
+"blends_street_01_103"
+],
+"23,41,0": [
+"blends_street_01_101",
+"street_curbs_01_10"
+],
+"23,42,0": [
+"blends_street_01_54"
+],
+"24,39,0": [
+"blends_street_01_102"
+],
+"24,40,0": [
+"blends_street_01_101"
+],
+"24,41,0": [
+"blends_street_01_102",
+"street_curbs_01_10"
+],
+"24,42,0": [
+"blends_street_01_54"
+],
+"25,39,0": [
+"blends_street_01_96"
+],
+"25,40,0": [
+"blends_street_01_96"
+],
+"25,41,0": [
+"blends_street_01_96",
+"street_curbs_01_10"
+],
+"25,42,0": [
+"blends_street_01_55"
+],
+"26,39,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"26,40,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"26,41,0": [
+"blends_street_01_103",
+"street_curbs_01_2"
+],
+"26,42,0": [
+"blends_street_01_53"
+],
+"28,0,0": [
+"blends_street_01_96",
+"street_curbs_01_11"
+],
+"28,1,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"28,2,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"28,3,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"28,4,0": [
+"blends_street_01_96",
+"street_curbs_01_11"
+],
+"28,5,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"28,6,0": [
+"blends_street_01_96",
+"street_curbs_01_11"
+],
+"29,0,0": [
+"blends_street_01_55"
+],
+"29,1,0": [
+"blends_street_01_54"
+],
+"29,2,0": [
+"blends_street_01_55"
+],
+"29,3,0": [
+"blends_street_01_53"
+],
+"29,4,0": [
+"blends_street_01_54"
+],
+"29,5,0": [
+"blends_street_01_55"
+],
+"29,6,0": [
+"blends_street_01_53"
+],
+"28,7,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"28,8,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"28,9,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"28,10,0": [
+"blends_street_01_96",
+"street_curbs_01_11"
+],
+"28,11,0": [
+"blends_street_01_103",
+"street_curbs_01_11"
+],
+"28,12,0": [
+"blends_street_01_101",
+"street_curbs_01_11"
+],
+"28,13,0": [
+"blends_street_01_102",
+"street_curbs_01_11"
+],
+"28,14,0": [
+"blends_street_01_101",
+"street_curbs_01_4"
+],
+"29,7,0": [
+"blends_street_01_53"
+],
+"29,8,0": [
+"blends_street_01_55"
+],
+"29,9,0": [
+"blends_street_01_53"
+],
+"29,10,0": [
+"blends_street_01_54"
+],
+"29,11,0": [
+"blends_street_01_53"
+],
+"29,12,0": [
+"blends_street_01_54"
+],
+"29,13,0": [
+"blends_street_01_48"
+],
+"29,14,0": [
+"blends_street_01_55",
+"street_curbs_01_8"
+],
+"28,15,0": [
+"blends_street_01_103"
+],
+"28,16,0": [
+"blends_street_01_103"
+],
+"28,17,0": [
+"blends_street_01_102"
+],
+"28,18,0": [
+"blends_street_01_103"
+],
+"28,19,0": [
+"blends_street_01_103"
+],
+"28,20,0": [
+"blends_street_01_101"
+],
+"28,21,0": [
+"blends_street_01_103"
+],
+"28,22,0": [
+"blends_street_01_96",
+"street_curbs_01_10"
+],
+"29,15,0": [
+"blends_street_01_96",
+"street_trafficlines_01_0"
+],
+"29,16,0": [
+"blends_street_01_96",
+"street_trafficlines_01_0"
+],
+"29,17,0": [
+"blends_street_01_96",
+"street_trafficlines_01_0"
+],
+"29,18,0": [
+"blends_street_01_102",
+"street_trafficlines_01_0"
+],
+"29,19,0": [
+"blends_street_01_96",
+"street_trafficlines_01_0"
+],
+"29,20,0": [
+"blends_street_01_103",
+"street_trafficlines_01_0"
+],
+"29,21,0": [
+"blends_street_01_102",
+"street_trafficlines_01_0"
+],
+"29,22,0": [
+"blends_street_01_96",
+"street_trafficlines_01_0",
+"street_curbs_01_10"
+],
+"28,23,0": [
+"blends_street_01_55"
+],
+"28,24,0": [
+"blends_street_01_48"
+],
+"29,23,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,24,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,25,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,26,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,27,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,28,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,29,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,30,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,31,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,32,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,33,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,34,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,35,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,36,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,37,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,38,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,39,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,40,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,41,0": [
+"floors_exterior_tilesandstone_01_3"
+],
+"29,42,0": [
+"floors_exterior_tilesandstone_01_3"
+]
+},
+"rooms": [
+[
+"fossoil",
+0,
+[
+[
+4,
+25,
+8,
+4
+],
+[
+4,
+29,
+15,
+1
+],
+[
+8,
+30,
+11,
+2
+],
+[
+6,
+32,
+13,
+2
+],
+[
+8,
+34,
+11,
+2
+]
+],
+51
+],
+[
+"gasstore",
+0,
+[
+[
+4,
+36,
+15,
+6
+]
+],
+51
+],
+[
+"gasstorage",
+0,
+[
+[
+4,
+32,
+2,
+2
+]
+],
+51
+],
+[
+"bathroom",
+0,
+[
+[
+4,
+30,
+4,
+2
+]
+],
+51
+],
+[
+"bathroom",
+0,
+[
+[
+4,
+34,
+4,
+2
+]
+],
+51
+],
+[
+"empty",
+0,
+[
+[
+8,
+7,
+1,
+1
+]
+],
+53
+],
+[
+"empty",
+0,
+[
+[
+18,
+7,
+1,
+1
+]
+],
+53
+],
+[
+"empty",
+0,
+[
+[
+8,
+14,
+1,
+1
+]
+],
+53
+],
+[
+"empty",
+0,
+[
+[
+18,
+14,
+1,
+1
+]
+],
+53
+],
+[
+"empty",
+1,
+[
+[
+8,
+7,
+1,
+1
+]
+],
+53
+],
+[
+"empty",
+1,
+[
+[
+18,
+7,
+1,
+1
+]
+],
+53
+],
+[
+"empty",
+1,
+[
+[
+8,
+14,
+1,
+1
+]
+],
+53
+],
+[
+"empty",
+1,
+[
+[
+18,
+14,
+1,
+1
+]
+],
+53
+],
+[
+"emptyoutside",
+1,
+[
+[
+7,
+5,
+13,
+2
+],
+[
+7,
+7,
+1,
+1
+],
+[
+9,
+7,
+9,
+1
+],
+[
+19,
+7,
+1,
+1
+],
+[
+7,
+8,
+13,
+6
+],
+[
+7,
+14,
+1,
+1
+],
+[
+9,
+14,
+9,
+1
+],
+[
+19,
+14,
+1,
+1
+],
+[
+7,
+15,
+13,
+2
+]
+],
+53
+],
+[
+"emptyoutside",
+2,
+[
+[
+7,
+5,
+13,
+12
+]
+],
+53
+]
+],
+"ground": [
+"blends_natural_01_16",
+"blends_natural_01_17",
+"blends_natural_01_18",
+"blends_natural_01_19",
+"blends_natural_01_21",
+"blends_natural_01_22",
+"blends_natural_01_23",
+"blends_natural_01_24",
+"blends_natural_01_25",
+"blends_natural_01_26",
+"blends_natural_01_27",
+"blends_natural_01_28",
+"blends_natural_01_29",
+"blends_natural_01_30",
+"blends_natural_01_31",
+"blends_natural_01_39",
+"blends_natural_01_40",
+"blends_natural_01_41",
+"blends_natural_01_42",
+"blends_natural_01_43",
+"blends_natural_01_44",
+"blends_natural_01_46",
+"blends_natural_01_47",
+"blends_street_01_0",
+"blends_street_01_1",
+"blends_street_01_10",
+"blends_street_01_101",
+"blends_street_01_102",
+"blends_street_01_103",
+"blends_street_01_11",
+"blends_street_01_2",
+"blends_street_01_3",
+"blends_street_01_4",
+"blends_street_01_48",
+"blends_street_01_53",
+"blends_street_01_54",
+"blends_street_01_55",
+"blends_street_01_8",
+"blends_street_01_9",
+"blends_street_01_96",
+"blends_streetoverlays_01_1",
+"blends_streetoverlays_01_18",
+"fencing_01_58",
+"fencing_01_59",
+"floors_exterior_street_01_16",
+"floors_exterior_street_01_17",
+"floors_exterior_street_01_18",
+"overlay_grime_floor_01_0",
+"overlay_grime_floor_01_1",
+"overlay_grime_floor_01_21",
+"overlay_grime_floor_01_28",
+"overlay_grime_floor_01_29",
+"overlay_grime_floor_01_30",
+"overlay_grime_floor_01_84",
+"street_curbs_01_0",
+"street_curbs_01_10",
+"street_curbs_01_11",
+"street_curbs_01_2",
+"street_curbs_01_3",
+"street_curbs_01_4",
+"street_curbs_01_5",
+"street_curbs_01_8",
+"street_curbs_01_9"
+]
+}

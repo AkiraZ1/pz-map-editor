@@ -1,0 +1,1288 @@
+{
+"w": 10,
+"floor": false,
+"solid": 136,
+"h": 17,
+"src": "45_32 64,104",
+"sq": {
+"0,0,0": [
+"fixtures_doors_fences_01_128"
+],
+"0,1,0": [
+"walls_garage_01_38",
+"industry_02_195",
+"overlay_grime_wall_01_2",
+"furniture_shelving_01_26"
+],
+"0,2,0": [
+"walls_garage_01_36",
+"industry_02_194",
+"overlay_grime_wall_01_0",
+"location_business_office_generic_01_15"
+],
+"0,3,0": [
+"walls_garage_01_36",
+"industry_02_194",
+"overlay_grime_wall_01_0",
+"lighting_indoor_01_1"
+],
+"0,4,0": [
+"walls_garage_01_46",
+"industry_02_194",
+"overlay_grime_wall_01_10",
+"fixtures_doors_01_56",
+"lighting_indoor_01_24"
+],
+"0,5,0": [
+"walls_garage_01_36",
+"industry_02_194",
+"overlay_grime_wall_01_0"
+],
+"0,6,0": [
+"floors_interior_tilesandwood_01_11",
+"walls_interior_house_03_22",
+"walls_interior_detailing_01_66",
+"overlay_grime_wall_01_18",
+"walls_decoration_01_11",
+"lighting_indoor_01_0",
+"fixtures_sinks_01_13"
+],
+"0,7,0": [
+"floors_interior_tilesandwood_01_11",
+"walls_interior_house_03_20",
+"walls_interior_detailing_01_64",
+"overlay_grime_wall_01_16",
+"fixtures_bathroom_01_1"
+],
+"1,1,0": [
+"walls_garage_01_37",
+"industry_02_193",
+"overlay_grime_wall_01_1",
+"furniture_shelving_01_27"
+],
+"1,2,0": [
+"trash_01_10"
+],
+"1,6,0": [
+"floors_interior_tilesandwood_01_11",
+"walls_interior_house_03_31",
+"walls_interior_detailing_01_75",
+"overlay_grime_wall_01_27",
+"fixtures_doors_01_57"
+],
+"1,7,0": [
+"floors_interior_tilesandwood_01_11"
+],
+"2,1,0": [
+"walls_garage_01_37",
+"industry_02_193",
+"overlay_grime_wall_01_1",
+"furniture_shelving_01_26"
+],
+"2,6,0": [
+"walls_garage_01_36",
+"overlay_grime_wall_01_0",
+"furniture_storage_02_16"
+],
+"2,7,0": [
+"walls_garage_01_36",
+"overlay_grime_wall_01_0",
+"furniture_storage_02_1"
+],
+"3,1,0": [
+"walls_garage_01_37",
+"industry_02_193",
+"overlay_grime_wall_01_1",
+"furniture_shelving_01_27"
+],
+"3,5,0": [
+"trash_01_9",
+"lighting_indoor_01_2"
+],
+"4,1,0": [
+"floors_interior_tilesandwood_01_11",
+"walls_interior_bathroom_01_18",
+"overlay_grime_wall_01_2",
+"fixtures_bathroom_01_0"
+],
+"4,2,0": [
+"floors_interior_tilesandwood_01_11",
+"walls_interior_bathroom_01_16",
+"overlay_grime_wall_01_0"
+],
+"4,3,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_2",
+"papernotices_01_8",
+"furniture_seating_indoor_01_61"
+],
+"4,4,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_10",
+"fixtures_doors_01_56"
+],
+"4,5,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_0",
+"location_community_school_01_33"
+],
+"4,6,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_0",
+"location_business_office_generic_01_37"
+],
+"4,7,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_0",
+"location_business_office_generic_01_36"
+],
+"5,1,0": [
+"floors_interior_tilesandwood_01_11",
+"walls_interior_bathroom_01_17",
+"overlay_grime_wall_01_1",
+"walls_decoration_01_10",
+"lighting_indoor_02_45",
+"fixtures_sinks_01_12"
+],
+"5,2,0": [
+"floors_interior_tilesandwood_01_11",
+"lighting_indoor_01_3"
+],
+"5,3,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_1",
+"papernotices_01_9",
+"furniture_seating_indoor_01_60"
+],
+"5,4,0": [
+"floors_interior_carpet_01_12"
+],
+"5,5,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_30",
+"location_shop_generic_01_120"
+],
+"5,6,0": [
+"floors_interior_carpet_01_12"
+],
+"5,7,0": [
+"floors_interior_carpet_01_12"
+],
+"6,1,0": [
+"floors_exterior_tilesandstone_01_5",
+"location_shop_gas2go_01_0",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_16"
+],
+"6,2,0": [
+"floors_exterior_tilesandstone_01_5",
+"location_shop_gas2go_01_10",
+"overlay_grime_wall_01_26",
+"fixtures_doors_01_56"
+],
+"6,3,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_1",
+"location_shop_generic_01_72"
+],
+"6,4,0": [
+"floors_interior_carpet_01_12"
+],
+"6,5,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_30"
+],
+"6,6,0": [
+"floors_interior_carpet_01_12",
+"floors_rugs_01_56",
+"lighting_indoor_03_20"
+],
+"6,7,0": [
+"floors_interior_carpet_01_12",
+"lighting_indoor_03_21"
+],
+"7,0,0": [
+"street_decoration_01_35"
+],
+"7,1,0": [
+"floors_exterior_tilesandstone_01_5"
+],
+"7,2,0": [
+"floors_exterior_tilesandstone_01_5"
+],
+"7,3,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_1",
+"location_shop_generic_01_73"
+],
+"7,4,0": [
+"floors_interior_carpet_01_12"
+],
+"7,5,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_30",
+"location_shop_accessories_01_2"
+],
+"7,6,0": [
+"floors_interior_carpet_01_12",
+"floors_rugs_01_57"
+],
+"7,7,0": [
+"floors_interior_carpet_01_12"
+],
+"0,1,1": [
+"roofs_03_23",
+"walls_detailing_01_91"
+],
+"0,2,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,3,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,4,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,5,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,6,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,7,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"1,1,1": [
+"roofs_03_23",
+"walls_detailing_01_89"
+],
+"1,2,1": [
+"roofs_03_23",
+"rooftop_furniture_1",
+"rooftop_furniture_15"
+],
+"1,3,1": [
+"roofs_03_23",
+"rooftop_furniture_1"
+],
+"1,4,1": [
+"roofs_03_23",
+"industry_02_148"
+],
+"1,5,1": [
+"roofs_03_23",
+"industry_02_144"
+],
+"1,6,1": [
+"roofs_03_23"
+],
+"1,7,1": [
+"roofs_03_23"
+],
+"2,1,1": [
+"roofs_03_23",
+"walls_detailing_01_89"
+],
+"2,2,1": [
+"roofs_03_23",
+"rooftop_furniture_19"
+],
+"2,3,1": [
+"roofs_03_23",
+"rooftop_furniture_12"
+],
+"2,4,1": [
+"roofs_03_23"
+],
+"2,5,1": [
+"roofs_03_23",
+"industry_02_149"
+],
+"2,6,1": [
+"roofs_03_23"
+],
+"2,7,1": [
+"roofs_03_23"
+],
+"3,1,1": [
+"roofs_03_23",
+"walls_detailing_01_89"
+],
+"3,2,1": [
+"roofs_03_23"
+],
+"3,3,1": [
+"roofs_03_23"
+],
+"3,4,1": [
+"roofs_03_23"
+],
+"3,5,1": [
+"roofs_03_23",
+"industry_02_149"
+],
+"3,6,1": [
+"roofs_03_23"
+],
+"3,7,1": [
+"roofs_03_23"
+],
+"4,1,1": [
+"roofs_03_23",
+"walls_detailing_01_89"
+],
+"4,2,1": [
+"roofs_03_23"
+],
+"4,3,1": [
+"roofs_03_23"
+],
+"4,4,1": [
+"roofs_03_23"
+],
+"4,5,1": [
+"roofs_03_23",
+"industry_02_149"
+],
+"4,6,1": [
+"roofs_03_23"
+],
+"4,7,1": [
+"roofs_03_23"
+],
+"5,1,1": [
+"roofs_03_23",
+"walls_detailing_01_89"
+],
+"5,2,1": [
+"roofs_03_23"
+],
+"5,3,1": [
+"roofs_03_23"
+],
+"5,4,1": [
+"roofs_03_23"
+],
+"5,5,1": [
+"roofs_03_23",
+"industry_02_149"
+],
+"5,6,1": [
+"roofs_03_23"
+],
+"5,7,1": [
+"roofs_03_23"
+],
+"6,1,1": [
+"walls_detailing_01_90",
+"walls_detailing_01_88"
+],
+"6,2,1": [
+"walls_detailing_01_88"
+],
+"6,3,1": [
+"roofs_03_23",
+"walls_detailing_01_89"
+],
+"6,4,1": [
+"roofs_03_23",
+"trash_01_10"
+],
+"6,5,1": [
+"roofs_03_23",
+"industry_02_143"
+],
+"6,6,1": [
+"roofs_03_23"
+],
+"6,7,1": [
+"roofs_03_23"
+],
+"7,3,1": [
+"roofs_03_23",
+"walls_detailing_01_89"
+],
+"7,4,1": [
+"roofs_03_23"
+],
+"7,5,1": [
+"roofs_03_23"
+],
+"7,6,1": [
+"roofs_03_23"
+],
+"7,7,1": [
+"roofs_03_23"
+],
+"0,8,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_2",
+"location_shop_zippee_01_25"
+],
+"0,9,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_0"
+],
+"0,10,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_0",
+"location_shop_generic_01_69"
+],
+"0,11,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_0",
+"location_shop_generic_01_68"
+],
+"0,12,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_0",
+"location_shop_generic_01_67"
+],
+"0,13,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_0",
+"location_shop_generic_01_69"
+],
+"0,14,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_0",
+"location_shop_generic_01_68"
+],
+"0,15,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_0",
+"location_shop_generic_01_67"
+],
+"1,8,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_1",
+"location_shop_zippee_01_24"
+],
+"1,9,0": [
+"floors_interior_carpet_01_12"
+],
+"1,10,0": [
+"floors_interior_carpet_01_12"
+],
+"1,11,0": [
+"floors_interior_carpet_01_12"
+],
+"1,12,0": [
+"floors_interior_carpet_01_12"
+],
+"1,13,0": [
+"floors_interior_carpet_01_12"
+],
+"1,14,0": [
+"floors_interior_carpet_01_12"
+],
+"1,15,0": [
+"floors_interior_carpet_01_12"
+],
+"2,8,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_1",
+"location_shop_zippee_01_25"
+],
+"2,9,0": [
+"floors_interior_carpet_01_12"
+],
+"2,10,0": [
+"floors_interior_carpet_01_12"
+],
+"2,11,0": [
+"floors_interior_carpet_01_12"
+],
+"2,12,0": [
+"floors_interior_carpet_01_12",
+"lighting_indoor_03_20"
+],
+"2,13,0": [
+"floors_interior_carpet_01_12",
+"lighting_indoor_03_21"
+],
+"2,14,0": [
+"floors_interior_carpet_01_12",
+"lighting_indoor_03_19"
+],
+"2,15,0": [
+"floors_interior_carpet_01_12"
+],
+"3,8,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_1",
+"location_shop_zippee_01_24"
+],
+"3,9,0": [
+"floors_interior_carpet_01_12"
+],
+"3,10,0": [
+"floors_interior_carpet_01_12"
+],
+"3,11,0": [
+"floors_interior_carpet_01_12"
+],
+"3,12,0": [
+"floors_interior_carpet_01_12",
+"location_shop_generic_01_79"
+],
+"3,13,0": [
+"floors_interior_carpet_01_12",
+"location_shop_generic_01_78"
+],
+"3,14,0": [
+"floors_interior_carpet_01_12",
+"location_shop_generic_01_79"
+],
+"3,15,0": [
+"floors_interior_carpet_01_12",
+"location_shop_generic_01_78"
+],
+"4,8,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_3"
+],
+"4,9,0": [
+"floors_interior_carpet_01_12"
+],
+"4,10,0": [
+"floors_interior_carpet_01_12"
+],
+"4,11,0": [
+"floors_interior_carpet_01_12"
+],
+"4,12,0": [
+"floors_interior_carpet_01_12",
+"location_shop_generic_01_75"
+],
+"4,13,0": [
+"floors_interior_carpet_01_12",
+"location_shop_generic_01_74"
+],
+"4,14,0": [
+"floors_interior_carpet_01_12",
+"location_shop_generic_01_75"
+],
+"4,15,0": [
+"floors_interior_carpet_01_12",
+"location_shop_generic_01_74"
+],
+"5,8,0": [
+"floors_interior_carpet_01_12"
+],
+"5,9,0": [
+"floors_interior_carpet_01_12"
+],
+"5,10,0": [
+"floors_interior_carpet_01_12"
+],
+"5,11,0": [
+"floors_interior_carpet_01_12"
+],
+"5,12,0": [
+"floors_interior_carpet_01_12"
+],
+"5,13,0": [
+"floors_interior_carpet_01_12"
+],
+"5,14,0": [
+"floors_interior_carpet_01_12"
+],
+"5,15,0": [
+"floors_interior_carpet_01_12"
+],
+"6,8,0": [
+"floors_interior_carpet_01_12",
+"location_shop_zippee_01_15",
+"lighting_indoor_03_19"
+],
+"6,9,0": [
+"floors_interior_carpet_01_12",
+"location_shop_zippee_01_14"
+],
+"6,10,0": [
+"floors_interior_carpet_01_12",
+"location_shop_zippee_01_13"
+],
+"6,11,0": [
+"floors_interior_carpet_01_12",
+"location_shop_zippee_01_12"
+],
+"6,12,0": [
+"floors_interior_carpet_01_12",
+"lighting_indoor_03_20"
+],
+"6,13,0": [
+"floors_interior_carpet_01_12",
+"lighting_indoor_03_21"
+],
+"6,14,0": [
+"floors_interior_carpet_01_12",
+"lighting_indoor_03_19"
+],
+"6,15,0": [
+"floors_interior_carpet_01_12"
+],
+"7,8,0": [
+"floors_interior_carpet_01_12"
+],
+"7,9,0": [
+"floors_interior_carpet_01_12"
+],
+"7,10,0": [
+"floors_interior_carpet_01_12"
+],
+"7,11,0": [
+"floors_interior_carpet_01_12"
+],
+"7,12,0": [
+"floors_interior_carpet_01_12"
+],
+"7,13,0": [
+"floors_interior_carpet_01_12"
+],
+"7,14,0": [
+"floors_interior_carpet_01_12"
+],
+"7,15,0": [
+"floors_interior_carpet_01_12"
+],
+"0,8,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,9,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,10,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,11,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,12,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,13,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,14,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"0,15,1": [
+"roofs_03_23",
+"walls_detailing_01_88"
+],
+"1,8,1": [
+"roofs_03_23"
+],
+"1,9,1": [
+"roofs_03_23"
+],
+"1,10,1": [
+"roofs_03_23"
+],
+"1,11,1": [
+"roofs_03_23"
+],
+"1,12,1": [
+"roofs_03_23"
+],
+"1,13,1": [
+"roofs_03_23"
+],
+"1,14,1": [
+"roofs_03_23",
+"rooftop_furniture_22"
+],
+"1,15,1": [
+"roofs_03_23"
+],
+"2,8,1": [
+"roofs_03_23"
+],
+"2,9,1": [
+"roofs_03_23"
+],
+"2,10,1": [
+"roofs_03_23"
+],
+"2,11,1": [
+"roofs_03_23"
+],
+"2,12,1": [
+"roofs_03_23"
+],
+"2,13,1": [
+"roofs_03_23"
+],
+"2,14,1": [
+"roofs_03_23"
+],
+"2,15,1": [
+"roofs_03_23"
+],
+"3,8,1": [
+"roofs_03_23"
+],
+"3,9,1": [
+"roofs_03_23"
+],
+"3,10,1": [
+"roofs_03_23",
+"trash_01_9"
+],
+"3,11,1": [
+"roofs_03_23"
+],
+"3,12,1": [
+"roofs_03_23"
+],
+"3,13,1": [
+"roofs_03_23"
+],
+"3,14,1": [
+"roofs_03_23"
+],
+"3,15,1": [
+"roofs_03_23"
+],
+"4,8,1": [
+"roofs_03_23"
+],
+"4,9,1": [
+"roofs_03_23"
+],
+"4,10,1": [
+"roofs_03_23"
+],
+"4,11,1": [
+"roofs_03_23"
+],
+"4,12,1": [
+"roofs_03_23"
+],
+"4,13,1": [
+"roofs_03_23"
+],
+"4,14,1": [
+"roofs_03_23"
+],
+"4,15,1": [
+"roofs_03_23"
+],
+"5,8,1": [
+"roofs_03_23"
+],
+"5,9,1": [
+"roofs_03_23"
+],
+"5,10,1": [
+"roofs_03_23"
+],
+"5,11,1": [
+"roofs_03_23"
+],
+"5,12,1": [
+"roofs_03_23"
+],
+"5,13,1": [
+"roofs_03_23"
+],
+"5,14,1": [
+"roofs_03_23"
+],
+"5,15,1": [
+"roofs_03_23"
+],
+"6,8,1": [
+"roofs_03_23"
+],
+"6,9,1": [
+"roofs_03_23"
+],
+"6,10,1": [
+"roofs_03_23"
+],
+"6,11,1": [
+"roofs_03_23"
+],
+"6,12,1": [
+"roofs_03_23"
+],
+"6,13,1": [
+"roofs_03_23"
+],
+"6,14,1": [
+"roofs_03_23",
+"rooftop_furniture_22"
+],
+"6,15,1": [
+"roofs_03_23"
+],
+"7,8,1": [
+"roofs_03_23"
+],
+"7,9,1": [
+"roofs_03_23"
+],
+"7,10,1": [
+"roofs_03_23"
+],
+"7,11,1": [
+"roofs_03_23"
+],
+"7,12,1": [
+"roofs_03_23"
+],
+"7,13,1": [
+"roofs_03_23"
+],
+"7,14,1": [
+"roofs_03_23"
+],
+"7,15,1": [
+"roofs_03_23"
+],
+"0,16,0": [
+"floors_exterior_tilesandstone_01_5",
+"location_shop_gas2go_01_1",
+"walls_commercial_02_41",
+"overlay_grime_wall_01_17",
+"fixtures_doors_fences_01_128"
+],
+"1,16,0": [
+"floors_exterior_tilesandstone_01_5",
+"walls_commercial_01_41",
+"walls_commercial_02_41",
+"overlay_grime_wall_01_41"
+],
+"2,16,0": [
+"floors_exterior_tilesandstone_01_5",
+"walls_commercial_01_41",
+"walls_commercial_02_41",
+"overlay_grime_wall_01_41"
+],
+"3,16,0": [
+"floors_exterior_tilesandstone_01_5",
+"location_shop_gas2go_01_1",
+"walls_commercial_02_41",
+"overlay_grime_wall_01_17"
+],
+"4,16,0": [
+"floors_exterior_tilesandstone_01_5",
+"location_shop_gas2go_01_1",
+"walls_commercial_02_41",
+"overlay_grime_wall_01_17"
+],
+"5,16,0": [
+"floors_exterior_tilesandstone_01_5",
+"location_shop_gas2go_01_1",
+"walls_commercial_02_41",
+"overlay_grime_wall_01_17"
+],
+"6,16,0": [
+"floors_exterior_tilesandstone_01_5",
+"walls_commercial_01_41",
+"walls_commercial_02_41",
+"overlay_grime_wall_01_41"
+],
+"7,16,0": [
+"floors_exterior_tilesandstone_01_5",
+"walls_commercial_01_41",
+"walls_commercial_02_41",
+"overlay_grime_wall_01_41",
+"rooftop_furniture_47"
+],
+"0,16,1": [
+"walls_detailing_01_89"
+],
+"1,16,1": [
+"walls_detailing_01_89"
+],
+"2,16,1": [
+"walls_detailing_01_89"
+],
+"3,16,1": [
+"walls_detailing_01_89"
+],
+"4,16,1": [
+"walls_detailing_01_89"
+],
+"5,16,1": [
+"walls_detailing_01_89"
+],
+"6,16,1": [
+"walls_detailing_01_89"
+],
+"7,16,1": [
+"walls_detailing_01_89"
+],
+"8,1,0": [
+"floors_exterior_tilesandstone_01_5"
+],
+"8,2,0": [
+"floors_exterior_tilesandstone_01_5"
+],
+"8,3,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_1",
+"furniture_storage_02_0"
+],
+"8,4,0": [
+"floors_interior_carpet_01_12"
+],
+"8,5,0": [
+"floors_interior_carpet_01_12",
+"location_shop_gas2go_01_30",
+"location_business_office_generic_02_7"
+],
+"8,6,0": [
+"floors_interior_carpet_01_12"
+],
+"8,7,0": [
+"floors_interior_carpet_01_12"
+],
+"9,1,0": [
+"floors_exterior_tilesandstone_01_5"
+],
+"9,2,0": [
+"floors_exterior_tilesandstone_01_5"
+],
+"9,3,0": [
+"floors_exterior_tilesandstone_01_4",
+"location_shop_gas2go_01_0",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_16"
+],
+"9,4,0": [
+"floors_exterior_tilesandstone_01_4",
+"location_shop_gas2go_01_0",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_16",
+"lighting_outdoor_01_41"
+],
+"9,5,0": [
+"floors_exterior_tilesandstone_01_4",
+"walls_commercial_01_40",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_40",
+"walls_decoration_01_129"
+],
+"9,6,0": [
+"floors_exterior_tilesandstone_01_4",
+"walls_commercial_01_40",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_40",
+"walls_decoration_01_129"
+],
+"9,7,0": [
+"floors_exterior_tilesandstone_01_4",
+"location_shop_gas2go_01_0",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_16",
+"trashcontainers_01_21",
+"walls_decoration_01_129"
+],
+"8,3,1": [
+"roofs_03_23",
+"walls_detailing_01_89"
+],
+"8,4,1": [
+"roofs_03_23"
+],
+"8,5,1": [
+"roofs_03_23"
+],
+"8,6,1": [
+"roofs_03_23"
+],
+"8,7,1": [
+"roofs_03_23"
+],
+"9,3,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_53"
+],
+"9,4,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_53"
+],
+"9,5,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_53"
+],
+"9,6,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_52"
+],
+"9,7,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_51"
+],
+"8,8,0": [
+"floors_interior_carpet_01_12"
+],
+"8,9,0": [
+"floors_interior_carpet_01_12"
+],
+"8,10,0": [
+"floors_interior_carpet_01_12",
+"lighting_indoor_01_2"
+],
+"8,11,0": [
+"floors_interior_carpet_01_12"
+],
+"8,12,0": [
+"floors_interior_carpet_01_12"
+],
+"8,13,0": [
+"floors_interior_carpet_01_12"
+],
+"8,14,0": [
+"floors_interior_carpet_01_12",
+"location_shop_generic_01_79"
+],
+"8,15,0": [
+"floors_interior_carpet_01_12",
+"location_shop_generic_01_78"
+],
+"9,8,0": [
+"floors_exterior_tilesandstone_01_4",
+"location_shop_gas2go_01_3",
+"walls_commercial_02_43",
+"overlay_grime_wall_01_19",
+"fixtures_doors_frames_01_29",
+"fixtures_doors_02_40",
+"walls_decoration_01_129"
+],
+"9,9,0": [
+"floors_exterior_tilesandstone_01_4",
+"fixtures_doors_frames_01_28",
+"fixtures_doors_02_44",
+"walls_decoration_01_129"
+],
+"9,10,0": [
+"floors_exterior_tilesandstone_01_4",
+"location_shop_gas2go_01_0",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_16",
+"walls_decoration_01_129"
+],
+"9,11,0": [
+"floors_exterior_tilesandstone_01_4",
+"walls_commercial_01_40",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_40",
+"walls_decoration_01_129"
+],
+"9,12,0": [
+"floors_exterior_tilesandstone_01_4",
+"walls_commercial_01_40",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_40",
+"walls_decoration_01_129"
+],
+"9,13,0": [
+"floors_exterior_tilesandstone_01_4",
+"location_shop_gas2go_01_0",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_16",
+"lighting_outdoor_01_41"
+],
+"9,14,0": [
+"floors_exterior_tilesandstone_01_4",
+"location_shop_gas2go_01_0",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_16",
+"location_shop_accessories_01_18"
+],
+"9,15,0": [
+"floors_exterior_tilesandstone_01_4",
+"location_shop_gas2go_01_0",
+"walls_commercial_02_40",
+"overlay_grime_wall_01_16",
+"location_shop_accessories_01_16"
+],
+"8,8,1": [
+"roofs_03_23"
+],
+"8,9,1": [
+"roofs_03_23"
+],
+"8,10,1": [
+"roofs_03_23"
+],
+"8,11,1": [
+"roofs_03_23"
+],
+"8,12,1": [
+"roofs_03_23"
+],
+"8,13,1": [
+"roofs_03_23"
+],
+"8,14,1": [
+"roofs_03_23"
+],
+"8,15,1": [
+"roofs_03_23"
+],
+"9,8,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_50"
+],
+"9,9,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_49"
+],
+"9,10,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_48"
+],
+"9,11,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_53"
+],
+"9,12,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_53"
+],
+"9,13,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_53"
+],
+"9,14,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_53"
+],
+"9,15,1": [
+"walls_exterior_house_low_01_56",
+"location_shop_gas2go_01_53"
+],
+"8,16,0": [
+"floors_exterior_tilesandstone_01_5",
+"location_shop_gas2go_01_1",
+"walls_commercial_02_41",
+"overlay_grime_wall_01_17"
+],
+"9,16,0": [
+"floors_exterior_tilesandstone_01_5",
+"location_shop_gas2go_01_3",
+"walls_commercial_02_43",
+"overlay_grime_wall_01_19"
+],
+"8,16,1": [
+"walls_detailing_01_89"
+],
+"9,16,1": [
+"walls_detailing_01_90"
+]
+},
+"rooms": [
+[
+"gas2go",
+0,
+[
+[
+4,
+3,
+5,
+5
+],
+[
+0,
+8,
+9,
+8
+]
+],
+3
+],
+[
+"bathroom",
+0,
+[
+[
+4,
+1,
+2,
+2
+]
+],
+3
+],
+[
+"bathroom",
+0,
+[
+[
+0,
+6,
+2,
+2
+]
+],
+3
+],
+[
+"gasstorage",
+0,
+[
+[
+0,
+1,
+4,
+5
+],
+[
+2,
+6,
+2,
+2
+]
+],
+3
+]
+],
+"ground": [
+"blends_natural_01_24",
+"blends_natural_01_28",
+"blends_street_01_101",
+"blends_street_01_102",
+"blends_street_01_48",
+"blends_street_01_53",
+"blends_street_01_54",
+"blends_street_01_55",
+"blends_street_01_96",
+"fencing_01_57",
+"fencing_01_61",
+"floors_exterior_street_01_17",
+"overlay_grime_floor_01_0",
+"overlay_grime_floor_01_1",
+"overlay_grime_floor_01_16",
+"overlay_grime_floor_01_17",
+"overlay_grime_floor_01_18",
+"overlay_grime_floor_01_19",
+"overlay_grime_floor_01_20",
+"overlay_grime_floor_01_28",
+"overlay_grime_floor_01_29",
+"overlay_grime_floor_01_30",
+"street_curbs_01_10",
+"street_curbs_01_20",
+"street_curbs_01_6",
+"street_curbs_01_8"
+]
+}

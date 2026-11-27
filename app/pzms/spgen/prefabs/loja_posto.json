@@ -1,0 +1,1822 @@
+{
+"w": 17,
+"floor": false,
+"solid": 133,
+"h": 18,
+"src": "50_11 103,218",
+"sq": {
+"0,16,0": [
+"lighting_outdoor_01_45"
+],
+"1,0,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_18",
+"location_shop_accessories_01_26",
+"location_shop_fossoil_01_19"
+],
+"1,1,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_19",
+"location_shop_fossoil_01_11"
+],
+"1,2,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_19",
+"location_shop_accessories_01_11"
+],
+"1,3,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_37"
+],
+"1,4,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_36"
+],
+"1,5,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_22",
+"overlay_grime_wall_01_18",
+"location_shop_fossoil_01_33",
+"fixtures_bathroom_01_17"
+],
+"2,0,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41"
+],
+"2,1,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"2,2,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"2,3,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"2,4,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"2,5,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_21",
+"overlay_grime_wall_01_17"
+],
+"3,0,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41",
+"trash_01_12"
+],
+"3,1,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"3,2,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_8"
+],
+"3,3,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"3,4,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"3,5,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_21",
+"overlay_grime_wall_01_17"
+],
+"4,0,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"4,1,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"4,2,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_9"
+],
+"4,3,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"4,4,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"4,5,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_21",
+"overlay_grime_wall_01_17",
+"walls_decoration_01_10",
+"fixtures_sinks_01_14"
+],
+"5,0,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"5,1,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"5,2,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_10"
+],
+"5,3,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"5,4,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"5,5,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"appliances_refrigeration_01_17"
+],
+"6,0,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41"
+],
+"6,1,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,2,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_11"
+],
+"6,3,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,4,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,5,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,0,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41"
+],
+"7,1,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,2,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,3,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,4,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,5,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"8,0,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17",
+"location_shop_generic_01_79"
+],
+"8,1,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_78"
+],
+"8,2,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_79"
+],
+"8,3,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_78"
+],
+"8,4,0": [
+"floors_interior_tilesandwood_01_19",
+"trash_01_5"
+],
+"8,5,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"1,0,1": [
+"roofs_04_55"
+],
+"1,1,1": [
+"roofs_04_55"
+],
+"1,2,1": [
+"roofs_04_55"
+],
+"1,3,1": [
+"roofs_04_55"
+],
+"1,4,1": [
+"roofs_04_55"
+],
+"1,5,1": [
+"roofs_04_55"
+],
+"2,0,1": [
+"roofs_04_55"
+],
+"2,1,1": [
+"roofs_04_55"
+],
+"2,2,1": [
+"roofs_04_55"
+],
+"2,3,1": [
+"roofs_04_55"
+],
+"2,4,1": [
+"roofs_04_55"
+],
+"2,5,1": [
+"roofs_04_55"
+],
+"3,0,1": [
+"roofs_04_55"
+],
+"3,1,1": [
+"roofs_04_55"
+],
+"3,2,1": [
+"roofs_04_55"
+],
+"3,3,1": [
+"roofs_04_55"
+],
+"3,4,1": [
+"roofs_04_55"
+],
+"3,5,1": [
+"roofs_04_55"
+],
+"4,0,1": [
+"roofs_04_55"
+],
+"4,1,1": [
+"roofs_04_55"
+],
+"4,2,1": [
+"roofs_04_55"
+],
+"4,3,1": [
+"roofs_04_55"
+],
+"4,4,1": [
+"roofs_04_55"
+],
+"4,5,1": [
+"roofs_04_55"
+],
+"5,0,1": [
+"roofs_04_55"
+],
+"5,1,1": [
+"roofs_04_55"
+],
+"5,2,1": [
+"roofs_04_55"
+],
+"5,3,1": [
+"roofs_04_55"
+],
+"5,4,1": [
+"roofs_04_55"
+],
+"5,5,1": [
+"roofs_04_55"
+],
+"6,0,1": [
+"roofs_04_55"
+],
+"6,1,1": [
+"roofs_04_55"
+],
+"6,2,1": [
+"roofs_04_55",
+"trash_01_10"
+],
+"6,3,1": [
+"roofs_04_55"
+],
+"6,4,1": [
+"roofs_04_55"
+],
+"6,5,1": [
+"roofs_04_55"
+],
+"7,0,1": [
+"roofs_04_55"
+],
+"7,1,1": [
+"roofs_04_55"
+],
+"7,2,1": [
+"roofs_04_55"
+],
+"7,3,1": [
+"roofs_04_55"
+],
+"7,4,1": [
+"roofs_04_55"
+],
+"7,5,1": [
+"roofs_04_55"
+],
+"8,0,1": [
+"roofs_04_55"
+],
+"8,1,1": [
+"roofs_04_55"
+],
+"8,2,1": [
+"roofs_04_55"
+],
+"8,3,1": [
+"roofs_04_55"
+],
+"8,4,1": [
+"roofs_04_55"
+],
+"8,5,1": [
+"roofs_04_55"
+],
+"1,6,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_20",
+"overlay_grime_wall_01_16",
+"fixtures_bathroom_01_45",
+"fixtures_bathroom_01_5"
+],
+"1,7,0": [
+"walls_garage_01_38",
+"overlay_grime_wall_01_18",
+"furniture_shelving_01_25"
+],
+"1,8,0": [
+"walls_garage_01_36",
+"overlay_grime_wall_01_16",
+"furniture_shelving_01_24"
+],
+"1,9,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_22",
+"overlay_grime_wall_01_18",
+"location_shop_fossoil_01_33",
+"fixtures_bathroom_01_17"
+],
+"1,10,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_20",
+"overlay_grime_wall_01_16",
+"fixtures_bathroom_01_45",
+"fixtures_bathroom_01_5"
+],
+"1,11,0": [
+"walls_garage_01_38",
+"overlay_grime_wall_01_2",
+"overlay_grime_wall_01_22",
+"location_business_machinery_01_37"
+],
+"1,12,0": [
+"location_business_machinery_01_15",
+"walls_garage_01_39",
+"overlay_grime_wall_01_3",
+"location_business_machinery_01_37"
+],
+"1,13,0": [
+"location_business_machinery_01_37"
+],
+"2,6,0": [
+"floors_interior_tilesandwood_01_19",
+"fixtures_bathroom_01_48",
+"fixtures_bathroom_01_46"
+],
+"2,7,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_17",
+"lighting_indoor_01_7"
+],
+"2,9,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_21",
+"overlay_grime_wall_01_17"
+],
+"2,10,0": [
+"floors_interior_tilesandwood_01_19",
+"fixtures_bathroom_01_48",
+"fixtures_bathroom_01_46"
+],
+"2,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"2,12,0": [
+"location_business_machinery_01_15"
+],
+"3,6,0": [
+"floors_interior_tilesandwood_01_19",
+"lighting_indoor_01_6"
+],
+"3,7,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_4",
+"overlay_grime_wall_01_18",
+"fixtures_bathroom_01_21"
+],
+"3,8,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_8",
+"overlay_grime_wall_01_26",
+"fixtures_doors_01_52"
+],
+"3,9,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_21",
+"overlay_grime_wall_01_17",
+"lighting_indoor_01_0"
+],
+"3,10,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"3,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"industry_02_34"
+],
+"3,12,0": [
+"location_business_machinery_01_14"
+],
+"4,6,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"4,7,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_9",
+"overlay_grime_wall_01_27",
+"fixtures_doors_01_25"
+],
+"4,8,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"4,9,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_interior_house_03_31",
+"overlay_grime_wall_01_27",
+"fixtures_doors_01_25"
+],
+"4,10,0": [
+"floors_interior_tilesandwood_01_19",
+"walls_decoration_01_24",
+"fixtures_sinks_01_30"
+],
+"4,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_21",
+"overlay_grime_wall_01_1",
+"industry_02_34"
+],
+"4,12,0": [
+"location_business_machinery_01_15"
+],
+"5,6,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"appliances_refrigeration_01_16"
+],
+"5,7,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_7",
+"overlay_grime_wall_01_19"
+],
+"5,8,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"5,9,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"appliances_refrigeration_01_17"
+],
+"5,10,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"appliances_refrigeration_01_16"
+],
+"5,11,0": [
+"street_decoration_01_14",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"5,12,0": [
+"location_business_machinery_01_15"
+],
+"6,6,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,7,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,8,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,9,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,10,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"6,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"6,12,0": [
+"location_business_machinery_01_14"
+],
+"7,6,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,7,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,8,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,9,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,10,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"7,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"7,12,0": [
+"location_business_machinery_01_15"
+],
+"8,6,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"8,7,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"8,8,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"8,9,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"8,10,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"8,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"lighting_indoor_01_0"
+],
+"8,12,0": [
+"location_business_machinery_01_15"
+],
+"1,6,1": [
+"roofs_04_55"
+],
+"1,7,1": [
+"roofs_04_55"
+],
+"1,8,1": [
+"roofs_04_55"
+],
+"1,9,1": [
+"roofs_04_55"
+],
+"1,10,1": [
+"roofs_04_55"
+],
+"1,11,1": [
+"ceilings_01_0"
+],
+"1,12,1": [
+"ceilings_01_0"
+],
+"1,13,1": [
+"ceilings_01_0"
+],
+"2,6,1": [
+"roofs_04_55",
+"rooftop_furniture_22"
+],
+"2,7,1": [
+"roofs_04_55"
+],
+"2,8,1": [
+"roofs_04_55"
+],
+"2,9,1": [
+"roofs_04_55"
+],
+"2,10,1": [
+"roofs_04_55"
+],
+"2,11,1": [
+"ceilings_01_0"
+],
+"2,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"2,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"3,6,1": [
+"roofs_04_55"
+],
+"3,7,1": [
+"roofs_04_55"
+],
+"3,8,1": [
+"roofs_04_55"
+],
+"3,9,1": [
+"roofs_04_55"
+],
+"3,10,1": [
+"roofs_04_55"
+],
+"3,11,1": [
+"ceilings_01_0"
+],
+"3,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"3,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"4,6,1": [
+"roofs_04_55"
+],
+"4,7,1": [
+"roofs_04_55"
+],
+"4,8,1": [
+"roofs_04_55"
+],
+"4,9,1": [
+"roofs_04_55"
+],
+"4,10,1": [
+"roofs_04_55"
+],
+"4,11,1": [
+"ceilings_01_0"
+],
+"4,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"4,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"5,6,1": [
+"roofs_04_55"
+],
+"5,7,1": [
+"roofs_04_55"
+],
+"5,8,1": [
+"roofs_04_55"
+],
+"5,9,1": [
+"roofs_04_55"
+],
+"5,10,1": [
+"roofs_04_55"
+],
+"5,11,1": [
+"ceilings_01_0"
+],
+"5,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"5,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"6,6,1": [
+"roofs_04_55"
+],
+"6,7,1": [
+"roofs_04_55"
+],
+"6,8,1": [
+"roofs_04_55"
+],
+"6,9,1": [
+"roofs_04_55"
+],
+"6,10,1": [
+"roofs_04_55"
+],
+"6,11,1": [
+"ceilings_01_0"
+],
+"6,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"6,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"7,6,1": [
+"roofs_04_55"
+],
+"7,7,1": [
+"roofs_04_55"
+],
+"7,8,1": [
+"roofs_04_55"
+],
+"7,9,1": [
+"roofs_04_55"
+],
+"7,10,1": [
+"roofs_04_55"
+],
+"7,11,1": [
+"ceilings_01_0"
+],
+"7,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"7,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"8,6,1": [
+"roofs_04_55"
+],
+"8,7,1": [
+"roofs_04_55",
+"rooftop_furniture_1",
+"rooftop_furniture_15"
+],
+"8,8,1": [
+"roofs_04_55",
+"rooftop_furniture_13"
+],
+"8,9,1": [
+"roofs_04_55"
+],
+"8,10,1": [
+"roofs_04_55"
+],
+"8,11,1": [
+"ceilings_01_0"
+],
+"8,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"8,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"1,14,0": [
+"location_business_machinery_01_37"
+],
+"1,15,0": [
+"location_business_machinery_01_15",
+"location_business_machinery_01_37"
+],
+"1,16,0": [
+"walls_garage_01_36",
+"overlay_grime_wall_01_0",
+"location_business_machinery_01_37"
+],
+"1,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"2,15,0": [
+"location_business_machinery_01_15"
+],
+"2,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"3,14,0": [
+"industry_01_12"
+],
+"3,15,0": [
+"location_business_machinery_01_14"
+],
+"3,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"4,14,0": [
+"industry_01_12"
+],
+"4,15,0": [
+"location_business_machinery_01_15"
+],
+"4,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"5,14,0": [
+"industry_01_12"
+],
+"5,15,0": [
+"location_business_machinery_01_15"
+],
+"5,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"6,14,0": [
+"industry_01_12"
+],
+"6,15,0": [
+"location_business_machinery_01_14"
+],
+"6,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"7,14,0": [
+"industry_01_12"
+],
+"7,15,0": [
+"location_business_machinery_01_15"
+],
+"7,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"8,14,0": [
+"industry_01_12"
+],
+"8,15,0": [
+"location_business_machinery_01_15"
+],
+"8,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"1,14,1": [
+"ceilings_01_0"
+],
+"1,15,1": [
+"ceilings_01_0"
+],
+"1,16,1": [
+"ceilings_01_0",
+"roofs_04_56"
+],
+"2,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"2,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"2,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"3,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"3,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"3,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"4,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"4,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"4,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"5,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"5,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"5,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"6,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"6,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"6,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"7,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"7,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"7,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"8,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"8,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"8,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"9,0,0": [
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"street_decoration_01_38"
+],
+"9,1,0": [
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_45",
+"appliances_refrigeration_01_21"
+],
+"9,2,0": [
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_44",
+"appliances_refrigeration_01_20"
+],
+"9,3,0": [
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"location_shop_fossoil_01_33"
+],
+"9,4,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17",
+"location_shop_fossoil_01_32",
+"lighting_indoor_01_0"
+],
+"9,5,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,4,0": [
+"floors_interior_tilesandwood_01_19",
+"floors_rugs_01_52",
+"location_shop_fossoil_01_9",
+"overlay_grime_wall_01_27",
+"location_shop_fossoil_01_61"
+],
+"10,5,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"11,4,0": [
+"floors_interior_tilesandwood_01_19",
+"floors_rugs_01_53",
+"location_shop_fossoil_01_9",
+"overlay_grime_wall_01_27",
+"location_shop_fossoil_01_61",
+"lighting_indoor_01_25"
+],
+"11,5,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"12,4,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"12,5,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"13,4,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41"
+],
+"13,5,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"14,4,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_0",
+"overlay_grime_wall_01_41"
+],
+"14,5,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,3,0": [
+"lighting_outdoor_01_44"
+],
+"15,4,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17",
+"location_community_school_01_32"
+],
+"15,5,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"16,4,0": [
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16"
+],
+"16,5,0": [
+"location_shop_fossoil_01_2",
+"overlay_grime_wall_01_40"
+],
+"9,4,1": [
+"roofs_04_55"
+],
+"9,5,1": [
+"roofs_04_55"
+],
+"10,4,1": [
+"roofs_04_55"
+],
+"10,5,1": [
+"roofs_04_55"
+],
+"11,4,1": [
+"roofs_04_55"
+],
+"11,5,1": [
+"roofs_04_55"
+],
+"12,4,1": [
+"roofs_04_55"
+],
+"12,5,1": [
+"roofs_04_55"
+],
+"13,4,1": [
+"roofs_04_55"
+],
+"13,5,1": [
+"roofs_04_55"
+],
+"14,4,1": [
+"roofs_04_55"
+],
+"14,5,1": [
+"roofs_04_55"
+],
+"15,4,1": [
+"roofs_04_55"
+],
+"15,5,1": [
+"roofs_04_55"
+],
+"9,6,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,7,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,8,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_20",
+"location_shop_generic_01_122"
+],
+"9,9,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"9,10,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_29"
+],
+"9,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"industry_02_34"
+],
+"9,12,0": [
+"location_business_machinery_01_14"
+],
+"10,6,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,7,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,8,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_21"
+],
+"10,9,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"10,10,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_29"
+],
+"10,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"10,12,0": [
+"location_business_machinery_01_15"
+],
+"11,6,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"11,7,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"11,8,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_21",
+"location_shop_accessories_01_1"
+],
+"11,9,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"11,10,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_29"
+],
+"11,11,0": [
+"street_decoration_01_14",
+"walls_garage_01_37",
+"overlay_grime_wall_01_1"
+],
+"11,12,0": [
+"location_business_machinery_01_15"
+],
+"12,6,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"12,7,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"12,8,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_fossoil_01_22"
+],
+"12,9,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"12,10,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"12,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"industry_02_34"
+],
+"12,12,0": [
+"location_business_machinery_01_14"
+],
+"13,6,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"13,7,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"13,8,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"13,9,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"13,10,0": [
+"floors_interior_tilesandwood_01_19",
+"location_community_medical_01_10"
+],
+"13,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"industry_02_34"
+],
+"13,12,0": [
+"location_business_machinery_01_15"
+],
+"14,6,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_0"
+],
+"14,7,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"14,8,0": [
+"floors_interior_tilesandwood_01_19",
+"location_shop_generic_01_0"
+],
+"14,9,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"14,10,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"14,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_5",
+"overlay_grime_wall_01_1"
+],
+"14,12,0": [
+"location_business_machinery_01_15"
+],
+"15,6,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,7,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,8,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,9,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,10,0": [
+"floors_interior_tilesandwood_01_19"
+],
+"15,11,0": [
+"walls_garage_01_37",
+"overlay_grime_wall_01_1",
+"location_business_machinery_01_37"
+],
+"15,12,0": [
+"location_business_machinery_01_15",
+"location_business_machinery_01_37"
+],
+"15,13,0": [
+"location_business_machinery_01_37"
+],
+"16,6,0": [
+"location_shop_fossoil_01_2",
+"overlay_grime_wall_01_40"
+],
+"16,7,0": [
+"location_shop_fossoil_01_2",
+"overlay_grime_wall_01_40"
+],
+"16,8,0": [
+"location_shop_fossoil_01_2",
+"overlay_grime_wall_01_40"
+],
+"16,9,0": [
+"location_shop_fossoil_01_2",
+"overlay_grime_wall_01_40"
+],
+"16,10,0": [
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16"
+],
+"16,11,0": [
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16"
+],
+"16,12,0": [
+"location_shop_fossoil_01_7",
+"location_shop_fossoil_01_41",
+"overlay_grime_wall_01_19"
+],
+"16,13,0": [
+"location_shop_fossoil_01_41"
+],
+"9,6,1": [
+"roofs_04_55"
+],
+"9,7,1": [
+"roofs_04_55",
+"rooftop_furniture_1"
+],
+"9,8,1": [
+"roofs_04_55"
+],
+"9,9,1": [
+"roofs_04_55"
+],
+"9,10,1": [
+"roofs_04_55"
+],
+"9,11,1": [
+"ceilings_01_0"
+],
+"9,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"9,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"10,6,1": [
+"roofs_04_55"
+],
+"10,7,1": [
+"roofs_04_55",
+"industry_02_143"
+],
+"10,8,1": [
+"roofs_04_55"
+],
+"10,9,1": [
+"roofs_04_55"
+],
+"10,10,1": [
+"roofs_04_55"
+],
+"10,11,1": [
+"ceilings_01_0"
+],
+"10,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"10,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"11,6,1": [
+"roofs_04_55"
+],
+"11,7,1": [
+"roofs_04_55"
+],
+"11,8,1": [
+"roofs_04_55"
+],
+"11,9,1": [
+"roofs_04_55"
+],
+"11,10,1": [
+"roofs_04_55"
+],
+"11,11,1": [
+"ceilings_01_0"
+],
+"11,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"11,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"12,6,1": [
+"roofs_04_55"
+],
+"12,7,1": [
+"roofs_04_55"
+],
+"12,8,1": [
+"roofs_04_55"
+],
+"12,9,1": [
+"roofs_04_55"
+],
+"12,10,1": [
+"roofs_04_55"
+],
+"12,11,1": [
+"ceilings_01_0"
+],
+"12,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"12,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"13,6,1": [
+"roofs_04_55"
+],
+"13,7,1": [
+"roofs_04_55"
+],
+"13,8,1": [
+"roofs_04_55"
+],
+"13,9,1": [
+"roofs_04_55"
+],
+"13,10,1": [
+"roofs_04_55"
+],
+"13,11,1": [
+"ceilings_01_0"
+],
+"13,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"13,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"14,6,1": [
+"roofs_04_55"
+],
+"14,7,1": [
+"roofs_04_55"
+],
+"14,8,1": [
+"roofs_04_55"
+],
+"14,9,1": [
+"roofs_04_55"
+],
+"14,10,1": [
+"roofs_04_55"
+],
+"14,11,1": [
+"ceilings_01_0"
+],
+"14,12,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"14,13,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"15,6,1": [
+"roofs_04_55"
+],
+"15,7,1": [
+"roofs_04_55"
+],
+"15,8,1": [
+"roofs_04_55"
+],
+"15,9,1": [
+"roofs_04_55"
+],
+"15,10,1": [
+"roofs_04_55"
+],
+"15,11,1": [
+"ceilings_01_0",
+"roofs_04_61"
+],
+"15,12,1": [
+"ceilings_01_0",
+"roofs_04_37"
+],
+"15,13,1": [
+"ceilings_01_0",
+"roofs_04_37"
+],
+"9,14,0": [
+"industry_01_12"
+],
+"9,15,0": [
+"location_business_machinery_01_14"
+],
+"9,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"10,14,0": [
+"industry_01_12"
+],
+"10,15,0": [
+"location_business_machinery_01_15"
+],
+"10,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"11,14,0": [
+"industry_01_12"
+],
+"11,15,0": [
+"location_business_machinery_01_15"
+],
+"11,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"12,14,0": [
+"industry_01_12"
+],
+"12,15,0": [
+"location_business_machinery_01_14"
+],
+"12,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"13,14,0": [
+"industry_01_12"
+],
+"13,15,0": [
+"location_business_machinery_01_15"
+],
+"13,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"14,14,0": [
+"industry_01_12"
+],
+"14,15,0": [
+"location_business_machinery_01_15"
+],
+"14,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"15,14,0": [
+"location_business_machinery_01_37"
+],
+"15,15,0": [
+"location_business_machinery_01_15",
+"location_business_machinery_01_37"
+],
+"15,16,0": [
+"location_business_machinery_01_37"
+],
+"15,17,0": [
+"location_shop_fossoil_01_5",
+"overlay_grime_wall_01_17"
+],
+"16,14,0": [
+"location_shop_fossoil_01_41"
+],
+"16,15,0": [
+"location_shop_fossoil_01_41"
+],
+"16,16,0": [
+"location_shop_fossoil_01_6",
+"overlay_grime_wall_01_16",
+"lighting_outdoor_01_41"
+],
+"16,17,0": [
+"location_shop_fossoil_01_7",
+"overlay_grime_wall_01_19"
+],
+"9,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"9,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"9,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"10,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"10,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"10,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"11,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"11,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"11,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"12,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"12,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"12,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"13,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"13,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"13,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"14,14,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"14,15,1": [
+"ceilings_01_0",
+"roofs_04_48"
+],
+"14,16,1": [
+"ceilings_01_0",
+"roofs_04_32"
+],
+"15,14,1": [
+"ceilings_01_0",
+"roofs_04_37"
+],
+"15,15,1": [
+"ceilings_01_0",
+"roofs_04_37"
+],
+"15,16,1": [
+"ceilings_01_0",
+"roofs_04_40"
+]
+},
+"rooms": [
+[
+"fossoil",
+0,
+[
+[
+1,
+0,
+8,
+4
+],
+[
+1,
+4,
+15,
+1
+],
+[
+5,
+5,
+11,
+2
+],
+[
+3,
+7,
+13,
+2
+],
+[
+5,
+9,
+11,
+2
+]
+],
+51
+],
+[
+"gasstore",
+0,
+[
+[
+1,
+11,
+15,
+6
+]
+],
+51
+],
+[
+"gasstorage",
+0,
+[
+[
+1,
+7,
+2,
+2
+]
+],
+51
+],
+[
+"bathroom",
+0,
+[
+[
+1,
+5,
+4,
+2
+]
+],
+51
+],
+[
+"bathroom",
+0,
+[
+[
+1,
+9,
+4,
+2
+]
+],
+51
+]
+],
+"ground": [
+"blends_natural_01_16",
+"blends_natural_01_21",
+"blends_natural_01_22",
+"blends_natural_01_23",
+"blends_natural_01_24",
+"blends_natural_01_25",
+"blends_natural_01_27",
+"blends_natural_01_28",
+"blends_natural_01_29",
+"blends_natural_01_30",
+"blends_natural_01_31",
+"blends_natural_01_32",
+"blends_natural_01_37",
+"blends_natural_01_38",
+"blends_natural_01_40",
+"blends_natural_01_43",
+"blends_natural_01_44",
+"blends_natural_01_47",
+"blends_street_01_101",
+"blends_street_01_102",
+"blends_street_01_103",
+"blends_street_01_48",
+"blends_street_01_53",
+"blends_street_01_54",
+"blends_street_01_55",
+"blends_street_01_96",
+"floors_exterior_street_01_16",
+"floors_exterior_street_01_17",
+"floors_exterior_street_01_18",
+"overlay_grime_floor_01_0",
+"overlay_grime_floor_01_1",
+"overlay_grime_floor_01_21",
+"overlay_grime_floor_01_28",
+"overlay_grime_floor_01_29",
+"overlay_grime_floor_01_30",
+"overlay_grime_floor_01_84",
+"street_curbs_01_0",
+"street_curbs_01_10",
+"street_curbs_01_8",
+"street_curbs_01_9"
+]
+}
