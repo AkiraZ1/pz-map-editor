@@ -111,12 +111,54 @@ def side_of(it):
     return it["side"] if it.get("walk_on", True) else 0
 
 
-def _raster(it):
+def _snap_ends(it, P, items):
+    """ponta da rua que cai dentro de outra rua (asfalto ou calcada) vai ate o eixo dela, ao longo da propria
+    direcao: o asfalto atravessa a calcada da outra e vira um T/cruzamento limpo (parava na calcada, serrilhado)."""
+    if len(P) < 2 or not items:
+        return P
+    P = list(P)
+    for e, nb in ((0, 1), (len(P) - 1, len(P) - 2)):
+        ex, ey = P[e]
+        ux, uy = ex - P[nb][0], ey - P[nb][1]
+        lu = math.hypot(ux, uy)
+        if lu < 1e-9:
+            continue
+        ux, uy = ux / lu, uy / lu
+        best = None
+        for o in items:
+            if o is it or o.get("id") == it.get("id"):
+                continue
+            Ro = o["width"] / 2 + side_of(o)
+            Q = path(o)
+            for (ax, ay), (bx, by) in zip(Q, Q[1:]):
+                dx, dy = bx - ax, by - ay
+                L2 = dx * dx + dy * dy
+                if L2 < 1e-9:
+                    continue
+                t = max(0.0, min(1.0, ((ex - ax) * dx + (ey - ay) * dy) / L2))
+                d = math.hypot(ex - ax - t * dx, ey - ay - t * dy)
+                if d > Ro + 1:
+                    continue
+                L = math.sqrt(L2)
+                nx, ny = -dy / L, dx / L                     # normal do eixo da outra rua
+                un = ux * nx + uy * ny
+                if abs(un) < 0.35:                           # quase paralela: nao e emenda
+                    continue
+                sd = ((ax - ex) * nx + (ay - ey) * ny) / un  # quanto andar na direcao da rua ate o eixo
+                if abs(sd) <= Ro + 1.5 and (best is None or d < best[0]):
+                    best = (d, sd)
+        if best:
+            P[e] = (ex + ux * best[1], ey + uy * best[1])
+    return P
+
+
+def _raster(it, items=None):
     """{(x, y): (dist, axis, lado, ao_longo)} dos quadrados ate width/2+calcada da linha.
     axis = 'x'/'y' no trecho reto ou None; lado = distancia com sinal (+ a esquerda de quem anda na rua);
-    ao_longo = metros desde o 1o ponto (para tracejado e postes)."""
+    ao_longo = metros desde o 1o ponto (para tracejado e postes). Ponta da rua reta (corte perpendicular), e
+    emendada no eixo de outra rua quando cai dentro dela (items = todas as ruas)."""
     import numpy as np
-    P = path(it)
+    P = _snap_ends(it, path(it), items)
     R = it["width"] / 2 + side_of(it)
     out = {}
     run = 0.0
@@ -130,7 +172,8 @@ def _raster(it):
         dx, dy = bx - ax, by - ay
         L2 = dx * dx + dy * dy or 1e-9
         L = math.sqrt(L2)
-        t = np.clip(((X - ax) * dx + (Y - ay) * dy) / L2, 0, 1)
+        t0 = ((X - ax) * dx + (Y - ay) * dy) / L2
+        t = np.clip(t0, 0, 1)
         D = np.hypot(X - (ax + t * dx), Y - (ay + t * dy))
         SG = ((X - ax) * dy - (Y - ay) * dx) / L
         AL = run + t * L
@@ -141,7 +184,12 @@ def _raster(it):
         ang = abs(math.degrees(math.atan2(dy, dx))) % 180
         axis = "x" if ang < 15 or ang > 165 else "y" if abs(ang - 90) < 15 else None
         LAT = (X - (ax + t * dx)) if axis == "y" else (Y - (ay + t * dy))
-        ys, xs = np.nonzero(D < R)
+        M = D < R
+        if si == 0:
+            M &= t0 >= 0                                     # ponta reta: sem o semicirculo (serrilhava)
+        if si == last:
+            M &= t0 <= 1
+        ys, xs = np.nonzero(M)
         for j, i in zip(ys.tolist(), xs.tolist()):
             k = (x0 + i, y0 + j)
             d = float(D[j, i])
@@ -154,13 +202,27 @@ def _raster(it):
 def classify(items):
     """{(x, y): (classe 'a'|'s', indice da rua, dist, axis)}: asfalto ganha da calcada; depois a rua mais perto."""
     cls = {}
+    na = {}
     for n, it in enumerate(items):
         half = it["width"] / 2
-        for k, (d, axis, sg, al, lat) in _raster(it).items():
+        for k, (d, axis, sg, al, lat) in _raster(it, items).items():
             c = "a" if d < half else "s"
+            if c == "a":
+                na.setdefault(k, []).append((n, al))
             cur = cls.get(k)
             if cur is None or (c == "a" and cur[0] == "s") or (c == cur[0] and d < cur[2]):
                 cls[k] = (c, n, d, axis, sg, al, lat)
+    span = {}                                                # cruzamento: trecho de cada rua sob o asfalto de outra
+    for v in na.values():
+        if len(v) > 1:
+            for n, al in v:
+                lo, hi = span.get(n, (al, al))
+                span[n] = (min(lo, al), max(hi, al))
+    if span:                                                 # ali sem faixa nem poste (a faixa nao cruza a outra rua)
+        for k, c in cls.items():
+            r = span.get(c[1])
+            if c[0] == "a" and r and r[0] - 0.5 <= c[5] <= r[1] + 0.5:
+                cls[k] = c[:5] + (-1.0,) + c[6:]
     return cls
 
 
@@ -353,7 +415,7 @@ def apply(project, items, label):
                    and json.dumps(by_id_old.get(i), sort_keys=True) != json.dumps(by_id_new.get(i), sort_keys=True)]
         region = set()
         for it in touched:
-            for (x, y) in _raster(it):
+            for (x, y) in _raster(it, items) | _raster(it, old["items"]):
                 for dx in (-1, 0, 1):
                     for dy in (-1, 0, 1):
                         region.add((x + dx, y + dy))

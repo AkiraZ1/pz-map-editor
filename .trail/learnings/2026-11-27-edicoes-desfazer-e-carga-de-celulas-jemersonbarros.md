@@ -3,7 +3,7 @@ title: "Edicoes, desfazer e carga de celulas vao em fila no cliente (servidor e 
 author: JemersonBarros
 date: 2026-11-27
 branch: main
-cost: { minutes: 50, tokens: 809536 }
+cost: { minutes: 66, tokens: 1049993 }
 id: l-0d762314
 scope: repo
 status: active
@@ -51,6 +51,14 @@ Versao antiga sem /api/shutdown: o Mac pede quit pelo osascript (a janela salva 
 - Format confirmed in the local B42 mods: one line `require=IdA,IdB`, plain ids separated by commas, no backslash.
 
 In the code: app/pzms/export.py, where it writes mod.info.
+O spgen roda só com os módulos Rust pré-compilados. Os caminhos Python e C foram removidos a pedido do usuário. A saída ficou idêntica e cerca de 3x mais rápida.
+
+In the code:
+- Os binários ficam em app/pzms/spgen/bin/<alvo>/:
+  - mac-arm64 e mac-x64: .so
+  - win-x64: .dll e .pyd
+- Os binários vão para o git e para o dist.
+- Para recompilar: python tools/build_rust.py.
 
 ## Watch out
 - Toda chamada nova que mexa no projeto deve passar por serial() no cliente, senao volta a corrida.
@@ -73,6 +81,12 @@ In the code: app/pzms/routes_stairs.py (plan, stair_sets), app/ui/stairs.js, app
 - The tiledef fileNumber is 2000 + crc32 % 7000, chosen to avoid colliding with vanilla and common mods.
 
 In the code: app/pzms/modtiles.py, app/pzms/routes_tiles.py, Assets.set_extras in app/pzms/assets.py, app/ui/tilesets.js.
+- O build de Windows a partir do mac precisa de:
+  - brew install mingw-w64
+  - a feature pyo3 generate-import-lib
+  - PYO3_CROSS=1
+- O mac-x64 precisa de rustup target add x86_64-apple-darwin.
+- Toda mudança no gen tem que ser validada pelo hash das células geradas de um OSM sintético, comparando antes e depois.
 
 ## Tried and ruled out
 - Calibrar com save: os saves locais sao MP (cliente) e so tem zpop_virtual.bin (roupas), sem contagem por celula. A conta densidade->zumbis esta em libPZPopMan.dylib.
