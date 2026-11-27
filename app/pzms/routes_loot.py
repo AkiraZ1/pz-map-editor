@@ -25,16 +25,27 @@ def _vanilla(app, q, body):
 
 @route("GET", "/api/loot/items")
 def _items(app, q, body):
-    """?q=texto -> ate 200 itens (Base.X) que contem o texto."""
-    s = (q.get("q") or "").strip().lower()
+    """?q=texto -> ate 200 itens. Acha pelo nome base (Base.Axe) e pelo nome do jogador em ingles e
+    portugues (traducao vanilla), sem ligar para acento. names = {item: [en, pt]} dos devolvidos."""
+    from . import names as NM
+    s = NM.fold((q.get("q") or "").strip())
     lim = max(1, min(500, int(q.get("limit") or 200)))
     items = SP.vanilla_lists(app.media)["items"]
+    tr = NM.items(app.media)
     if s:
-        a = [i for i in items if i.lower().split(".", 1)[-1].startswith(s)]
-        sa = set(a)
-        b = [i for i in items if s in i.lower() and i not in sa]
-        items = a + b
-    return {"items": items[:lim], "total": len(items)}
+        def keys(i):
+            en, pt = tr.get(i, ("", ""))
+            return NM.fold(i.split(".", 1)[-1]), NM.fold(en), NM.fold(pt), NM.fold(i)
+        scored = []
+        for i in items:
+            ks = keys(i)
+            if any(k.startswith(s) for k in ks[:3]):
+                scored.append((0, i))
+            elif any(s in k for k in ks):
+                scored.append((1, i))
+        items = [i for _, i in sorted(scored, key=lambda t: t[0])]
+    out = items[:lim]
+    return {"items": out, "total": len(items), "names": {i: list(tr[i]) for i in out if i in tr}}
 
 
 @route("POST", "/api/loot/set")

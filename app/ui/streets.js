@@ -10,7 +10,7 @@
   const R = {
     items: [], sel: null, draft: null, drag: null, key: null, proj: null, loading: false,
     opts: { name: "rua", width: 6, walk_on: true, side: 2, asph: 80, walk: 48, smooth: true, curbs: true,
-            lanes: 1, dash: 3, poles: false, pole_every: 12, pole: "lighting_outdoor_01_16" },
+            lanes: 1, dash: 3, line_color: 16, poles: false, pole_every: 12, pole: "lighting_outdoor_01_16" },
   };
   window.PZMS_STREETS = R;                                       // (depuracao)
   const FAMS = [0, 16, 32, 48, 64, 80, 96];
@@ -89,6 +89,16 @@
     R.busy = false; refresh();
   }
   const save = (it, label) => send({ item: it, label });
+  // mudancas do painel entram numa fila e cada uma parte da rua mais nova (antes, dois cliques seguidos
+  // mandavam a rua velha e o 2o desfazia o 1o: "so aparecia quando mexia em outra coisa")
+  R.chain = Promise.resolve();
+  function patch(id, k, v) {
+    R.chain = R.chain.then(async () => {
+      const it = R.items.find(i => i.id === id);
+      if (it && it[k] !== v) await save({ ...it, [k]: v }, `${it.name}: ${k}`);
+    });
+    return R.chain;
+  }
 
   function refresh() { S.needDraw = true; if (S.tool === "street") window.PZMS.setTool("street"); }
 
@@ -161,12 +171,13 @@
   function opts() {
     const it = cur(), o = it || R.opts;
     const upd = (k, v) => {
-      if (it) { const n = { ...it, [k]: v }; save(n, `${it.name}: ${k}`); }
+      if (it) patch(it.id, k, v);
       else { R.opts[k] = v; window.PZMS.setTool("street"); }
     };
     const num = (k, min, max) => {
-      const i = h("input", { type: "number", min, max, value: o[k], style: "width:3.6em" });
+      const i = h("input", { type: "number", min, max, value: o[k], style: "width:3.6em", "data-k": k });
       i.addEventListener("change", () => upd(k, Math.max(min, Math.min(max, +i.value | 0))));
+      i.dataset.live = "1";                                          // setas/teclado aplicam na hora (app.js)
       return i;
     };
     const tog = (k, label, title) => h("button", { class: o[k] ? "on" : "", title, onclick: () => upd(k, !o[k]) }, label);
@@ -187,7 +198,12 @@
           famPicker(o.walk, f => upd("walk", f), fromCatalog(o.walk, t => upd("walk", t))),
           tog("curbs", "meio-fio", "meio-fio no asfalto encostado na calcada")] : [])),
       grp(h("label", {}, "Faixas"), num("lanes", 1, 8), dim(o.lanes > 1 ? `pistas (${o.lanes - 1} faixa${o.lanes > 2 ? "s" : ""})` : "pista (sem faixa)"),
-        ...(o.lanes > 1 ? [dim("tracejado a cada"), num("dash", 0, 20), dim(o.dash ? "quadrados" : "(0 = continua)")] : [])),
+        ...(o.lanes > 1 ? [dim("tracejado a cada"), num("dash", 0, 20), dim(o.dash ? "quadrados" : "(0 = continua)"),
+          h("span", { class: "stfam" }, ...[[0, "cinza"], [8, "branca"], [16, "amarela gasta"], [24, "amarela"]].map(([v, t]) => {
+            const c = h("canvas", { width: 34, height: 22 });
+            try { S.atlas.thumb(c, ["blends_street_01_80", `street_trafficlines_01_${v + 1}`], 34, 22); } catch (e) { /* atlas */ }
+            return h("button", { class: (o.line_color ?? 16) === v ? "on" : "", title: "faixa " + t, onclick: () => upd("line_color", v) }, c);
+          }))] : [])),
       grp(tog("poles", "postes", "poste de luz na calcada, lados alternados"),
         ...(o.poles && o.walk_on ? [dim("a cada"), num("pole_every", 3, 80), dim("quadrados"),
           fromCatalog(o.pole && o.pole !== "lighting_outdoor_01_16" ? o.pole : null, t => upd("pole", t), "any")] : [])),

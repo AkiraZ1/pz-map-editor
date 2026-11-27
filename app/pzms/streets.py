@@ -25,11 +25,17 @@ BLEND_EDGE = {"N": (8, 12), "W": (9, 13), "E": (10, 14), "S": (11, 15)}
 # borda de baixo/direita no do ASFALTO (10 calcada ao S, 11 calcada a E)
 CURB_WALK = {"S": "street_curbs_01_8", "E": "street_curbs_01_9"}
 CURB_ASPH = {"S": "street_curbs_01_10", "E": "street_curbs_01_11"}
-# faixas: tambem na borda S/E do quadrado (no vanilla o par 2|6 e 0|4 forma a faixa dupla na divisa)
-LINE_X, LINE_Y = "street_trafficlines_01_2", "street_trafficlines_01_0"
+# faixas (street_trafficlines_01, medido nos sprites): cada tile pinta borda(s) do proprio quadrado.
+# base+0 W, +2 N, +4 E, +6 S; cantos +1 NW, +3 NE, +5 SE, +7 SW. Cores: base 0 cinza, 8 branca,
+# 16 amarela gasta, 24 amarela. Assim a faixa segue curvas e diagonais em escada sem buracos.
+LINE_EDGE = {"W": 0, "N": 2, "E": 4, "S": 6}
+LINE_CORNER = {frozenset("NW"): 1, frozenset("NE"): 3, frozenset("SE"): 5, frozenset("SW"): 7}
+LINE_COLORS = (0, 8, 16, 24)
+# variacoes do piso: familias 0 e 16 so tem base+5 (base+6/+7 nao existem e saem pretas no mapa)
+FAM_VARS = {0: (5,), 16: (5,)}
 POLE = "lighting_outdoor_01_16"
 DEF = {"name": "rua", "width": 6, "walk_on": True, "side": 2, "asph": 80, "walk": 48, "smooth": True, "curbs": True,
-       "lanes": 1, "dash": 3, "poles": False, "pole_every": 12, "pole": POLE}
+       "lanes": 1, "dash": 3, "line_color": 16, "poles": False, "pole_every": 12, "pole": POLE}
 MAX_AREA = 40_000_000
 NB = {"N": (0, -1), "S": (0, 1), "W": (-1, 0), "E": (1, 0)}
 
@@ -72,6 +78,7 @@ def norm(it, old=None):
     o["dash"] = max(0, min(20, int(o["dash"])))
     o["pole_every"] = max(3, min(80, int(o["pole_every"])))
     o["pole"] = str(o.get("pole") or POLE)[:120]
+    o["line_color"] = int(o.get("line_color", 16)) if int(o.get("line_color", 16)) in LINE_COLORS else 16
     for k in ("asph", "walk"):
         v = o[k]
         if isinstance(v, str) and not v.isdigit():
@@ -163,7 +170,8 @@ def _fam_tile(v, hh, base_only=False):
     if base_only:
         return f"blends_street_01_{v}"
     k = hh % 16
-    return f"blends_street_01_{v + (5 + k % 3 if k < 3 else 0)}"   # base na maioria, variacao rara
+    vs = FAM_VARS.get(v, (5, 6, 7))
+    return f"blends_street_01_{v + (vs[k % len(vs)] if k < 3 else 0)}"   # base na maioria, variacao rara
 
 
 def _nat_family(tiles):
@@ -195,18 +203,55 @@ def _grass(x, y, nb, base_of):
     return f"blends_natural_01_{f + kk}"
 
 
-def lane_line(it, axis, lat, al):
-    """o quadrado leva faixa? `lat` = centro do quadrado ate o eixo (+ = leste/sul). Divisorias entre `lanes`
-    pistas, encaixadas na divisa de quadrados mais perto; o sprite pinta a borda S/E, entao vai no quadrado
-    de cima/esquerda da divisa. Tracejado: `dash` quadrados pintados, `dash` vazios (0 = continua)."""
-    n, w = it["lanes"], it["width"]
-    if n < 2 or not axis or al < 0:
-        return False
-    if it["dash"] and int(al // it["dash"]) % 2:
-        return False
-    e0 = 0.0 if w % 2 == 0 else 0.5                      # divisas de quadrado em relacao ao eixo
-    edge = lat + 0.5
-    return any(abs(edge - (round(-w / 2 + i * w / n - e0) + e0)) < 0.25 for i in range(1, n))
+def _dashed(it, al):
+    return al < 0 or (it["dash"] and int(al // it["dash"]) % 2)
+
+
+def lane_edges(it, n, k, cls):
+    """bordas do quadrado k que levam faixa: a divisoria i (deslocamento o_i do eixo) passa entre dois quadrados
+    de asfalto vizinhos da mesma rua quando o lado (sg) dos dois fica um de cada lado de o_i. A borda vai para o
+    quadrado com sg menor (lado fixo), entao numa curva em escada os dois lados de um degrau caem no mesmo
+    quadrado e viram um tile de canto."""
+    L, w = it["lanes"], it["width"]
+    if L < 2:
+        return set()
+    offs = [-w / 2 + i * w / L for i in range(1, L)]
+    x, y = k
+    me = cls[k]
+    out = set()
+    for s, (dx, dy) in NB.items():
+        o = cls.get((x + dx, y + dy))
+        if not o or o[0] != "a" or o[1] != n:
+            continue
+        a, b = me[4], o[4]
+        if a >= b or _dashed(it, min(me[5], o[5])) or me[5] < 0 or o[5] < 0:
+            continue
+        if any(a < off <= b for off in offs):
+            out.add(s)
+    return out
+
+
+def line_tiles(it, edges):
+    base, out, left = it["line_color"], [], set(edges)
+    for pr, v in LINE_CORNER.items():
+        if pr <= left:
+            out.append(f"street_trafficlines_01_{base + v}")
+            left -= pr
+    out += [f"street_trafficlines_01_{base + LINE_EDGE[s]}" for s in ("N", "W", "S", "E") if s in left]
+    return out
+
+
+def _straight(cls, k, s, me, other):
+    """a borda s do quadrado k (classe me, vizinho classe other) continua reta em pelo menos um dos lados?
+    Degrau isolado de diagonal fica sem meio-fio (o vanilla nao tem meio-fio diagonal)."""
+    x, y = k
+    dx, dy = NB[s]
+    for ex, ey in ((dy, dx), (-dy, -dx)):                  # vizinhos ao longo da borda
+        a = cls.get((x + ex, y + ey))
+        b = cls.get((x + ex + dx, y + ey + dy))
+        if a and b and a[0] == me and b[0] == other:
+            return True
+    return False
 
 
 def pole_here(it, d, sg, al):
@@ -228,11 +273,9 @@ def tiles_for(k, cls, items, base_of):
     nb = {s: cls.get((x + dx, y + dy)) for s, (dx, dy) in NB.items()}
     if c == "a":
         out = [_fam_tile(it["asph"], hh)]
-        edge = any(v and v[0] == "s" for v in nb.values())
         if it["curbs"]:
-            out += [CURB_ASPH[s] for s in ("S", "E") if nb[s] and nb[s][0] == "s"]
-        if not edge and lane_line(it, axis, lat, al):
-            out.append(LINE_X if axis == "x" else LINE_Y)
+            out += [CURB_ASPH[s] for s in ("S", "E") if nb[s] and nb[s][0] == "s" and _straight(cls, k, s, "a", "s")]
+        out += line_tiles(it, lane_edges(it, n, k, cls))
         if not side_of(it):
             g = _grass(x, y, nb, base_of)
             if g:
@@ -248,7 +291,8 @@ def tiles_for(k, cls, items, base_of):
     if g:
         out.append(g)
     if it["curbs"]:
-        out += [CURB_WALK[s] for s in ("S", "E") if nb[s] and nb[s][0] == "a" and items[nb[s][1]]["curbs"]]
+        out += [CURB_WALK[s] for s in ("S", "E") if nb[s] and nb[s][0] == "a" and items[nb[s][1]]["curbs"]
+                and _straight(cls, k, s, "s", "a")]
     if pole_here(it, d, sg, al):
         out.append(it["pole"])
     return out

@@ -2,6 +2,16 @@
 // Mistura grupos vanilla (ProceduralDistributions / Distributions), itens avulsos e grupos personalizados
 // (do projeto ou do perfil). Clique numa sala do mapa para editar as regras dela.
 "use strict";
+// nome do jogador (EN / PT, traducao vanilla) ao lado do nome base; preenchido pelas buscas de item
+const NAMES = {};
+function itemLabel(n) {
+  const [en, pt] = NAMES[n] || [];
+  const t = [pt, en && en !== pt ? en : ""].filter(Boolean).join(" / ");
+  const e = document.createElement("span");
+  e.append(n);
+  if (t) { const d = document.createElement("span"); d.className = "lt-dim"; d.textContent = "  " + t; e.append(d); }
+  return e;
+}
 (() => {
   const { S, api, h, $, say, modal, closeModal } = window.PZMS;
   const L = { loot: { custom: {}, rules: [] }, user: {}, van: null, key: null, proj: null, loading: false, again: false };
@@ -137,10 +147,10 @@
       tbl.innerHTML = "";
       if (!g.items.length) { tbl.append(h("tr", {}, h("td", { class: "lt-dim" }, "nenhum item avulso"))); return; }
       tbl.append(h("tr", { class: "lt-dim" }, h("td", {}, "item"), h("td", {}, "chance %"), h("td", {}, "qtd"), h("td", {}, "cond %"), h("td", {})));
-      g.items.forEach((it, i) => tbl.append(h("tr", {}, h("td", {}, it.item), h("td", {}, num(it, "chance", 0, 100)), h("td", {}, num(it, "count", 1, 100)),
+      g.items.forEach((it, i) => tbl.append(h("tr", {}, h("td", {}, itemLabel(it.item)), h("td", {}, num(it, "chance", 0, 100)), h("td", {}, num(it, "count", 1, 100)),
         h("td", {}, num(it, "cond", 1, 100, "jogo")), h("td", {}, h("button", { title: "tirar", onclick: () => { g.items.splice(i, 1); drawI(); } }, "x")))));
     };
-    const iq = h("input", { placeholder: `buscar item (${(L.van && L.van.nitems) || 0} no jogo)`, style: "width:100%" });
+    const iq = h("input", { placeholder: `buscar item: nome base, ingles ou portugues (${(L.van && L.van.nitems) || 0} no jogo)`, style: "width:100%" });
     const ires = h("div", { class: "lt-res" });
     const addI = name => { if (name) { g.items.push({ item: name, chance: 100, count: 1, cond: null }); drawI(); } };
     let iT = 0, last = [];
@@ -151,7 +161,8 @@
         const r = await api(`/api/loot/items?q=${encodeURIComponent(s)}&limit=120`);
         if (iq.value.trim() !== s) return;
         last = r.items; ires.innerHTML = "";
-        for (const n of r.items) ires.append(h("div", { onclick: () => addI(n) }, n));
+        Object.assign(NAMES, r.names || {});
+        for (const n of r.items) ires.append(h("div", { onclick: () => addI(n) }, itemLabel(n)));
         if (r.total > r.items.length) ires.append(h("div", { class: "lt-dim" }, `... ${r.total} no total`));
         if (!r.items.length) ires.append(h("div", { class: "lt-dim", onclick: () => addI(s.includes(".") ? s : "Base." + s) }, `nenhum; usar "${s}" assim mesmo`));
       } catch (e) { say(e.message, true); }

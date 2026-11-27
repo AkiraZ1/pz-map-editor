@@ -366,23 +366,65 @@ function wallOps(a, b) {
 }
 
 // lado da parede mais perto do cursor dentro do quadrado
+// borda mais perto das 4: S vira N do quadrado de baixo, E vira W do quadrado da direita
 function edgeAt(fx, fy) {
-  const ax = fx - Math.floor(fx), ay = fy - Math.floor(fy);
-  return ax < ay ? "W" : "N";
+  let x = Math.floor(fx), y = Math.floor(fy);
+  const ax = fx - x, ay = fy - y;
+  const d = [[ax, "W"], [ay, "N"], [1 - ax, "E"], [1 - ay, "S"]].sort((a, b) => a[0] - b[0])[0][1];
+  if (d === "E") return [x + 1, y, "W"];
+  if (d === "S") return [x, y + 1, "N"];
+  return [x, y, d];
+}
+
+// portas/janelas vanilla (pares W/N) e a escolhida em cada modo
+const OPEN = { list: null, sel: { door: "fixtures_doors_01_0", window: "fixtures_windows_01_0" }, q: "" };
+try { Object.assign(OPEN.sel, JSON.parse(localStorage.getItem("pzms.openings") || "{}")); } catch (e) { /* sem storage */ }
+async function openings() {
+  if (!OPEN.list) { try { OPEN.list = await api("/api/openings"); } catch (e) { OPEN.list = { door: [], window: [] }; } }
+  return OPEN.list;
+}
+function openingSel(kind) {
+  const L = (OPEN.list || {})[kind] || [];
+  return L.find(o => o.W === OPEN.sel[kind]) || L[0] ||
+    (kind === "door" ? { W: "fixtures_doors_01_0", N: "fixtures_doors_01_1" } : { W: "fixtures_windows_01_0", N: "fixtures_windows_01_1" });
 }
 
 function wallClickOps(fx, fy) {
   const f = wallFam(); if (!f) return [];
-  const x = Math.floor(fx), y = Math.floor(fy), side = edgeAt(fx, fy), z = S.z;
-  if (S.wallMode === "window") {
-    const fr = side === "W" ? f.winW : f.winN;
-    return fr ? [{ x, y, z, tile: fr }, { x, y, z, tile: side === "W" ? "fixtures_windows_01_0" : "fixtures_windows_01_1" }] : [];
-  }
-  if (S.wallMode === "door") {
-    const fr = side === "W" ? f.doorW : f.doorN;
-    return fr ? [{ x, y, z, tile: fr }, { x, y, z, tile: side === "W" ? "fixtures_doors_01_0" : "fixtures_doors_01_1" }] : [];
+  const [x, y, side] = edgeAt(fx, fy), z = S.z;
+  if (S.wallMode === "window" || S.wallMode === "door") {
+    const k = S.wallMode === "door" ? "door" : "win";
+    const def = (S.itemById.get("w:walls_exterior_house_01_0") || {}).wall || {};
+    const fr = f[k + side] || def[k + side];               // parede sem moldura: usa a da casa padrao
+    const o = openingSel(S.wallMode);
+    return fr ? [{ x, y, z, tile: fr }, { x, y, z, tile: o[side] }] : [];
   }
   return [{ x, y, z, tile: side === "W" ? f.W : f.N }];
+}
+
+function openingOpts(kind) {
+  const box = h("span", { class: "opgrid" });
+  const search = h("input", { type: "search", placeholder: "buscar (en/pt/tile)", value: OPEN.q, style: "width:11em" });
+  const name = o => o.pt || o.en || o.label;
+  const fill = () => {
+    box.innerHTML = "";
+    const L = (OPEN.list || {})[kind] || [], q = fold(OPEN.q);
+    const cur = openingSel(kind);
+    for (const o of L) {
+      if (q && ![o.label, o.en, o.pt, o.W, o.N].some(t => fold(t).includes(q))) continue;
+      const c = h("canvas", { width: 30, height: 44 });
+      try { S.atlas.thumb(c, [o.W], 30, 44); } catch (e) { /* atlas carregando */ }
+      box.append(h("button", { class: o.W === cur.W ? "on" : "", title: `${name(o)}${o.en && o.pt ? " / " + o.en : ""}\n${o.W} | ${o.N}`,
+        onclick: () => { OPEN.sel[kind] = o.W; try { localStorage.setItem("pzms.openings", JSON.stringify(OPEN.sel)); } catch (e) { /* ok */ } setTool("wall"); } }, c));
+    }
+    if (!box.children.length) box.append(h("span", { style: "color:var(--dim)" }, OPEN.list ? "nada encontrado" : "carregando..."));
+  };
+  search.addEventListener("input", () => { OPEN.q = search.value; fill(); });
+  if (!OPEN.list) openings().then(() => { if (S.tool === "wall" && S.wallMode === kind) setTool("wall"); });
+  fill();
+  const cur = openingSel(kind);
+  return [h("label", {}, kind === "door" ? "Porta" : "Janela"), h("b", { class: "opname", title: `${cur.W} | ${cur.N}` }, name(cur)), search, box,
+    h("label", { style: "color:var(--dim)" }, "clique na borda (fica amarela): as 4 bordas do quadrado servem  -  a moldura vem da parede escolhida")];
 }
 
 const ROOM_NAMES = ["bedroom", "livingroom", "kitchen", "bathroom", "hall", "closet", "office", "garagestorage",
@@ -448,9 +490,11 @@ function renderCats() {
   }
   renderSubs(); renderItems();
 }
+const fold = s => String(s).toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");   // busca sem acento
+const playerName = it => [it.pt, it.en && it.en !== it.pt ? it.en : ""].filter(Boolean).join(" / ");
 function catItems() {
-  const q = S.search.trim().toLowerCase();
-  if (q) return S.pal.items.filter(it => it.label.toLowerCase().includes(q) || it.id.toLowerCase().includes(q) || (it.sub || "").toLowerCase().includes(q));
+  const q = fold(S.search.trim());
+  if (q) return S.pal.items.filter(it => [it.label, it.id, it.sub, it.en, it.pt].some(v => v && fold(v).includes(q)));
   return S.pal.items.filter(it => it.cat === S.cat);
 }
 function renderSubs() {
@@ -479,7 +523,7 @@ function renderItems(limit = 360) {
   for (const it of items.slice(0, limit)) {
     if (S.item && it.rot && it.rot[0] !== it.id && S.sub === null && !S.search && it.rot.length > 1) continue; // so 1 orientacao por grupo
     const c = h("canvas", { "data-id": it.id });
-    const card = h("div", { class: "card" + (S.item && S.item.id === it.id ? " on" : ""), title: `${it.label}\n${it.icon}`, onclick: () => selectItem(it) }, c, h("span", {}, it.label));
+    const card = h("div", { class: "card" + (S.item && S.item.id === it.id ? " on" : ""), title: `${playerName(it) || it.label}\n${it.label}\n${it.icon}`, onclick: () => selectItem(it) }, c, h("span", {}, it.pt || it.en || it.label));
     el.append(card); thumbIO.observe(c);
   }
   if (items.length > limit) el.append(h("button", { style: "grid-column:1/-1", onclick: () => renderItems(limit * 3) }, `mostrar mais (${items.length - limit})`));
@@ -551,7 +595,8 @@ function rotate() {
 const TOOL_OPTS = {
   brush: () => [h("label", {}, "Tamanho"), ...[1, 3, 5, 9].map(n => h("button", { class: S.brush === n ? "on" : "", onclick: () => { S.brush = n; setTool("brush"); } }, n)), h("label", {}, "[ ] muda  -  R gira")],
   erase: () => [h("label", {}, "Apagar"), ...[["top", "topo"], ["objects", "objetos"], ["walls", "paredes"], ["all", "tudo"]].map(([k, l]) => h("button", { class: S.eraseMode === k ? "on" : "", onclick: () => { S.eraseMode = k; setTool("erase"); } }, l)), h("label", {}, "Shift+arrastar = area")],
-  wall: () => [h("label", {}, "Modo"), ...[["wall", "Parede (arraste: retangulo/linha)"], ["window", "Janela (clique)"], ["door", "Porta (clique)"]].map(([k, l]) => h("button", { class: S.wallMode === k ? "on" : "", onclick: () => { S.wallMode = k; setTool("wall"); } }, l))],
+  wall: () => [h("label", {}, "Modo"), ...[["wall", "Parede (arraste: retangulo/linha)"], ["window", "Janela (clique)"], ["door", "Porta (clique)"]].map(([k, l]) => h("button", { class: S.wallMode === k ? "on" : "", onclick: () => { S.wallMode = k; setTool("wall"); } }, l)),
+    ...(S.wallMode === "wall" ? [] : openingOpts(S.wallMode))],
   area: () => [h("label", {}, "Arraste para preencher um retangulo com o item escolhido")],
   room: () => [h("label", {}, "Arraste para criar sala  -  clique numa sala troca o tipo  -  comece o arraste dentro de uma sala para juntar ao predio  -  Alt+clique apaga o predio")],
   pick: () => [h("label", {}, "Clique para pegar o tile do topo")],
@@ -568,7 +613,10 @@ function setTool(t) {
   }
   S.tool = t;
   $$("#tools button").forEach(b => b.classList.toggle("on", b.dataset.tool === t));
-  const o = $("#toolopts"); o.innerHTML = ""; o.append(...(X && X.opts ? X.opts() : TOOL_OPTS[t] ? TOOL_OPTS[t]() : []));
+  const o = $("#toolopts");
+  const fk = document.activeElement && o.contains(document.activeElement) ? document.activeElement.dataset.k : null;
+  o.innerHTML = ""; o.append(...(X && X.opts ? X.opts() : TOOL_OPTS[t] ? TOOL_OPTS[t]() : []));
+  if (fk) { const f = o.querySelector(`[data-k="${fk}"]`); if (f) f.focus(); }   // setas do teclado seguem no mesmo campo
   updateGhost(); S.needDraw = true;
 }
 
@@ -759,7 +807,7 @@ function drawOverlay() {
     ctx.strokeStyle = S.tool === "erase" ? "#e05a47" : "#f3d79a"; ctx.lineWidth = 1.5;
     diamond(ctx, x, y, w, hh); ctx.stroke();
     if (S.tool === "wall" && S.wallMode !== "wall" && S.hoverF) {
-      const side = edgeAt(...S.hoverF), [a, b] = S.hover;
+      const [a, b, side] = edgeAt(...S.hoverF);
       const P = side === "W" ? [[a, b], [a, b + 1]] : [[a, b], [a + 1, b]];
       const q = P.map(([u, v]) => S.gl.toScreen(u - .5, v - .5, S.z));
       ctx.strokeStyle = "#ffcf5a"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(...q[0]); ctx.lineTo(...q[1]); ctx.stroke();
@@ -811,3 +859,37 @@ setInterval(async () => {          // salvamento automatico
 window.PZMS = { S, api, rectOf, fetchRooms, CS, h, $, $$, say, modal, closeModal, applyChanged, setTool, selectItem, showTab, boot, afterState, resetView, centerOn, flush };
 setTool("brush");
 boot();
+
+
+// ---- campos de numero: setinhas visiveis (sobe/desce) e teclas seta cima/baixo aplicam na hora
+(() => {
+  function step(i, d) {
+    if (i.disabled) return;
+    d > 0 ? i.stepUp() : i.stepDown();
+    i.dispatchEvent(new Event("input", { bubbles: true }));
+    i.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  function wrap(i) {
+    if (i.dataset.nb || !i.parentNode) return;
+    i.dataset.nb = "1";
+    const box = document.createElement("span"); box.className = "numbox";
+    const up = document.createElement("button"), dn = document.createElement("button");
+    up.type = dn.type = "button"; up.tabIndex = dn.tabIndex = -1;
+    up.className = "nb-up"; dn.className = "nb-dn"; up.textContent = "\u25B2"; dn.textContent = "\u25BC";
+    up.title = "aumentar (seta para cima)"; dn.title = "diminuir (seta para baixo)";
+    up.addEventListener("mousedown", e => { e.preventDefault(); i.focus(); step(i, 1); });
+    dn.addEventListener("mousedown", e => { e.preventDefault(); i.focus(); step(i, -1); });
+    i.replaceWith(box);
+    const arrows = document.createElement("span"); arrows.className = "nb-arrows"; arrows.append(up, dn);
+    box.append(i, arrows);
+  }
+  document.addEventListener("keydown", e => {
+    const i = e.target;
+    if (!(i instanceof HTMLInputElement) || i.type !== "number" || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
+    e.preventDefault(); step(i, e.key === "ArrowUp" ? (e.shiftKey ? 10 : 1) : (e.shiftKey ? -10 : -1));
+  }, true);
+  const scan = root => root.querySelectorAll && root.querySelectorAll('input[type="number"]').forEach(wrap);
+  new MutationObserver(ms => { for (const m of ms) m.addedNodes.forEach(n => { if (n.nodeType === 1) { if (n.matches('input[type="number"]')) wrap(n); scan(n); } }); })
+    .observe(document.body, { childList: true, subtree: true });
+  scan(document);
+})();

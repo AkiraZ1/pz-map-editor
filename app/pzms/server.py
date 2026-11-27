@@ -361,8 +361,19 @@ def _palette(app, q, body):
     """folhas por categoria (como o menu de construcao) com rotulos e nomes."""
     if not app.assets:
         raise ApiError("cache nao pronto")
-    from . import palette
-    return palette.build(app.assets, app.kinds)
+    from . import palette, names
+    pal = palette.build(app.assets, app.kinds)
+    if not pal.get("named"):                         # nome do jogador (EN/PT, traducao vanilla) em cada item
+        T = app.assets.tiles
+        for it in pal["items"]:
+            p = T.get((it.get("parts") or [[0, 0, it.get("icon")]])[0][2], {}) or {}
+            en, pt = names.moveable(app.media, p.get("GroupName"), p.get("CustomName"))
+            if en:
+                it["en"] = en
+            if pt:
+                it["pt"] = pt
+        pal["named"] = True
+    return pal
 
 
 @route("POST", "/api/pick_folder")

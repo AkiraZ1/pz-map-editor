@@ -151,3 +151,19 @@ canvas.osmarea { width: 100%; max-width: 360px; border: 1px solid var(--line); b
 .stfam button{padding:1px 2px;margin-right:2px;line-height:0}
 .stgrp{display:inline-flex;gap:5px;align-items:center;padding-left:6px;border-left:1px solid var(--line)}
 #toolopts .stfam canvas{display:block;position:static;width:34px;height:22px}
+
+/* campos de numero com setinhas proprias */
+.numbox{display:inline-flex;align-items:stretch;vertical-align:middle}
+.numbox input[type=number]{-moz-appearance:textfield;border-top-right-radius:0;border-bottom-right-radius:0}
+.numbox input[type=number]::-webkit-inner-spin-button,.numbox input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.nb-arrows{display:inline-flex;flex-direction:column}
+.nb-arrows button{padding:0 5px;min-height:0;height:50%;font-size:8px;line-height:1;border-radius:0;margin:0}
+.nb-arrows .nb-up{border-top-right-radius:4px}
+.nb-arrows .nb-dn{border-bottom-right-radius:4px}
+
+/* escolha de porta/janela (ferramenta Parede) */
+#toolopts .opgrid { display: flex; flex-wrap: wrap; gap: 3px; max-width: 520px; max-height: 108px; overflow-y: auto; padding: 2px; }
+#toolopts .opgrid button { padding: 1px; line-height: 0; }
+#toolopts .opgrid button.on { outline: 2px solid var(--accent, #d9a441); }
+#toolopts .opgrid canvas { position: static; width: 30px; height: 44px; }
+#toolopts .opname { max-width: 14em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
