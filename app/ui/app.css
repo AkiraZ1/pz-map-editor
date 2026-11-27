@@ -167,3 +167,7 @@ canvas.osmarea { width: 100%; max-width: 360px; border: 1px solid var(--line); b
 #toolopts .opgrid button.on { outline: 2px solid var(--accent, #d9a441); }
 #toolopts .opgrid canvas { position: static; width: 30px; height: 44px; }
 #toolopts .opname { max-width: 14em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* caixa de marcar com o texto ao lado (o .fld e grid e empilhava) */
+.chk { display: flex; flex-direction: row; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; margin: 4px 0; }
+.chk input { width: auto; margin: 0; flex: none; }

@@ -36,7 +36,7 @@ function say(t, err = false) {
 // ---------------------------------------------------------------- estado
 const S = {
   state: null, atlas: null, gl: null, pal: null, itemById: new Map(), itemByTile: new Map(),
-  tool: "brush", item: null, brush: 1, z: 0, eraseMode: "top", wallMode: "wall",
+  tool: "brush", item: null, brush: 1, z: 0, eraseMode: "top", eraseFloor: false, wallMode: "wall", paintMode: "add",
   cells: new Map(),        // "cx,cy" -> {loading, loaded}
   rooms: [], hover: null, drag: null, cat: "terreno", sub: null, search: "",
   stroke: null, queue: [], flushT: null, needDraw: true, lastRoom: "bedroom",
@@ -232,7 +232,15 @@ function ensureCells() {
   fetchRooms();
 }
 
-async function loadCell(cx, cy, chunks) {
+const cellChain = new Map();
+function loadCell(cx, cy, chunks) {
+  const k = cx + "," + cy;
+  const p = (cellChain.get(k) || Promise.resolve()).then(() => loadCellNow(cx, cy, chunks));
+  cellChain.set(k, p);
+  p.finally(() => { if (cellChain.get(k) === p) cellChain.delete(k); });
+  return p;
+}
+async function loadCellNow(cx, cy, chunks) {
   try {
     const q = `/api/cell?cx=${cx}&cy=${cy}` + (chunks ? `&chunks=${chunks.join(",")}` : "");
     applyBlob(await api(q));
@@ -275,7 +283,7 @@ async function applyChanged(r) {
     if (!projCells().has(k)) { S.state.project.cells.push([cx, cy]); }
     const cs = cis.filter(c => c >= 0);
     if (cis.includes(-1)) rooms = true;
-    if (cs.length && S.cells.get(k) && S.cells.get(k).loaded) await loadCell(cx, cy, cs);
+    if (cs.length && S.cells.get(k)) await loadCell(cx, cy, cs);
   }
   if (rooms) fetchRooms(true);
   S.needDraw = true;
@@ -302,20 +310,38 @@ function queueOps(ops, label) {
   if (!S.flushT) S.flushT = setTimeout(flush, 70);
   // previa imediata local: o servidor confirma e o chunk e refeito
 }
-async function flush() {
+// edicao, desfazer e refazer passam por UMA fila: o servidor atende em paralelo e um Ctrl+Z
+// chegando antes do ultimo pedaco do pincel desfazia o comando errado
+S.editChain = Promise.resolve();
+function serial(fn) { const p = S.editChain.then(fn, fn); S.editChain = p.catch(() => {}); return p; }
+function flush() {
   clearTimeout(S.flushT); S.flushT = null;
-  if (!S.queue.length) return;
-  const ops = S.queue; S.queue = [];
-  try { await applyChanged(await api("/api/edit", { ops, label: S.queueLabel || "editar", stroke: S.stroke })); }
-  catch (e) { say(e.message, true); }
+  if (!S.queue.length) return S.editChain;
+  const ops = S.queue, label = S.queueLabel || "editar", stroke = S.stroke; S.queue = [];
+  return serial(async () => {
+    try { await applyChanged(await api("/api/edit", { ops, label, stroke })); }
+    catch (e) { say(e.message, true); }
+  });
 }
-async function undo() { await flush(); try { applyChanged(await api("/api/undo", {})); } catch (e) { say(e.message, true); } }
-async function redo() { await flush(); try { applyChanged(await api("/api/redo", {})); } catch (e) { say(e.message, true); } }
+async function undo() { await flush(); return serial(async () => { try { await applyChanged(await api("/api/undo", {})); } catch (e) { say(e.message, true); } }); }
+async function redo() { await flush(); return serial(async () => { try { await applyChanged(await api("/api/redo", {})); } catch (e) { say(e.message, true); } }); }
 
 function itemParts(it) { return it ? it.parts : []; }
 
+// apagar com pincel/area: tira so o tile escolhido (e as variantes de grama); sem item, apaga o topo
+function rmOp(x, y, it) {
+  if (!it) return { x, y, z: S.z, erase: "top" };
+  const t = it.parts.map(p => p[2]);
+  return { x, y, z: S.z, remove: GRASS.includes(t[0]) ? [...t, ...GRASS] : t };
+}
 function brushOps(x, y) {
-  const it = S.item; if (!it) return [];
+  const it = S.item;
+  if (S.paintMode === "erase") {
+    const r = it && it.kind !== "floor" && it.kind !== "overlay" ? 0 : S.brush >> 1, ops = [];
+    for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) ops.push(rmOp(x + dx, y + dy, it));
+    return ops;
+  }
+  if (!it) return [];
   const ops = [];
   if (it.kind === "floor" || it.kind === "overlay") {
     const r = S.brush >> 1;
@@ -340,8 +366,9 @@ function areaOps(a, b) {
   const [x0, y0, x1, y1] = rectOf(a, b), ops = [];
   if ((x1 - x0 + 1) * (y1 - y0 + 1) > 70000) { say("area grande demais (max ~256x256)", true); return []; }
   for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) {
-    if (S.tool === "erase") ops.push({ x, y, z: S.z, erase: S.eraseMode });
-    else for (const [dx, dy, t] of S.item.parts) if (S.item.kind === "floor" || S.item.kind === "overlay" || (dx === 0 && dy === 0)) ops.push({ x: x + dx, y: y + dy, z: S.z, tile: t });
+    if (S.tool === "erase") ops.push({ x, y, z: S.z, erase: S.eraseMode, floor: S.eraseFloor });
+    else if (S.paintMode === "erase") ops.push(rmOp(x, y, S.item));
+    else if (S.item) for (const [dx, dy, t] of S.item.parts) if (S.item.kind === "floor" || S.item.kind === "overlay" || (dx === 0 && dy === 0)) ops.push({ x: x + dx, y: y + dy, z: S.z, tile: t });
   }
   return ops;
 }
@@ -452,7 +479,7 @@ async function pickRoomType(title, initial, extra, onOk) {
     const rows = T.types.filter(t => (grp == null || t.type === grp) && (!k || t.name.includes(k))).slice(0, 400);
     for (const t of rows) list.append(h("button", { class: t.name === sel ? "on" : "", title: t.count ? `aparece em ${t.count} predio(s) vanilla` : "so no Distributions.lua",
       onclick: () => { sel = t.name; cur.textContent = sel; draw(); }, ondblclick: ok }, t.name, h("small", {}, t.count ? String(t.count) : "")));
-    if (k && !rows.some(r => r.name === k) && /^[a-z0-9_]+$/.test(k)) list.append(h("button", { onclick: () => { sel = k; cur.textContent = sel; draw(); } }, `usar "${k}" (nome proprio: so loot das regras de Spawn)`));
+    if (k && !rows.some(r => r.name === k) && /^[a-z0-9_]+$/.test(k)) list.append(h("button", { onclick: () => { sel = k; cur.textContent = sel; draw(); } }, `usar "${k}" (nome proprio: so os itens das regras de Spawn de itens)`));
   }
   q.addEventListener("input", draw);
   function ok() { S.lastRoom = sel; closeModal(); onOk(sel); }
@@ -578,7 +605,7 @@ async function ctxPanel(it) {
   if (keys.length) box.append(h("div", { class: "sec" }, "Propriedades"),
     h("div", { class: "props" }, ...keys.map(k => h("span", {}, h("b", {}, k), pr[k] ? " " + pr[k] : ""))));
   if (pr.container) {
-    box.append(h("div", { class: "sec" }, "Spawn"),
+    box.append(h("div", { class: "sec" }, "Spawn de itens"),
       h("div", { class: "row" }, h("span", { class: "note" }, `container "${pr.container}": loot vanilla pelo tipo da sala.`),
         window.PZMS_TOOLS && window.PZMS_TOOLS.loot ? h("button", { onclick: () => { window.PZMS_lootTarget = { container: pr.container }; setTool("loot"); } }, "Regras de spawn...") : ""));
   }
@@ -592,15 +619,20 @@ function rotate() {
 }
 
 // ---------------------------------------------------------------- ferramentas
+function paintModeOpts(t) {
+  return [h("label", {}, "Acao"), ...[["add", "adicionar"], ["erase", "apagar"]].map(([k, l]) => h("button", {
+    class: S.paintMode === k ? "on" : "", title: k === "erase" ? "tira o item escolhido (X alterna)" : "coloca o item escolhido (X alterna)",
+    onclick: () => { S.paintMode = k; setTool(t); } }, l))];
+}
 const TOOL_OPTS = {
-  brush: () => [h("label", {}, "Tamanho"), ...[1, 3, 5, 9].map(n => h("button", { class: S.brush === n ? "on" : "", onclick: () => { S.brush = n; setTool("brush"); } }, n)), h("label", {}, "[ ] muda  -  R gira")],
-  erase: () => [h("label", {}, "Apagar"), ...[["top", "topo"], ["objects", "objetos"], ["walls", "paredes"], ["all", "tudo"]].map(([k, l]) => h("button", { class: S.eraseMode === k ? "on" : "", onclick: () => { S.eraseMode = k; setTool("erase"); } }, l)), h("label", {}, "Shift+arrastar = area")],
+  brush: () => [...paintModeOpts("brush"), h("label", {}, "Tamanho"), ...[1, 3, 5, 9].map(n => h("button", { class: S.brush === n ? "on" : "", onclick: () => { S.brush = n; setTool("brush"); } }, n)), h("label", {}, "[ ] muda  -  R gira")],
+  erase: () => [h("label", {}, "Apagar"), ...[["top", "topo"], ["objects", "objetos"], ["walls", "paredes"], ["all", "tudo"]].map(([k, l]) => h("button", { class: S.eraseMode === k ? "on" : "", onclick: () => { S.eraseMode = k; setTool("erase"); } }, l)), h("label", { class: "chk", title: "Desligado: piso e misturas do chao ficam; so o que esta em cima e apagado" }, h("input", { type: "checkbox", checked: S.eraseFloor, onchange: e => { S.eraseFloor = e.target.checked; } }), "apagar chao"), h("label", {}, "Shift+arrastar = area")],
   wall: () => [h("label", {}, "Modo"), ...[["wall", "Parede (arraste: retangulo/linha)"], ["window", "Janela (clique)"], ["door", "Porta (clique)"]].map(([k, l]) => h("button", { class: S.wallMode === k ? "on" : "", onclick: () => { S.wallMode = k; setTool("wall"); } }, l)),
     ...(S.wallMode === "wall" ? [] : openingOpts(S.wallMode))],
-  area: () => [h("label", {}, "Arraste para preencher um retangulo com o item escolhido")],
+  area: () => [...paintModeOpts("area"), h("label", {}, S.paintMode === "erase" ? "Arraste: tira o item escolhido do retangulo (sem item: apaga o topo)" : "Arraste para preencher um retangulo com o item escolhido")],
   room: () => [h("label", {}, "Arraste para criar sala  -  clique numa sala troca o tipo  -  comece o arraste dentro de uma sala para juntar ao predio  -  Alt+clique apaga o predio")],
-  pick: () => [h("label", {}, "Clique para pegar o tile do topo")],
-  inspect: () => [h("label", {}, "Clique para ver os tiles do quadrado")],
+  pick: () => [h("label", {}, "Clique para copiar o tile do topo (vira o item do pincel)")],
+  inspect: () => [h("label", {}, "Clique: tiles do quadrado  -  Arraste: tiles da area (remover um tipo ou todos de uma vez)")],
   place: () => (window.PZMS_placeOpts ? window.PZMS_placeOpts() : [h("label", {}, "Escolha um predio na aba Predios")]),
 };
 function setTool(t) {
@@ -625,12 +657,52 @@ function updateGhost() {
   const hv = S.hover;
   if (!hv || !S.state.project) { S.gl.setGhost(null); S.needDraw = true; return; }
   let sq = [];
-  if (S.tool === "brush" && S.item && !S.drag) sq = brushOps(hv[0], hv[1]).map(o => [o.x, o.y, o.z, [o.tile]]);
+  if (S.tool === "brush" && S.item && !S.drag && S.paintMode !== "erase") sq = brushOps(hv[0], hv[1]).map(o => [o.x, o.y, o.z, [o.tile]]);
   else if (S.tool === "place" && window.PZMS_ghost) sq = window.PZMS_ghost(hv[0], hv[1], S.z) || [];
   else if (S.tool === "wall" && S.drag && S.wallMode === "wall") sq = wallOps(S.drag.a, hv).map(o => [o.x, o.y, o.z, [o.tile]]);
   else if (S.tool === "wall" && S.wallMode !== "wall" && S.hoverF) sq = wallClickOps(...S.hoverF).map(o => [o.x, o.y, o.z, [o.tile]]);
   S.gl.setGhost(sq.length && sq.length < 20000 ? S.gl.build(sq) : null);
   S.needDraw = true;
+}
+
+// Ver arrastando: lista os tiles do retangulo; remove um tipo (ou tudo) na area num desfazer so
+async function inspectArea(a, b) {
+  const [x0, y0, x1, y1] = rectOf(a, b), z = S.z;
+  let r;
+  try { r = await api(`/api/area_tiles?x0=${x0}&y0=${y0}&x1=${x1}&y1=${y1}&z=${z}`); } catch (e) { return say(e.message, true); }
+  const sqs = () => { const o = []; for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) o.push([x, y]); return o; };
+  const run = async (names, label) => {
+    await flush();
+    await serial(async () => {
+      try { await applyChanged(await api("/api/edit", { ops: sqs().map(([x, y]) => ({ x, y, z, remove: names })), label })); }
+      catch (e) { say(e.message, true); }
+    });
+    closeModal(); inspectArea(a, b);
+  };
+  const KIND = { floor: "piso", overlay: "camada", wall: "parede", object: "objeto" };
+  const kinds = [...new Set(r.tiles.map(t => t.kind))];
+  const filt = h("span", { class: "row" });
+  const list = h("div", { class: "inspect" });
+  let only = null;
+  const fill = () => {
+    list.innerHTML = "";
+    for (const t of r.tiles) {
+      if (only && t.kind !== only) continue;
+      const c = h("canvas"); S.atlas.thumb(c, [t.name], 40, 40);
+      list.append(h("div", {}, c, h("code", {}, `${t.name}  ${t.label ? "(" + t.label + ")" : ""}  [${KIND[t.kind] || t.kind}]  x${t.count}`),
+        h("button", { onclick: () => { selectItem(S.itemByTile.get(t.name)); closeModal(); } }, "usar"),
+        h("button", { onclick: () => run([t.name], `remover ${t.label || t.name} da area`) }, "remover na area")));
+    }
+    if (!list.children.length) list.append(h("p", { class: "note" }, "nenhum tile aqui"));
+  };
+  const btn = (k, l) => h("button", { class: only === k ? "on" : "", onclick: () => { only = k; filt.querySelectorAll("button").forEach(x => x.classList.toggle("on", x.textContent === l)); fill(); } }, l);
+  filt.append(btn(null, "todos"), ...kinds.map(k => btn(k, KIND[k] || k)));
+  fill();
+  const visible = () => r.tiles.filter(t => !only || t.kind === only).map(t => t.name);
+  modal(`Area ${x1 - x0 + 1} x ${y1 - y0 + 1} (${x0},${y0} a ${x1},${y1}), andar ${z}`,
+    [h("p", { class: "note" }, `${r.tiles.length} tipo(s) de tile em ${r.squares} quadrado(s). Cada remocao e um passo do Ctrl+Z.`), filt, list],
+    [h("button", { onclick: () => { const v = visible(); if (v.length) run(v, only ? `remover ${KIND[only] || only} da area` : "remover tudo da area"); } }, "remover todos (filtro atual)"),
+     h("button", { onclick: closeModal }, "Fechar")]);
 }
 
 async function inspectAt(x, y) {
@@ -667,13 +739,13 @@ cv.addEventListener("mousedown", async e => {
   S.stroke = Math.random().toString(36).slice(2);
   const t = S.tool, X = (window.PZMS_TOOLS || {})[t];
   if (X) { if (X.down) X.down(sq, e); S.needDraw = true; return; }
-  if (t === "brush") queueOps(brushOps(...sq), "pincel " + (S.item ? S.item.label : ""));
-  else if (t === "erase" && !e.shiftKey) queueOps([{ x: sq[0], y: sq[1], z: S.z, erase: S.eraseMode }], "apagar");
+  if (t === "brush") queueOps(brushOps(...sq), (S.paintMode === "erase" ? "apagar pincel " : "pincel ") + (S.item ? S.item.label : ""));
+  else if (t === "erase" && !e.shiftKey) queueOps([{ x: sq[0], y: sq[1], z: S.z, erase: S.eraseMode, floor: S.eraseFloor }], "apagar");
   else if (t === "pick") {
     S.drag = null;
     const r = await api(`/api/square?x=${sq[0]}&y=${sq[1]}&z=${S.z}`);
-    const top = r.tiles[r.tiles.length - 1]; if (top) { selectItem(S.itemByTile.get(top.name)); say("pegou " + top.name); }
-  } else if (t === "inspect") { S.drag = null; inspectAt(...sq); }
+    const top = r.tiles[r.tiles.length - 1]; if (top) { selectItem(S.itemByTile.get(top.name)); say("copiou " + top.name); }
+  } else if (t === "inspect") { /* clique: no up; arrasto: area */ }
   else if (t === "wall" && S.wallMode !== "wall") { S.drag = null; queueOps(wallClickOps(...f), S.wallMode === "door" ? "porta" : "janela"); }
   else if (t === "room" && e.altKey) { S.drag = null; applyChanged(await api("/api/rooms/remove", { x: sq[0], y: sq[1], z: S.z })); }
   else if (t === "place" && window.PZMS_place) { S.drag = null; window.PZMS_place(sq[0], sq[1], S.z); }
@@ -696,7 +768,7 @@ window.addEventListener("mousemove", e => {
     const t = S.tool, X = (window.PZMS_TOOLS || {})[t];
     if (X && X.move) X.move(sq, e);
     if (t === "brush") { for (const p of lineSq(S.drag.last, sq)) queueOps(brushOps(...p), "pincel"); }
-    else if (t === "erase" && !S.drag.shift) { for (const p of lineSq(S.drag.last, sq)) queueOps([{ x: p[0], y: p[1], z: S.z, erase: S.eraseMode }], "apagar"); }
+    else if (t === "erase" && !S.drag.shift) { for (const p of lineSq(S.drag.last, sq)) queueOps([{ x: p[0], y: p[1], z: S.z, erase: S.eraseMode, floor: S.eraseFloor }], "apagar"); }
     S.drag.last = sq;
   }
   if (moved || S.tool === "wall") updateGhost();
@@ -708,10 +780,11 @@ window.addEventListener("mouseup", async e => {
   if (!d || !S.hover) return;
   const t = S.tool, b = S.hover, X = (window.PZMS_TOOLS || {})[t];
   if (X) { if (X.up) await X.up(d.a, b, e); S.stroke = null; S.needDraw = true; return; }
-  if (t === "area") queueOps(areaOps(d.a, b), "area " + (S.item ? S.item.label : ""));
+  if (t === "area") queueOps(areaOps(d.a, b), (S.paintMode === "erase" ? "apagar area " : "area ") + (S.item ? S.item.label : ""));
   else if (t === "erase" && d.shift) queueOps(areaOps(d.a, b), "apagar area");
   else if (t === "wall" && S.wallMode === "wall") queueOps(wallOps(d.a, b), "paredes");
   else if (t === "room") dlgRoom(d.a, b);
+  else if (t === "inspect") { if (d.a[0] === b[0] && d.a[1] === b[1]) inspectAt(...b); else inspectArea(d.a, b); }
   await flush(); S.stroke = null; updateGhost();
 });
 function lineSq(a, b) {
@@ -754,6 +827,7 @@ window.addEventListener("keydown", e => {
     || Object.keys(window.PZMS_TOOLS || {}).find(n => window.PZMS_TOOLS[n].key === k);
   if (tk) return setTool(tk);
   if (k === "r") return rotate();
+  if (k === "x" && (S.tool === "brush" || S.tool === "area")) { S.paintMode = S.paintMode === "erase" ? "add" : "erase"; return setTool(S.tool); }
   const step = 64 / S.gl.cam.zoom;
   if (e.key === "ArrowLeft") S.gl.cam.x -= step; else if (e.key === "ArrowRight") S.gl.cam.x += step;
   else if (e.key === "ArrowUp") S.gl.cam.y -= step; else if (e.key === "ArrowDown") S.gl.cam.y += step; else return;
@@ -797,7 +871,7 @@ function drawOverlay() {
   // cursor e retangulos
   if (S.hover) {
     let [x, y] = S.hover, w = 1, hh = 1;
-    if (S.drag && (["area", "room", "wall"].includes(S.tool) || (window.PZMS_TOOLS || {})[S.tool]?.rect) || (S.drag && S.tool === "erase" && S.drag.shift)) {
+    if (S.drag && (["area", "room", "wall", "inspect"].includes(S.tool) || (window.PZMS_TOOLS || {})[S.tool]?.rect) || (S.drag && S.tool === "erase" && S.drag.shift)) {
       const [x0, y0, x1, y1] = rectOf(S.drag.a, S.hover); x = x0; y = y0; w = x1 - x0 + 1; hh = y1 - y0 + 1;
       ctx.fillStyle = "rgba(217,164,65,.12)"; diamond(ctx, x, y, w, hh); ctx.fill();
       const [sx, sy] = S.gl.toScreen(x + w, y + hh, S.z); ctx.fillStyle = "#f3d79a"; ctx.textAlign = "left"; ctx.fillText(`${w} x ${hh}`, sx + 8, sy);

@@ -34,11 +34,11 @@
   <button data-tool="area" title="Area retangular (G)"><b>G</b><span>Area</span></button>
   <button data-tool="wall" title="Paredes (W)"><b>W</b><span>Parede</span></button>
   <button data-tool="erase" title="Borracha (E)"><b>E</b><span>Apagar</span></button>
-  <button data-tool="pick" title="Conta-gotas (I)"><b>I</b><span>Pegar</span></button>
+  <button data-tool="pick" title="Copiar tile: clique num quadrado e o tile do topo vira o item do pincel (I)"><b>I</b><span>Copiar</span></button>
   <button data-tool="room" title="Salas (M)"><b>M</b><span>Sala</span></button>
   <button data-tool="place" title="Colocar predio (P)"><b>P</b><span>Predio</span></button>
   <button data-tool="zombie" title="Zumbis (Z)"><b>Z</b><span>Zumbis</span></button>
-  <button data-tool="loot" title="Spawn de itens (L)"><b>L</b><span>Spawn</span></button>
+  <button data-tool="loot" title="Spawn de itens: o que nasce em salas e containers (L)"><b>L</b><span>Itens</span></button>
    <button data-tool="street" title="Ruas e avenidas (U)"><b>U</b><span>Ruas</span></button>
 </nav>
 
@@ -49,7 +49,7 @@
   <div id="empty" class="hidden">
     <h2>Nenhum projeto aberto</h2>
     <p>Crie um mapa novo, abra um existente ou gere a partir de um lugar real.</p>
-    <div class="row"><button class="primary" data-act="new">Novo mapa</button><button data-act="open">Abrir</button><button data-act="gen">Gerar de lugar real</button></div>
+    <div class="row"><button class="primary" data-act="new">Novo mapa</button><button data-act="open">Abrir</button><button data-act="gen">Criar de lugar real</button></div>
     <div id="recent"></div>
   </div>
 </main>
@@ -58,7 +58,7 @@
   <div class="tabs">
     <button data-tab="tiles" class="on">Tiles</button>
     <button data-tab="build">Predios</button>
-    <button data-tab="gen">Gerar</button>
+    <button data-tab="gen" title="criar um mapa novo a partir de um lugar real (OpenStreetMap)">Lugar real</button>
     <button data-tab="export">Exportar</button>
   </div>
   <section id="tab-tiles" class="tab on">

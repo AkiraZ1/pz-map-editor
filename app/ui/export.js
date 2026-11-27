@@ -106,11 +106,11 @@
     }
     tab.append(
       h("h3", {}, "Exportar para mod"),
-      h("p", { class: "note" }, "Gera a pasta do mod pronta para o Build 42 (lotheader, lotpack, chunkdata, map.info, spawnpoints, objects.lua, worldmap e spawns). So celulas alteradas sao copiadas de novo."),
+      h("p", { class: "note" }, "Monta a pasta do mod pronta para o Build 42 (lotheader, lotpack, chunkdata, map.info, spawnpoints, objects.lua, worldmap e spawns). So celulas alteradas sao copiadas de novo."),
       field("ID do mod", id, "letras, numeros, _ ou - (tambem e o nome da pasta do mapa)"),
       field("Titulo", title), field("Descricao", desc), field("Autor", author),
       field("Pasta de mods", h("div", { class: "row" }, dir, pick), "padrao: ~/Zomboid/mods"),
-      h("label", { class: "fld", style: "flex-direction:row;gap:8px;align-items:center" }, wsOn, h("span", {}, "Preparar para a Steam Workshop (capa, workshop.txt, .vdf e comando do steamcmd)")),
+      h("label", { class: "chk" }, wsOn, h("span", {}, "Preparar para a Steam Workshop (capa, workshop.txt, .vdf e comando do steamcmd)")),
       wsBox,
       info.exists && !info.ours ? h("p", { class: "warn" }, "Ja existe um mod com esse ID que nao foi feito por este app. Troque o ID.") : "",
       h("div", { class: "row" }, go), out);

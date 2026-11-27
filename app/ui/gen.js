@@ -26,10 +26,10 @@
       "Contornos de predio com altura melhoram as alturas e os formatos dos predios.",
       "Exemplo: GeoSampa em Sao Paulo (edificacoes com numero de pavimentos).",
       "Informe o arquivo em \"Fonte extra\" abaixo; sem ela, a altura vem das tags building:levels do OSM."]],
-    ["Gerar", [
+    ["Criar o mapa", [
       "Abra o arquivo no J' PZ MAP STUDIO (botao Escolher arquivo).",
       "Arraste no mapa para escolher a area (cada quadradinho e uma celula de 256 m).",
-      "Confira a estimativa de celulas e tempo e clique em Gerar."]],
+      "Confira a estimativa de celulas e tempo e clique em Criar mapa do lugar."]],
   ];
 
   function tutorial() {
@@ -181,7 +181,7 @@
     tab.innerHTML = "";
     const fin = h("input", { value: G.path, placeholder: "/caminho/para/area.osm.pbf", spellcheck: "false", onchange: e => openFile(e.target.value) });
     const pick = h("button", { onclick: async () => { try { const r = await api("/api/pick_file", {}); if (r.path) openFile(r.path); } catch (e) { say(e.message, true); } } }, "Escolher arquivo...");
-    tab.append(h("h3", {}, "Gerar de lugar real"),
+    tab.append(h("h3", {}, "Criar mapa de um lugar real"),
       h("p", { class: "note" }, "Transforma um trecho do OpenStreetMap num mapa editavel: ruas, calcadas, predios com salas e moveis, agua, parques e arvores. 1 quadrado = 1 metro."),
       tutorial(),
       h("label", { class: "fld" }, h("span", {}, "Arquivo OSM (.osm ou .osm.pbf)"), h("div", { class: "row" }, fin, pick)));
@@ -192,7 +192,7 @@
         h("label", { class: "fld" }, h("span", {}, "Nome do mapa"), nm),
         h("label", { class: "fld" }, h("span", {}, "Fonte extra"), fp, h("small", { class: "note" }, "melhora alturas e formatos dos predios (ex.: GeoSampa)")),
         h("div", { id: "gencheck" }),
-        h("div", { class: "row" }, h("button", { id: "gengo", class: "primary", onclick: generate }, "Gerar")));
+        h("div", { class: "row" }, h("button", { id: "gengo", class: "primary", onclick: generate }, "Criar mapa do lugar")));
       showBox();
     } else tab.append(h("div", { id: "gencheck" }));
     renderCheck();

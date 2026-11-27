@@ -309,7 +309,7 @@ function itemLabel(n) {
           h("span", { class: "sum" }, mine ? `substituido pela regra: ${summary(mine)}` : txt),
           h("button", { onclick: pre }, mine ? "Editar regra" : "Editar"));
       })) : null;
-    big(`Spawn: sala "${name}"`, [
+    big(`Spawn de itens: sala "${name}"`, [
       h("span", { class: "lt-dim" }, van ? `sala vanilla: containers ${van.join(", ") || "(nenhum)"}; o loot normal continua, as regras somam (a nao ser as marcadas para substituir)` :
         "nome proprio (area): sem loot vanilla; so nasce o que estiver nas regras"),
       vsec,
@@ -324,7 +324,7 @@ function itemLabel(n) {
     await vanilla();
     const back = () => listModal();
     const rs = L.loot.rules;
-    big("Spawn: todas as regras", [
+    big("Spawn de itens: todas as regras", [
       L.van.media === false ? h("span", { style: "color:var(--bad)" }, "pasta do jogo nao encontrada: sem listas vanilla nem busca de itens") : null,
       ...(rs.length ? rs.map(r => ruleRow(r, back)) : [h("span", { class: "lt-dim" }, "nenhuma regra. Clique numa sala do mapa ou crie uma regra aqui.")])].filter(Boolean),
     [h("button", { onclick: () => groupsModal() }, "Grupos..."), h("button", { onclick: luaModal }, "Ver Lua"),
@@ -424,7 +424,7 @@ function itemLabel(n) {
     key: "l",
     opts() {
       const n = L.loot.rules.length, g = Object.keys(L.loot.custom).length + Object.keys(L.user).length;
-      return [h("label", {}, "Spawn: clique numa sala (ou area da ferramenta Sala)"),
+      return [h("label", {}, "Spawn de itens: clique numa sala (ou area da ferramenta Sala)"),
         h("button", { onclick: listModal }, `Regras (${n})`), h("button", { onclick: groupsModal }, `Grupos (${g})`),
         h("button", { onclick: luaModal, title: "previa do Lua do export" }, "Lua")];
     },

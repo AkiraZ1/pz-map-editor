@@ -299,10 +299,14 @@ class Project:
         out.sort(key=lambda t: ORDER[K.kind(t)])           # sort estavel
         return out
 
-    def erase(self, cur, what="top"):
+    def erase(self, cur, what="top", floor=True):
         K = self.kinds
         if not cur:
             return cur
+        if not floor:                                       # preserva o chao (piso + camadas de mistura)
+            base = [t for t in cur if K.kind(t) in ("floor", "overlay")]
+            rest = [t for t in cur if K.kind(t) not in ("floor", "overlay")]
+            return base + (self.erase(rest, what) if rest else [])
         if what == "all":
             return []
         if what == "objects":
@@ -314,7 +318,7 @@ class Project:
         return out
 
     def apply(self, ops, label="edit", stroke=None):
-        """ops: [{"x","y","z", "tile"} | {"x","y","z","erase": modo} | {"x","y","z","set":[...]}].
+        """ops: [{"x","y","z", "tile"} | {"x","y","z","erase": modo} | {"x","y","z","remove":[tiles]} | {"x","y","z","set":[...]}].
         Devolve {(cx,cy): {ci}} das mudancas; empilha no desfazer."""
         with self.lock:
             rec = {}
@@ -327,7 +331,10 @@ class Project:
                 if "set" in op:
                     new = list(op["set"])
                 elif "erase" in op:
-                    new = self.erase(cur, op["erase"])
+                    new = self.erase(cur, op["erase"], op.get("floor", True))
+                elif "remove" in op:                       # pincel/area no modo apagar: tira so esses tiles
+                    rm = set(op["remove"])
+                    new = [t for t in cur if t not in rm]
                 else:
                     new = self.layered(cur, op["tile"])
                 if new == cur:

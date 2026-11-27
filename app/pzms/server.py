@@ -265,6 +265,25 @@ def _square(app, q, body):
                       for t in tiles]}
 
 
+@route("GET", "/api/area_tiles")
+def _area_tiles(app, q, body):
+    """tiles de um retangulo (ferramenta Ver arrastando): nome, tipo, rotulo e em quantos quadrados aparece."""
+    p = app.need_project()
+    x0, y0, x1, y1, z = (int(q[k]) for k in ("x0", "y0", "x1", "y1", "z"))
+    if (x1 - x0 + 1) * (y1 - y0 + 1) > 70000:
+        raise ApiError("area grande demais (max ~256x256)")
+    cnt, n = {}, 0
+    for x in range(x0, x1 + 1):
+        for y in range(y0, y1 + 1):
+            ts = p.get(x, y, z)
+            n += bool(ts)
+            for t in set(ts):
+                cnt[t] = cnt.get(t, 0) + 1
+    tiles = [{"name": t, "kind": p.kinds.kind(t), "label": app.assets.props(t).get("CustomName", ""), "count": c}
+             for t, c in sorted(cnt.items(), key=lambda kv: (-kv[1], kv[0]))]
+    return {"squares": n, "tiles": tiles}
+
+
 @route("POST", "/api/edit")
 def _edit(app, q, body):
     p = app.need_project()
