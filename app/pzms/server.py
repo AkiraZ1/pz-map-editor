@@ -249,7 +249,8 @@ def _cell(app, q, body):
         blob = p.chunk_blob(int(q["cx"]), int(q["cy"]), chunks)
     if blob is None:
         raise ApiError("celula fora do projeto")
-    return ("application/octet-stream", blob)
+    # no-store: a mesma URL muda a cada edicao; com cache o pincel arrastado mostrava o chunk velho
+    return ("application/octet-stream", blob, {"Cache-Control": "no-store"})
 
 
 @route("GET", "/api/square")
@@ -503,7 +504,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(data)))
-        self.send_header("Cache-Control", "no-store" if ctype.startswith("application/json") else "max-age=60")
+        if "Cache-Control" not in (extra or {}):
+            self.send_header("Cache-Control", "no-store" if ctype.startswith("application/json") else "max-age=60")
         for k, v in (extra or {}).items():
             self.send_header(k, v)
         self.end_headers()
