@@ -139,7 +139,7 @@ def _raster(it):
         if si == last:
             AL = np.where(t >= 1, -1.0, AL)
         ang = abs(math.degrees(math.atan2(dy, dx))) % 180
-        axis = "x" if ang < 8 or ang > 172 else "y" if abs(ang - 90) < 8 else None
+        axis = "x" if ang < 15 or ang > 165 else "y" if abs(ang - 90) < 15 else None
         LAT = (X - (ax + t * dx)) if axis == "y" else (Y - (ay + t * dy))
         ys, xs = np.nonzero(D < R)
         for j, i in zip(ys.tolist(), xs.tolist()):
@@ -223,11 +223,53 @@ def lane_edges(it, n, k, cls):
         o = cls.get((x + dx, y + dy))
         if not o or o[0] != "a" or o[1] != n:
             continue
+        if me[3] is None or o[3] is None:              # diagonal/curva: lane_diag usa os tiles vanilla de angulo
+            continue
         a, b = me[4], o[4]
         if a >= b or _dashed(it, min(me[5], o[5])) or me[5] < 0 or o[5] < 0:
             continue
         if any(a < off <= b for off in offs):
             out.add(s)
+    return out
+
+
+def lane_diag(it, n, k, cls):
+    """faixa em trecho diagonal/curvo: a reta sg = off cortada no quadrado vira o sprite vanilla de mesmo angulo.
+    O gradiente de sg sai dos vizinhos da mesma rua (diferenca central), entao segue a curva quadrado a quadrado."""
+    from . import lanelines as LL
+    L, w = it["lanes"], it["width"]
+    me = cls[k]
+    if L < 2 or me[3] is not None or _dashed(it, me[5]):
+        return []
+    x, y = k
+
+    def sg(dx, dy):
+        o = cls.get((x + dx, y + dy))
+        return o[4] if o and o[1] == n else None
+
+    def grad(dx, dy):
+        a, b = sg(dx, dy), sg(-dx, -dy)
+        if a is not None and b is not None:
+            return (a - b) / 2
+        if a is not None:
+            return a - me[4]
+        if b is not None:
+            return me[4] - b
+        return 0.0
+    gx, gy = grad(1, 0), grad(0, 1)
+    if abs(gx) + abs(gy) < 1e-6:
+        return []
+    out = []
+    for i in range(1, L):
+        off = -w / 2 + i * w / L
+        seg = LL.clip(me[4] - off, gx, gy)
+        if not seg or math.hypot(seg[2] - seg[0], seg[3] - seg[1]) < 0.08:
+            continue
+        b = LL.best(seg)
+        if b is None:
+            b = LL.best(seg, tol=0.35)                         # angulo raso: o sprite vanilla mais proximo
+        if b is not None:
+            out.append(LL.tile(it["line_color"], b))
     return out
 
 
@@ -275,7 +317,7 @@ def tiles_for(k, cls, items, base_of):
         out = [_fam_tile(it["asph"], hh)]
         if it["curbs"]:
             out += [CURB_ASPH[s] for s in ("S", "E") if nb[s] and nb[s][0] == "s" and _straight(cls, k, s, "a", "s")]
-        out += line_tiles(it, lane_edges(it, n, k, cls))
+        out += line_tiles(it, lane_edges(it, n, k, cls)) + lane_diag(it, n, k, cls)
         if not side_of(it):
             g = _grass(x, y, nb, base_of)
             if g:
