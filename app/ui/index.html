@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J' PZ MAP STUDIO</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header id="top">
+  <div class="brand" data-act="about" title="Sobre">J'&nbsp;PZ&nbsp;MAP&nbsp;STUDIO</div>
+  <div class="grp">
+    <button data-act="new" title="Novo projeto">Novo</button>
+    <button data-act="open" title="Abrir projeto">Abrir</button>
+    <button data-act="save" title="Salvar (Ctrl/Cmd+S)">Salvar</button>
+  </div>
+  <div class="grp">
+    <button data-act="undo" id="bUndo" title="Desfazer (Ctrl/Cmd+Z)">&#x21B6;</button>
+    <button data-act="redo" id="bRedo" title="Refazer (Ctrl/Cmd+Shift+Z)">&#x21B7;</button>
+  </div>
+  <div class="grp level">
+    <button data-act="zdown" title="Andar abaixo (PageDown)">&#x25BC;</button>
+    <span id="zlabel">Andar 0</span>
+    <button data-act="zup" title="Andar acima (PageUp)">&#x25B2;</button>
+  </div>
+  <div class="grp" id="projname"></div>
+  <div class="spacer"></div>
+  <div class="grp"><span id="gamever"></span></div>
+</header>
+
+<nav id="tools">
+  <button data-tool="inspect" title="Inspecionar (V)"><b>V</b><span>Ver</span></button>
+  <button data-tool="brush" title="Pincel (B)"><b>B</b><span>Pincel</span></button>
+  <button data-tool="area" title="Area retangular (G)"><b>G</b><span>Area</span></button>
+  <button data-tool="wall" title="Paredes (W)"><b>W</b><span>Parede</span></button>
+  <button data-tool="erase" title="Borracha (E)"><b>E</b><span>Apagar</span></button>
+  <button data-tool="pick" title="Conta-gotas (I)"><b>I</b><span>Pegar</span></button>
+  <button data-tool="room" title="Salas (M)"><b>M</b><span>Sala</span></button>
+  <button data-tool="place" title="Colocar predio (P)"><b>P</b><span>Predio</span></button>
+  <button data-tool="zombie" title="Zumbis (Z)"><b>Z</b><span>Zumbis</span></button>
+  <button data-tool="loot" title="Spawn de itens (L)"><b>L</b><span>Spawn</span></button>
+   <button data-tool="street" title="Ruas e avenidas (U)"><b>U</b><span>Ruas</span></button>
+</nav>
+
+<main id="stage">
+  <canvas id="gl"></canvas>
+  <canvas id="ov"></canvas>
+  <div id="toolopts"></div>
+  <div id="empty" class="hidden">
+    <h2>Nenhum projeto aberto</h2>
+    <p>Crie um mapa novo, abra um existente ou gere a partir de um lugar real.</p>
+    <div class="row"><button class="primary" data-act="new">Novo mapa</button><button data-act="open">Abrir</button><button data-act="gen">Gerar de lugar real</button></div>
+    <div id="recent"></div>
+  </div>
+</main>
+
+<aside id="side">
+  <div class="tabs">
+    <button data-tab="tiles" class="on">Tiles</button>
+    <button data-tab="build">Predios</button>
+    <button data-tab="gen">Gerar</button>
+    <button data-tab="export">Exportar</button>
+  </div>
+  <section id="tab-tiles" class="tab on">
+    <div class="catcol" id="cats"></div>
+    <div class="itemcol">
+      <input id="search" type="search" placeholder="Buscar tile ou objeto...">
+      <div id="subs" class="chips"></div>
+      <div id="items" class="grid"></div>
+    </div>
+  </section>
+  <section id="tab-build" class="tab">
+    <div class="catcol" id="bcats"></div>
+    <div class="itemcol">
+      <input id="bsearch" type="search" placeholder="Buscar predio...">
+      <div id="bstatus" class="note"></div>
+      <div id="bitems" class="grid big"></div>
+    </div>
+  </section>
+  <section id="tab-gen" class="tab pad"></section>
+  <section id="tab-export" class="tab pad"></section>
+  <div id="selbox"></div>
+</aside>
+
+<footer id="status">
+  <span id="pos">-</span>
+  <span id="sqinfo"></span>
+  <span class="spacer"></span>
+  <span id="jobinfo"></span>
+  <span id="msg"></span>
+  <span id="credit">J' PZ MAP STUDIO — criado por Jemerson Barros</span>
+</footer>
+<div id="busy" class="hidden"><div class="bt"><b>J' PZ MAP STUDIO</b><span id="busytitle"></span></div></div>
+
+<div id="prog" class="hidden">
+  <div class="ph"><b id="progtitle"></b><span id="proglive"></span><span class="spacer"></span><button id="progmin" title="Continuar em segundo plano">_</button></div>
+  <div class="pb">
+    <div class="sec">MACRO</div><div id="progtrail" class="trail"></div>
+    <div class="bar big"><i id="progbar"></i></div><div id="progtxt" class="note"></div>
+    <div class="sec">MICRO</div><div id="progmicro" class="micro"></div>
+    <div class="sec">LOG</div><pre id="proglog" class="log"></pre>
+  </div>
+</div>
+<div id="modal" class="hidden"><div class="box" id="modalbox"></div></div>
+
+<script src="gl.js"></script>
+<script src="app.js"></script>
+<script src="progress.js"></script>
+<script src="catalog.js"></script>
+<script src="zombies.js"></script>
+<script src="streets.js"></script>
+<script src="loot.js"></script>
+<script src="export.js"></script>
+<script src="gen.js"></script>
+</body>
+</html>
