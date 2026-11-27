@@ -143,3 +143,109 @@ def export(project, map_dir):
                     bad.append(ck)
     st["mismatch"] = bad
     return st
+
+
+# ----- estimativa relativa (ferramenta Zumbis > Estimar)
+# A conta densidade -> zumbis fica na lib nativa do jogo (libPZPopMan), que nao da para ler.
+# Aqui o indice e relativo: soma das densidades x multiplicadores do sandbox, comparado com o vanilla.
+# Multiplicadores do B42 (media/lua/shared/defines.lua); nomes na ordem do sandbox (Zombies = 1..6).
+PRESETS = [("Insano", 2.5, 4.0, 4.0), ("Muito alta", 1.6, 2.0, 2.0), ("Alta", 1.2, 1.5, 1.5),
+           ("Normal", 0.65, 1.0, 1.0), ("Baixa", 0.15, 0.5, 0.5), ("Nenhum", 0.0, 0.0, 0.0)]
+_ref = {}
+
+
+def _defines(media):
+    """le os multiplicadores do defines.lua do jogo instalado; cai nos valores acima se nao achar."""
+    import re
+    try:
+        s = open(os.path.join(media, "lua", "shared", "defines.lua"), encoding="utf-8", errors="ignore").read()
+    except (OSError, TypeError):
+        return PRESETS
+    keys = ["Insane", "VeryHigh", "High", "Normal", "Low", "None"]
+    out = []
+    for (nm, p0, s0, k0), key in zip(PRESETS, keys):
+        def g(tab, dflt):
+            m = re.search(rf'{tab}\.{key}\s*=\s*"([\d.]+)"', s)
+            return float(m.group(1)) if m else dflt
+        out.append((nm, g("ZombiePopulationMultiplier", p0), g("ZombiePopulationStartMultiplier", s0),
+                    g("ZombiePopulationPeakMultiplier", k0)))
+    return out
+
+
+def vanilla_ref(media):
+    """soma media de densidade por celula vanilla com zumbis (Muldraugh, KY), com cache em disco."""
+    import json
+    from . import gamedir
+    if media in _ref:
+        return _ref[media]
+    cp = os.path.join(gamedir.cache_dir(), "zombie_ref.json")
+    try:
+        j = json.load(open(cp))
+        if j.get("media") == media:
+            _ref[media] = j
+            return j
+    except (OSError, ValueError):
+        pass
+    d = os.path.join(media or "", "maps", "Muldraugh, KY")
+    sums = []
+    try:
+        names = [f for f in os.listdir(d) if f.endswith(".lotheader")]
+    except OSError:
+        names = []
+    for f in names:
+        try:
+            with open(os.path.join(d, f), "rb") as fh:
+                s = sum(F.read_header(fh.read()).density)
+        except Exception:                                   # celula estranha nao derruba a estimativa
+            continue
+        if s:
+            sums.append(s)
+    sums.sort()
+    j = {"media": media, "cells": len(sums), "avg": (sum(sums) / len(sums)) if sums else 0,
+         "p90": sums[int(len(sums) * 0.9)] if sums else 0, "max": sums[-1] if sums else 0}
+    try:
+        json.dump(j, open(cp, "w"))
+    except OSError:
+        pass
+    _ref[media] = j
+    return j
+
+
+def servers():
+    """configuracoes de servidor salvas (~/Zomboid/Server/*_SandboxVars.lua): multiplicadores de populacao."""
+    import re
+    from . import gamedir
+    d = os.path.join(gamedir.zomboid_user_dir(), "Server")
+    out = []
+    try:
+        fs = sorted(f for f in os.listdir(d) if f.endswith("_SandboxVars.lua"))
+    except OSError:
+        return out
+    for f in fs:
+        try:
+            s = open(os.path.join(d, f), encoding="utf-8", errors="ignore").read()
+        except OSError:
+            continue
+        def g(k, dflt):
+            m = re.search(rf"\b{k}\s*=\s*([\d.]+)", s)
+            return float(m.group(1)) if m else dflt
+        out.append({"name": f[:-len("_SandboxVars.lua")], "pop": g("PopulationMultiplier", 0.65),
+                    "start": g("PopulationStartMultiplier", 1.0), "peak": g("PopulationPeakMultiplier", 1.5),
+                    "peakday": g("PopulationPeakDay", 28), "respawn_h": g("RespawnHours", 0),
+                    "respawn_m": g("RespawnMultiplier", 0)})
+    return out
+
+
+def sim(project, media):
+    """dados para a estimativa: soma das densidades do projeto, referencia vanilla, presets e servidores."""
+    s = st = n = 0
+    per = []
+    with project.lock:
+        for ck in sorted(project.cellset):
+            d = _header_density(project, ck) or bytes(1024)
+            cs = sum(d)
+            s += cs; n += sum(1 for v in d if v)
+            if cs:
+                per.append([ck[0], ck[1], cs])
+    return {"sum": s, "chunks": n, "cells": len(project.cellset), "per_cell": per,
+            "ref": vanilla_ref(media), "presets": [list(p) for p in _defines(media)], "servers": servers()}

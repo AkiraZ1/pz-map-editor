@@ -171,3 +171,8 @@ canvas.osmarea { width: 100%; max-width: 360px; border: 1px solid var(--line); b
 /* caixa de marcar com o texto ao lado (o .fld e grid e empilhava) */
 .chk { display: flex; flex-direction: row; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; margin: 4px 0; }
 .chk input { width: auto; margin: 0; flex: none; }
+
+.ztab { border-collapse: collapse; margin: 6px 0; font-size: 12px }
+.ztab th, .ztab td { padding: 2px 10px; text-align: right; border-bottom: 1px solid rgba(255,255,255,.08) }
+.ztab th:first-child, .ztab td:first-child { text-align: left }
+.ztab tr.on td { color: var(--accent, #e0b050) }

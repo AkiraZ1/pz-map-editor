@@ -40,3 +40,9 @@ def _zombies_paint(app, q, body):
 @route("GET", "/api/zombies/stats")
 def _zombies_stats(app, q, body):
     return ZB.stats(app.need_project())
+
+
+@route("GET", "/api/zombies/sim")
+def _zombies_sim(app, q, body):
+    """estimativa relativa: soma das densidades x multiplicadores do sandbox, comparada ao vanilla."""
+    return ZB.sim(app.need_project(), app.media)

@@ -163,6 +163,61 @@
     return n ? `${n} de ${tot} chunks com zumbis (${(100 * n / Math.max(1, tot)).toFixed(1)}%), media ${(sum / n).toFixed(1)}, max ${mx}` +
       (hot ? `, ${hot} acima do vanilla` : "") : "mapa sem zumbis pintados";
   }
+  // Estimar: indice relativo = soma das densidades x populacao x multiplicador do dia (inicio -> pico).
+  // O jogo faz a conta final na lib nativa; o indice serve para comparar mapas e configuracoes.
+  async function estimate() {
+    const { modal, closeModal } = window.PZMS;
+    let r;
+    try { r = await api("/api/zombies/sim"); } catch (e) { return say(e.message, true); }
+    const cfgs = r.presets.map(([n, pop]) => ({ n, pop, start: 1.0, peak: 1.5, peakday: 28 }))   // nivel so troca a populacao; inicio/pico/dia = padrao do jogo
+      .concat(r.servers.map(v => ({ n: "servidor: " + v.name, pop: v.pop, start: v.start, peak: v.peak, peakday: v.peakday })));
+    const C = Object.assign({}, cfgs.find(c => c.n === "Normal") || cfgs[0]);
+    let day = 0;
+    const num = (k, step) => { const i = h("input", { type: "number", step, min: 0, value: C[k], style: "width:5em" });
+      i.addEventListener("input", () => { C[k] = Math.max(0, +i.value || 0); sel.value = ""; draw(); }); return i; };
+    const sel = h("select", {}, h("option", { value: "" }, "personalizado"), ...cfgs.map((c, i) => h("option", { value: i }, c.n)));
+    sel.value = String(cfgs.indexOf(cfgs.find(c => c.n === "Normal")));
+    const ins = { pop: num("pop", 0.05), start: num("start", 0.1), peak: num("peak", 0.1), peakday: num("peakday", 1) };
+    sel.addEventListener("change", () => { if (sel.value === "") return; Object.assign(C, cfgs[+sel.value]); for (const k in ins) ins[k].value = C[k]; draw(); });
+    const dl = h("span", {}, "0");
+    const ds = h("input", { type: "range", min: 0, max: 90, value: 0, style: "width:180px" });
+    ds.addEventListener("input", () => { day = +ds.value; draw(); });
+    const mult = (c, d) => c.start + (c.peak - c.start) * Math.min(1, d / Math.max(1, c.peakday));
+    const idx = (c, d) => r.sum * c.pop * mult(c, d);
+    const out = h("div", {}), chart = h("canvas", { width: 520, height: 120, style: "width:100%;max-width:520px;height:120px;position:static" });
+    const ref = r.ref.avg || 1, f = v => v >= 100 ? Math.round(v).toLocaleString("pt-BR") : v.toFixed(v >= 10 ? 1 : 2);
+    function draw() {
+      dl.textContent = day;
+      const now = idx(C, day), peak = idx(C, Math.max(day, C.peakday)), normal = r.sum * 0.65;
+      out.innerHTML = "";
+      out.append(
+        h("p", {}, h("b", {}, `Indice no dia ${day}: ${f(now)}`), `  (pico no dia ${C.peakday}: ${f(peak)})`),
+        h("p", { class: "note" }, `Mapa: soma das densidades ${r.sum.toLocaleString("pt-BR")} em ${r.chunks} chunks de ${r.cells} celula(s). ` +
+          `Equivale a ${f(r.sum / ref)} celula(s) media(s) de Muldraugh (media ${f(ref)}, cidade densa ${r.ref.p90}).`),
+        h("p", { class: "note" }, normal ? `Comparado ao mesmo mapa no Normal (inicio): ${f(now / normal)}x hoje, ${f(peak / normal)}x no pico.` : "Mapa sem zumbis pintados."),
+        h("table", { class: "ztab" }, h("tr", {}, h("th", {}, "Config"), h("th", {}, "Inicio"), h("th", {}, `Dia ${day}`), h("th", {}, "Pico"), h("th", {}, "x Normal")),
+          ...cfgs.map(c => h("tr", { class: c.n === sel.selectedOptions[0]?.text ? "on" : "" }, h("td", {}, c.n), h("td", {}, f(idx(c, 0))),
+            h("td", {}, f(idx(c, day))), h("td", {}, f(idx(c, c.peakday))), h("td", {}, normal ? f(idx(c, day) / normal) : "-")))));
+      const g = chart.getContext("2d"), W = chart.width, H = chart.height, D = 90;
+      g.clearRect(0, 0, W, H);
+      const top = Math.max(1, idx(C, Math.max(D, C.peakday)));
+      g.strokeStyle = "rgba(255,255,255,.15)"; g.beginPath(); g.moveTo(0, H - 1); g.lineTo(W, H - 1); g.stroke();
+      g.strokeStyle = "#e0b050"; g.lineWidth = 2; g.beginPath();
+      for (let d = 0; d <= D; d++) { const x = d / D * W, y = H - 4 - idx(C, d) / top * (H - 12); d ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.stroke();
+      const x = day / D * W; g.strokeStyle = "rgba(255,255,255,.5)"; g.lineWidth = 1; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke();
+      g.fillStyle = "rgba(255,255,255,.6)"; g.font = "11px sans-serif"; g.fillText(`dias 0-${D}`, 4, 12);
+    }
+    modal("Estimativa de zumbis", [
+      h("div", { class: "row" }, h("label", {}, "Configuracao"), sel),
+      h("div", { class: "row" }, h("label", {}, "Populacao"), ins.pop, h("label", {}, "Inicio"), ins.start, h("label", {}, "Pico"), ins.peak, h("label", {}, "Dia do pico"), ins.peakday),
+      h("div", { class: "row" }, h("label", {}, "Dia"), ds, dl), chart, out,
+      h("p", { class: "note" }, "Indice relativo, nao contagem exata: o jogo faz a conta final no codigo nativo. Use para comparar mapas e configuracoes. " +
+        "Multiplicadores lidos do jogo instalado (defines.lua) e das configuracoes de servidor salvas em ~/Zomboid/Server.")],
+      [h("button", { onclick: closeModal }, "Fechar")]);
+    draw();
+  }
+
   function pick(sq) {
     Z.num = chunkVal(Math.floor(sq[0] / CH), Math.floor(sq[1] / CH));
     if (Z.mode === "conta-gotas") Z.mode = "pintar";
@@ -199,6 +254,7 @@
         h("label", {}, "Densidade"), ...presets, val, num,
         h("label", {}, "Pincel"), bs, bl, h("span", { class: "zdim", style: "color:var(--dim)" }, "chunks  [ ]"), soft,
         legend(), show, all, clr,
+        h("button", { title: "indice relativo de zumbis com os multiplicadores do sandbox (populacao, inicio, pico)", onclick: estimate }, "estimar"),
         h("label", { class: "zsum", title: "valores medidos nos lotheaders vanilla do B42: cidade 3-4, centro 6-10" }, summary()),
         h("label", { class: "zdim", style: "color:var(--dim)" }, "Shift+arrastar = retangulo  -  Alt+clique = conta-gotas")];
     },
