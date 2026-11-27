@@ -241,12 +241,56 @@ class Assets:
         self.tiles = json.load(open(os.path.join(self.root, "tiles.json")))
         self.sheets = json.load(open(os.path.join(self.root, "sheets.json")))
         self._pages = {}
+        self.nbase = self.atlas["pages"]
+        self.base = (dict(self.sprites), dict(self.tiles), dict(self.sheets))
+        self.base_sheets = self.base[2]
+        self.files = [os.path.join(self.root, "atlas", f"p{i}.png") for i in range(self.nbase)]
+        self.urls = [f"/cache/atlas/p{i}.png" for i in range(self.nbase)]
+        self.extras = []
+        self.sig = ""
+
+    def set_extras(self, roots):
+        """soma caches de tiles extras (modtiles) depois das paginas vanilla; dicts mudam no lugar
+        (Kinds e catalogo guardam a referencia). Vanilla vence em nome repetido."""
+        sp, ti, sh = (dict(d) for d in self.base)
+        files, urls = self.files[:self.nbase], self.urls[:self.nbase]
+        for r in roots:
+            a = json.load(open(os.path.join(r, "atlas.json")))
+            off = len(files)
+            for n, e in a["sprites"].items():
+                if n not in sp:
+                    sp[n] = [e[0] + off] + e[1:]
+            for n, p in json.load(open(os.path.join(r, "tiles.json"))).items():
+                ti.setdefault(n, p)
+            for s, v in json.load(open(os.path.join(r, "sheets.json"))).items():
+                sh.setdefault(s, dict(v, extra=a.get("label", "")))
+            key = os.path.basename(r)
+            files += [os.path.join(r, f"p{i}.png") for i in range(a["pages"])]
+            urls += [f"/data/modtiles/{key}/p{i}.png" for i in range(a["pages"])]
+        for d, new in ((self.sprites, sp), (self.tiles, ti), (self.sheets, sh)):
+            d.clear(); d.update(new)
+        self.files, self.urls, self.extras = files, urls, list(roots)
+        self._pages = {k: v for k, v in self._pages.items() if k < self.nbase}
+        self.sig = "|".join(os.path.basename(r) for r in roots)
+        self.atlas["pages"] = len(files)
+
+    @property
+    def palette_path(self):
+        if not self.extras:
+            return os.path.join(self.root, "palette.json")
+        import hashlib
+        return os.path.join(os.path.dirname(self.extras[0]), "pal-" + hashlib.sha1(
+            (self.root + self.sig).encode()).hexdigest()[:16] + ".json")
+
+    def meta(self):
+        """atlas.json para a UI, com as paginas extras."""
+        return dict(self.atlas, urls=self.urls, sig=self.sig)
 
     def page(self, i):
         from PIL import Image
         im = self._pages.get(i)
         if im is None:
-            im = Image.open(os.path.join(self.root, "atlas", f"p{i}.png")).convert("RGBA")
+            im = Image.open(self.files[i]).convert("RGBA")
             im.load()
             self._pages[i] = im
         return im

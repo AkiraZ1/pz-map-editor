@@ -97,6 +97,9 @@ class App:
         return self.project
 
 
+OPEN_HOOKS = []                         # f(app) depois de abrir/criar projeto (modtiles)
+
+
 class ApiError(Exception):
     pass
 
@@ -189,6 +192,8 @@ def _new(app, q, body):
         app.project = Project.create(path, name, int(body.get("cx0", 2)), int(body.get("cy0", 2)), w, h,
                                      app.kinds, ground=body.get("ground", True))
         app.remember(path)
+    for f in OPEN_HOOKS:
+        f(app)
     return app.state()
 
 
@@ -206,6 +211,8 @@ def _open(app, q, body):
             app.project.save()
         app.project = Project.open(path, app.kinds)
         app.remember(path)
+    for f in OPEN_HOOKS:
+        f(app)
     return app.state()
 
 

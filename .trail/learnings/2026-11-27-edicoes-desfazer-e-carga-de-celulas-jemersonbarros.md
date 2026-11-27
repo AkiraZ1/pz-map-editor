@@ -3,7 +3,7 @@ title: "Edicoes, desfazer e carga de celulas vao em fila no cliente (servidor e 
 author: JemersonBarros
 date: 2026-11-27
 branch: main
-cost: { minutes: 38, tokens: 577393 }
+cost: { minutes: 49, tokens: 803247 }
 id: l-0d762314
 scope: repo
 status: active
@@ -42,6 +42,11 @@ Versao antiga sem /api/shutdown: o Mac pede quit pelo osascript (a janela salva 
 - A previa esconde os quadrados resultantes nos chunks normais via uniform hide[] no shader (max 24) e desenha o resultado como ghost.
 - Portao de garagem (prop GarageDoor 1-6): partes W correm S->N e partes N correm W->E; ao espelhar/girar, troca pela parte de mesmo numero relativo e inverte a ordem quando o sentido do eixo inverte.
 - Faixas de rodovia: eixo reto ate 15 graus; acima disso usa os tiles angulados vanilla (lanelines.py).
+- Each extra tile source (an installed mod with .pack + .tiles, or the project's PNG sheets) becomes its own atlas cache in the same format as the vanilla one. It is merged in place into the vanilla dicts at runtime. Kinds and catalog hold references to those dicts, so the merge has to mutate them instead of replacing them.
+- Vanilla wins when a sprite name is duplicated. The palette is cached per set of extras (a hash in the file name), so vanilla's palette.json is never overwritten.
+- When the server changes extras, it bumps the atlas `sig`. The UI polls the status and reloads the page when the sig no longer matches. The project stays open on the server, so boot shows it again.
+- Mods that provide sheets the opened map already uses (read from the lotheader tile tables) are added automatically to project meta `tilemods`.
+- The export does NOT write `require=` into mod.info, because the B42 format is uncertain. It writes `pack=` and `tiledef=` for the project's own sheets and shows in the UI which mods must be enabled.
 
 ## Watch out
 - Toda chamada nova que mexa no projeto deve passar por serial() no cliente, senao volta a corrida.
@@ -58,6 +63,12 @@ In the code: app/pzms/routes_session.py; app/pzms/main.py (--resume); app/ui/app
 - Ainda ha um pequeno artefato de faixa nas juncoes reta/curva.
 
 In the code: app/pzms/routes_stairs.py (plan, stair_sets), app/ui/stairs.js, app/ui/gl.js (setHide), app/pzms/catalog.py (garage_part), app/pzms/streets.py, app/pzms/lanelines.py.
+- PNG sheet: 2x tiles are 128x256 px, grid of 8 columns (1024 px wide), height a multiple of 256, RGBA. The floor diamond sits at the bottom of the cell (y 192-256). A 1x sheet (64x128) is upscaled 2x.
+- Sheet names must match `^[A-Za-z][A-Za-z0-9_]*_\d\d$`. Tile name = sheet_index, where index = row*cols + col.
+- Empty cells (no alpha) do not become tiles. A pixel spilling into the next cell creates a 1x1 tile.
+- The tiledef fileNumber is 2000 + crc32 % 7000, chosen to avoid colliding with vanilla and common mods.
+
+In the code: app/pzms/modtiles.py, app/pzms/routes_tiles.py, Assets.set_extras in app/pzms/assets.py, app/ui/tilesets.js.
 
 ## Tried and ruled out
 - Calibrar com save: os saves locais sao MP (cliente) e so tem zpop_virtual.bin (roupas), sem contagem por celula. A conta densidade->zumbis esta em libPZPopMan.dylib.

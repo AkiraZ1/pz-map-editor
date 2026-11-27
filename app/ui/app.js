@@ -126,9 +126,9 @@ async function buildCache() {
 
 async function loadAtlas() {
   say("carregando sprites...");
-  const meta = await (await fetch("/cache/atlas.json")).json();
+  const meta = await api("/api/atlas");                 // vanilla + tiles extras (mods e folhas do projeto)
   const pages = await Promise.all([...Array(meta.pages).keys()].map(async i => {
-    const b = await (await fetch(`/cache/atlas/p${i}.png`)).blob();
+    const b = await (await fetch(meta.urls ? meta.urls[i] : `/cache/atlas/p${i}.png`)).blob();
     return createImageBitmap(b, { premultiplyAlpha: "none", colorSpaceConversion: "none" });
   }));
   S.atlas = new Atlas(meta, pages);
@@ -177,7 +177,7 @@ function centerOn(x, y) {
 }
 
 async function openProject(path) {
-  try { S.state = await api("/api/project/open", { path }); closeModal(); resetView(); afterState(); }
+  try { S.state = await api("/api/project/open", { path }); closeModal(); resetView(); afterState(); window.PZMS_TILESETS?.watch(); }
   catch (e) { say(e.message, true); }
 }
 
@@ -197,7 +197,7 @@ function dlgNew() {
   ], [h("button", { onclick: closeModal }, "Cancelar"), h("button", { class: "primary", onclick: async () => {
     try {
       S.state = await api("/api/project/new", { name: f.name.value, w: +f.w.value, h: +f.hh.value, cx0: +f.cx0.value, cy0: +f.cy0.value, ground: f.ground.checked });
-      closeModal(); resetView(); afterState(); say("projeto criado");
+      closeModal(); resetView(); afterState(); say("projeto criado"); window.PZMS_TILESETS?.watch();
     } catch (e) { say(e.message, true); }
   } }, "Criar")]);
 }

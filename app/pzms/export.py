@@ -265,10 +265,14 @@ def export(project, mods_dir=None, opts=None, jobs=None):
             ZB.export(project, mdir)
     except ImportError:
         pass
+    from . import modtiles as MT                   # folhas PNG do projeto viram pack + tiledef do mod
+    extra = MT.export(project, root, modid)
     with open(os.path.join(root, "42", "mod.info"), "w", encoding="utf-8") as f:
         f.write(f"name={title}\nid={modid}\ndescription={desc}\nversionMin=42.0.0\nposter=poster.png\n")
         if opts.get("author"):
             f.write(f"author={opts['author']}\n")
+        for ln in extra:
+            f.write(ln + "\n")
     th = os.path.join(mdir, "thumb.png")
     try:
         if todo or not os.path.exists(th):
@@ -280,7 +284,8 @@ def export(project, mods_dir=None, opts=None, jobs=None):
     if os.path.exists(WS.cover_path(project)):     # capa escolhida no Exportar tambem vira o poster do mod
         shutil.copy2(WS.cover_path(project), os.path.join(root, "42", "poster.png"))
     PG.finish("metadados")
-    return {"path": root, "modid": modid, "cells": n, "secs": round(time.time() - t0, 1)}
+    return {"path": root, "modid": modid, "cells": n, "secs": round(time.time() - t0, 1),
+            "needs": list(meta.get("tilemods") or []), "sheets": len(MT.proj_sheets(project))}
 
 
 def _thumb(project, cells, out, poster):

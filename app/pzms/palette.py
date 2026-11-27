@@ -16,6 +16,7 @@ CATS = [
     ("moveis", "Moveis"), ("cozinha", "Cozinha e banheiro"), ("lojas", "Lojas e servicos"),
     ("luz", "Luz e fixos"), ("vegetacao", "Vegetacao"), ("cercas", "Cercas e muros"),
     ("carros", "Veiculos e rua"), ("placas", "Placas"), ("decoracao", "Decoracao e itens"), ("outros", "Outros"),
+    ("mods", "Tiles de mods e do projeto"),
 ]
 
 FACE_ORDER = ["S", "E", "N", "W"]
@@ -72,7 +73,7 @@ def cat_of(sheet, props, kind):
 
 
 def build(assets, kinds, force=False):
-    path = os.path.join(assets.root, "palette.json")
+    path = getattr(assets, "palette_path", None) or os.path.join(assets.root, "palette.json")
     if not force and os.path.exists(path):
         with open(path, encoding="utf-8") as f:
             return json.load(f)
@@ -172,6 +173,10 @@ def build(assets, kinds, force=False):
                 continue
             items.append({"id": f"t:{n}", "label": p.get("CustomName") or pretty(s) + f" {i}",
                           "cat": cat_of(s, p, k), "sub": pretty(s), "icon": n, "kind": k, "parts": [[0, 0, n]]})
+    for it in items:                                  # folhas extras (modtiles): categoria propria, sub = fonte
+        x = (assets.sheets.get(sheet_of(it["icon"])[0]) or {}).get("extra")
+        if x is not None:
+            it["cat"], it["sub"] = "mods", f"{x}: {pretty(sheet_of(it['icon'])[0])}"
     out = {"cats": [{"key": k, "label": l, "n": sum(1 for it in items if it["cat"] == k)} for k, l in CATS],
            "items": items}
     tmp = path + ".tmp"

@@ -68,6 +68,9 @@
       if (!r) return;
       out.append(h("p", {}, `Ultimo export: ${r.cells} celula(s) em ${r.secs}s`), h("code", {}, r.path),
         h("p", {}, "No jogo: Mods -> ative o mod -> Novo jogo -> escolha o mapa na lista de locais de inicio."));
+      if (r.sheets) out.append(h("p", {}, `${r.sheets} folha(s) PNG do projeto foram junto no mod (pack + .tiles).`));
+      if (r.needs && r.needs.length) out.append(h("p", { style: "color:var(--warn,#e0a040)" },
+        `O mapa usa tiles destes mods: ative-os junto no jogo (e marque como requisito na Workshop): ${r.needs.join(", ")}`));
       const w = r.workshop;
       if (w) {
         if (w.published_id && !pid.value) pid.value = w.published_id;
