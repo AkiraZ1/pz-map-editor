@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-label="J' PZ MAP STUDIO: map editor for Project Zomboid Build 42">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1d2024"/>
+      <stop offset="1" stop-color="#101214"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0c060"/>
+      <stop offset="1" stop-color="#c98f2c"/>
+    </linearGradient>
+    <pattern id="iso" width="64" height="32" patternUnits="userSpaceOnUse">
+      <path d="M0 16 L32 0 L64 16 L32 32 Z" fill="none" stroke="#2a2e34" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="fade" cx="0.75" cy="0.5" r="0.7">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#101214" stop-opacity="1"/>
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="320" fill="url(#bg)"/>
+  <rect width="1280" height="320" fill="url(#iso)"/>
+  <rect width="1280" height="320" fill="url(#fade)"/>
+
+  <!-- quarteirao isometrico estilizado -->
+  <g transform="translate(1075 168) scale(0.78)">
+    <path d="M-200 0 L0 -100 L200 0 L0 100 Z" fill="#4a5a2a"/>
+    <path d="M-200 0 L0 -100 L200 0 L0 100 Z" fill="none" stroke="#8a8f96" stroke-width="10" opacity="0.55"/>
+    <path d="M-120 40 L80 -60" stroke="#6e737a" stroke-width="18" opacity="0.8"/>
+    <circle cx="-150" cy="10" r="12" fill="#2f5d2a"/>
+    <path d="M-126 -28 L-70 0 L-70 -62 L-126 -90 Z" fill="#8c4a2f"/>
+    <path d="M-70 0 L-14 -28 L-14 -90 L-70 -62 Z" fill="#a85a39"/>
+    <path d="M-126 -90 L-70 -118 L-14 -90 L-70 -62 Z" fill="#d9a441"/>
+    <path d="M22 -20 L70 4 L70 -44 L22 -68 Z" fill="#6f7680"/>
+    <path d="M70 4 L118 -20 L118 -68 L70 -44 Z" fill="#8b939d"/>
+    <path d="M22 -68 L70 -92 L118 -68 L70 -44 Z" fill="#b7bec7"/>
+    <path d="M-30 40 L10 60 L10 26 L-30 6 Z" fill="#5d6b3a"/>
+    <path d="M10 60 L50 40 L50 6 L10 26 Z" fill="#748548"/>
+    <path d="M-30 6 L10 -14 L50 6 L10 26 Z" fill="#e4e1da"/>
+    <circle cx="140" cy="50" r="14" fill="#2f5d2a"/>
+    <circle cx="120" cy="-72" r="5" fill="#d94141"/>
+  </g>
+
+  <text x="72" y="140" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="56" font-weight="800" fill="url(#gold)" letter-spacing="1">J' PZ MAP STUDIO</text>
+  <text x="74" y="192" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="24" fill="#e4e1da">Map editor for Project Zomboid · Build 42</text>
+  <text x="74" y="232" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="18" fill="#9a978f">Paint, place buildings, generate a real city and export a ready mod</text>
+  <rect x="74" y="258" width="120" height="4" rx="2" fill="#d9a441"/>
+</svg>
