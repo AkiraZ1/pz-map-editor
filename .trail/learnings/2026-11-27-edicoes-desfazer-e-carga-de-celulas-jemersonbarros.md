@@ -3,7 +3,7 @@ title: "Edicoes, desfazer e carga de celulas vao em fila no cliente (servidor e 
 author: JemersonBarros
 date: 2026-11-27
 branch: main
-cost: { minutes: 19, tokens: 291660 }
+cost: { minutes: 38, tokens: 577393 }
 id: l-0d762314
 scope: repo
 status: active
@@ -36,6 +36,12 @@ touches:
 O app aberto grava running.json (porta, pid, versao) na pasta de dados e apaga ao sair. O instalador le a porta e chama POST /api/shutdown: salva se houver mudanca, guarda cfg["resume"] (caminho + camera x/y/zoom/andar) e encerra. Depois troca o .app e abre com --resume. No boot, a UI reabre o projeto e a camera uma vez.
 A UI manda a camera para /api/view a cada 2s, so quando muda (a janela pywebview nao guarda localStorage entre execucoes).
 Versao antiga sem /api/shutdown: o Mac pede quit pelo osascript (a janela salva no on_closing) e o Windows usa CloseMainWindow. --resume sem cfg resume cai no ultimo recente.
+- Escada vanilla (medida em Muldraugh): degrau B no quadrado de partida, M e T seguem para (-1,0) na W e (0,-1) na N; o patamar e o 4o quadrado no andar de cima; em cima dos 3 degraus nao ha piso, so parede lateral/grade.
+- Modo descer: o quadrado sob o mouse e o patamar; a escada vai em z-1, comecando 3 quadrados antes.
+- Ao por a escada sai mobilia e a parede que fecha a passagem (lado d ou canto NW; porta fica). No canto NW fica so a metade do outro lado (CornerNorthWall / CornerWestWall).
+- A previa esconde os quadrados resultantes nos chunks normais via uniform hide[] no shader (max 24) e desenha o resultado como ghost.
+- Portao de garagem (prop GarageDoor 1-6): partes W correm S->N e partes N correm W->E; ao espelhar/girar, troca pela parte de mesmo numero relativo e inverte a ordem quando o sentido do eixo inverte.
+- Faixas de rodovia: eixo reto ate 15 graus; acima disso usa os tiles angulados vanilla (lanelines.py).
 
 ## Watch out
 - Toda chamada nova que mexa no projeto deve passar por serial() no cliente, senao volta a corrida.
@@ -48,6 +54,10 @@ Fechar antes da UI reabrir nao pode perder o resume pendente: shutdown sem proje
 Para testar o instalador sem tocar no app real, use PZMS_HOME, PZMS_INSTALL_DIR e PZMS_NO_LAUNCH. O RUNF do install.command respeita PZMS_HOME. O fallback do osascript mira o app pelo NOME e fecharia a instalacao real.
 
 In the code: app/pzms/routes_session.py; app/pzms/main.py (--resume); app/ui/app.js resumeSession/postView; install.command e install.ps1 (bloco "aberto: salvando").
+- Uma tile de portao para todas as partes era o bug do espelho: sempre mapear por (folha, i//8, lado, parte).
+- Ainda ha um pequeno artefato de faixa nas juncoes reta/curva.
+
+In the code: app/pzms/routes_stairs.py (plan, stair_sets), app/ui/stairs.js, app/ui/gl.js (setHide), app/pzms/catalog.py (garage_part), app/pzms/streets.py, app/pzms/lanelines.py.
 
 ## Tried and ruled out
 - Calibrar com save: os saves locais sao MP (cliente) e so tem zpop_virtual.bin (roupas), sem contagem por celula. A conta densidade->zumbis esta em libPZPopMan.dylib.

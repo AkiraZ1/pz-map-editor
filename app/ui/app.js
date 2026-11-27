@@ -675,8 +675,10 @@ function setTool(t) {
 
 function updateGhost() {
   if (!S.gl) return;
-  const hv = S.hover;
+  const hv = S.hover, X = (window.PZMS_TOOLS || {})[S.tool];
+  S.gl.setHide(null);
   if (!hv || !S.state.project) { S.gl.setGhost(null); S.needDraw = true; return; }
+  if (X && X.ghost) { X.ghost(hv); S.needDraw = true; return; }      // a ferramenta cuida da previa (pode ser assincrona)
   let sq = [];
   if (S.tool === "brush" && S.item && !S.drag && S.paintMode !== "erase") sq = brushOps(hv[0], hv[1]).map(o => [o.x, o.y, o.z, [o.tile]]);
   else if (S.tool === "place" && window.PZMS_ghost) sq = window.PZMS_ghost(hv[0], hv[1], S.z) || [];
@@ -847,6 +849,7 @@ window.addEventListener("keydown", e => {
   const tk = { v: "inspect", b: "brush", g: "area", w: "wall", e: "erase", i: "pick", m: "room", p: "place" }[k]
     || Object.keys(window.PZMS_TOOLS || {}).find(n => window.PZMS_TOOLS[n].key === k);
   if (tk) return setTool(tk);
+  if (k === "r" && (window.PZMS_TOOLS || {})[S.tool]?.rotate) return window.PZMS_TOOLS[S.tool].rotate();
   if (k === "r") return rotate();
   if (k === "x" && (S.tool === "brush" || S.tool === "area")) { S.paintMode = S.paintMode === "erase" ? "add" : "erase"; return setTool(S.tool); }
   const step = 64 / S.gl.cam.zoom;
@@ -951,7 +954,7 @@ setInterval(async () => {          // salvamento automatico
   }
 }, 120000);
 
-window.PZMS = { S, api, rectOf, fetchRooms, CS, h, $, $$, say, modal, closeModal, applyChanged, setTool, selectItem, showTab, boot, afterState, resetView, centerOn, flush };
+window.PZMS = { S, api, serial, updateGhost, rectOf, fetchRooms, CS, h, $, $$, say, modal, closeModal, applyChanged, setTool, selectItem, showTab, boot, afterState, resetView, centerOn, flush };
 setTool("brush");
 boot();
 

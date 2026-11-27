@@ -53,9 +53,11 @@ layout(location=2) in vec4 uv;     // x, y, w, h no atlas (px)
 layout(location=3) in vec3 off;    // dx, dy, pagina
 uniform vec2 cam; uniform float zoom; uniform vec2 view; uniform float zmax; uniform float zlo; uniform float s0;
 uniform float dimz;
+uniform vec3 hide[24]; uniform int nhide; uniform float isghost;
 out vec2 vuv; flat out float vpage; out float vdim;
 void main() {
   if (pos.z > zmax) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+  if (isghost < 0.5) for (int i = 0; i < nhide; i++) if (hide[i] == pos.xyz) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
   float sx = (pos.x - pos.y) * 16.0 - 16.0 + off.x + corner.x * uv.z;
   float sy = (pos.x + pos.y) * 8.0 - pos.z * 48.0 - 48.0 + off.y + corner.y * uv.w;
   vec2 p = (vec2(sx, sy) - cam) * zoom;
@@ -81,7 +83,7 @@ class IsoGL {
     if (!gl) throw new Error("WebGL2 indisponivel");
     this.prog = this._prog(VS, FS);
     this.u = {};
-    for (const n of ["cam", "zoom", "view", "zmax", "zlo", "s0", "tex", "page", "dimz"]) this.u[n] = gl.getUniformLocation(this.prog, n);
+    for (const n of ["cam", "zoom", "view", "zmax", "zlo", "s0", "tex", "page", "dimz", "hide", "nhide", "isghost"]) this.u[n] = gl.getUniformLocation(this.prog, n);
     const P = atlas.meta.page;
     this.tex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.tex);
@@ -96,7 +98,7 @@ class IsoGL {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW);
     this.chunks = new Map();          // "cx,cy,ci" -> {vao, buf, n, wx, wy}
     this.cam = { x: 0, y: 0, zoom: 1 };
-    this.zmax = 0; this.dim = true; this.ghost = null;
+    this.zmax = 0; this.dim = true; this.ghost = null; this.hide = [];
   }
   _prog(vs, fs) {
     const gl = this.gl, p = gl.createProgram();
@@ -157,6 +159,8 @@ class IsoGL {
     if (this.ghost) { this.gl.deleteBuffer(this.ghost.buf); this.gl.deleteVertexArray(this.ghost.vao); this.ghost = null; }
     if (data && data.length) this.ghost = this._vao(data);
   }
+  // quadrados [[x, y, z]] que somem do mapa enquanto a previa (ghost) mostra o resultado
+  setHide(list) { this.hide = (list || []).slice(0, 24); }
   resize() {
     const r = this.cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
     this.vw = r.width; this.vh = r.height; this.dpr = dpr;
@@ -196,12 +200,14 @@ class IsoGL {
     gl.uniform1f(this.u.page, this.atlas.meta.page);
     gl.uniform1f(this.u.dimz, this.dim ? 1 : 0);
     gl.uniform1i(this.u.tex, 0);
+    gl.uniform1i(this.u.nhide, this.hide.length); gl.uniform1f(this.u.isghost, 0);
+    if (this.hide.length) gl.uniform3fv(this.u.hide, new Float32Array(this.hide.flat()));
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.tex);
     for (const c of this.chunks.values()) {
       gl.bindVertexArray(c.vao); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, c.n);
     }
     if (this.ghost) {
-      gl.clear(gl.DEPTH_BUFFER_BIT);
+      gl.clear(gl.DEPTH_BUFFER_BIT); gl.uniform1f(this.u.isghost, 1);
       gl.bindVertexArray(this.ghost.vao); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, this.ghost.n);
     }
     gl.bindVertexArray(null);
