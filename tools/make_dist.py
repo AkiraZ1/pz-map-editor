@@ -20,7 +20,7 @@ import zipfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TARGETS = ["mac-arm64", "mac-x64", "win-x64"]
 TOP_FILES = ["install.command", "install.cmd", "install.ps1"]
-SKIP_DIRS = {"__pycache__", ".git", ".cache", "graft", ".trail", "dist", "node_modules", ".pytest_cache"}
+SKIP_DIRS = {"__pycache__", ".git", ".cache", "graft", ".trail", "dist", "node_modules", ".pytest_cache", "target"}
 SKIP_FILES = {".DS_Store", "Thumbs.db"}
 # extensoes que so podem vir do jogo: o pacote nunca pode carregar nenhuma
 GAME_EXT = (".pack", ".lotpack", ".lotheader", ".tbx", ".lot", ".tiles", ".bin", ".zpop")

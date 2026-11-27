@@ -15,11 +15,11 @@ import math
 import os
 import shutil
 import struct
-from operator import itemgetter
-import sys
 
 import numpy as np
 from PIL import Image, ImageDraw
+
+from . import genfast as GF  # noqa: E402  rotinas nativas em Rust (pre-compiladas): GF.C (ctypes) e GF.GP (_gfpy)
 
 # ---------------------------------------------------------------- geometria (antes area.py), via configure()
 CS = 256
@@ -242,7 +242,9 @@ ISLAND.update({k: "tables" for k in ("cafe", "restaurantdining", "bar", "bakery"
 ISLAND["gasstore"] = "mix"
 ISLAND.update({k: "desks" for k in ("office", "policeoffice", "classroom", "post", "medicaloffice")})
 ISLAND.update({k: "beds" for k in ("hospitalroom", "medical")})
-TV = _f("appliances_television_01", E=0, S=1, W=2, N=3)
+ISLAND.update({k: "dine" for k in ("kitchen", "livingroom")})
+DINE_CHAIR = _f("furniture_seating_indoor_02", S=0, E=1, N=2, W=3)   # cadeira de madeira (casa)
+TV =_f("appliances_television_01", E=0, S=1, W=2, N=3)
 # moveis de 2 quadrados: face -> (tile na origem, tile no 2o quadrado, dx, dy) (SpriteGridPos da tiledef)
 TWO = {
     "bed": {"S": ("furniture_bedding_01_1", "furniture_bedding_01_0", 0, 1),
@@ -339,16 +341,25 @@ TWO["wardrobe"] = VAR2["wardrobe"][0][1] if VAR2["wardrobe"] else {}
 FURN["wardrobe"] = {}
 
 
+_RS = []    # room_style: [(7001 + i, tipo, pool, len)] e {grupo: 1a poltrona}, montados na 1a chamada
+
+
 def room_style(seed):
-    """estilo do comodo: {tipo: dict de faces}; sofa e poltrona do mesmo grupo quando existe."""
-    st = {}
-    for i, (k, pool) in enumerate(sorted(VAR.items()) + sorted(VAR2.items())):
-        if pool:
-            st[k] = pool[h32(seed, 7001 + i) % len(pool)]
+    """estilo do comodo: {tipo: dict de faces}; sofa e poltrona do mesmo grupo quando existe.
+    h32(seed, 7001 + i) com o 1o passo do hash fixo por comodo (mesmo resultado)."""
+    if not _RS:
+        _RS.append([(7001 + i, k, pool, len(pool)) for i, (k, pool) in
+                    enumerate(sorted(VAR.items()) + sorted(VAR2.items())) if pool])
+        arm = {}
+        for gn, v in VAR.get("armchair", ()):
+            arm.setdefault(gn, v)
+        _RS.append(arm)
+    hs = ((2166136261 ^ (int(seed) & 0xFFFFFFFF)) * 16777619) & 0xFFFFFFFF
+    st = {k: pool[(((hs ^ c) * 16777619) & 0xFFFFFFFF) % n] for c, k, pool, n in _RS[0]}
     if "couch" in st:
-        same_ = [v for gn, v in VAR["armchair"] if gn == st["couch"][0]]
-        if same_:
-            st["armchair"] = (st["couch"][0], same_[0])
+        v = _RS[1].get(st["couch"][0])
+        if v is not None:
+            st["armchair"] = (st["couch"][0], v)
     return {k: v[1] for k, v in st.items()}
 # piso proprio por comodo (azulejo no banheiro, ladrilho na cozinha)
 ROOM_FLOOR = {"bathroom": ["floors_interior_tilesandwood_01_5", "floors_interior_tilesandwood_01_11",
@@ -408,9 +419,10 @@ FACE = {"N": "S", "W": "E", "S": "N", "E": "W"}                      # parede ->
 FURNISH = {
     "kitchen": (["counter", "stove", "counter", "fridge", "counter", "counter", "counter", "counter"], ["counter"], 3),
     "bathroom": (["toilet", "sink", "bath", "medicine", "shower", "counter"], ["counter", "mshelf"], 3),
-    "bedroom": (["bed", "dresser", "sidetable", "wardrobe", "shelf"], ["sidetable", "dresser", "shelf"], 4),
-    "livingroom": (["couch", "tvstand", "bookshelf", "armchair", "sidetable", "couch2", "bookshelf"],
-                   ["armchair", "sidetable", "bookshelf"], 5),
+    "bedroom": (["bed", "dresser", "sidetable", "wardrobe", "shelf", "armchair", "sidetable"],
+                ["sidetable", "dresser", "shelf", "armchair"], 3),
+    "livingroom": (["couch", "tvstand", "bookshelf", "armchair", "sidetable", "couch2", "bookshelf", "armchair"],
+                   ["armchair", "sidetable", "bookshelf"], 3),
     "office": (["desk", "filing", "desk", "shelf"], ["filing", "desk"], False),
     "medicaloffice": (["mdesk", "exambed", "filing", "firstaid", "counter"], ["widemed"], 6),
     "classroom": (["desk", "shelf"], ["bench"], 4),
@@ -603,12 +615,143 @@ TWO["chalkboard"] = {"S": ("location_community_school_01_19", ["location_communi
                      "E": ("location_community_school_01_18", ["location_community_school_01_17",
                                                                  "location_community_school_01_16"], 0, 1)}
 EXTRA_FX = {"classroom": ["chalkboard"]}        # lousa na parede
+# m2 por item que o modelo vanilla (per 6-7) deixava ralo demais no predio inteiro (rodada 5)
+PER_OVR = {"policeoffice": 3, "policestorage": 3, "policelocker": 3, "evidenceroom": 3, "policegunstorage": 3,
+           "interrogationroom": 3, "policehall": 4, "lobby": 4, "hall": 4, "storage": 3}
+FURNISH["policehall"] = (["sidetable", "filing", "locker"], ["filing", "locker", "sidetable"], 4)
 
 
-def furnish(add, rname, cells_, same, z, dsq, stz, seed):
+class DoorSet(set):
+    """dsq (quadrados de porta, (x, y, z)) + vizinhancas mantidas a cada porta nova: cruz (blocked) e 3x3
+    (folga das ilhas; a de 2 e o 3x3 do 3x3). Troca 5-25 consultas por quadrado por 1-9."""
+    def __init__(self, it=()):
+        super().__init__(); self.cr, self.n9 = set(), set()
+        self |= it
+
+    def __ior__(self, o):
+        cr, n9 = self.cr, self.n9
+        for p in o:
+            if p in self:
+                continue
+            set.add(self, p)
+            x, y, z = p
+            cr.update(((x, y, z), (x - 1, y, z), (x + 1, y, z), (x, y - 1, z), (x, y + 1, z)))
+            n9.update(((x - 1, y - 1, z), (x, y - 1, z), (x + 1, y - 1, z), (x - 1, y, z), (x, y, z), (x + 1, y, z),
+                       (x - 1, y + 1, z), (x, y + 1, z), (x + 1, y + 1, z)))
+        return self
+
+    def add(self, p):
+        self.__ior__((p,))
+
+
+def furnish(add, rname, cells_, same, z, dsq, stz, seed, sk, grp=None):
     """Poe conteineres encostados nas paredes do comodo, sem bloquear porta, escada nem passagem."""
+    # tudo em Rust (_gfpy.furnish + Cat); config por nome de comodo memoizada
+    cf = _FCFG.get(rname)
+    if cf is None:
+        cf = _FCFG[rname] = _fcfg(rname)
+    if not cf:
+        return 0
+    fx, rep, per, reg, tp, tpl, alt, seat, grocery, hashed = cf
+    if grp is not None:     # (Groups, i, Cell): quadrados do comodo ja em Rust (unicos), moveis direto no registro
+        G_, gi, cell = grp
+        nC = G_.size(gi)
+        C = set(G_.cells(gi)) if ISLAND.get(rname) or rname in ROWS else None    # so as ilhas usam
+        cells_ = G_
+    else:
+        gi = cell = None
+        C = set(cells_)
+        nC = len(C)
+    if not nC:
+        return 0
+    if not isinstance(dsq, DoorSet):
+        dsq = DoorSet(dsq)
+    hs = ((2166136261 ^ (int(seed) & 0xFFFFFFFF)) * 16777619) & 0xFFFFFFFF
+    r = GF.GP.furnish(cells_, stz, dsq.cr, dsq.n9, z, sk, hs, fx, rep, hashed, max(len(fx), min(nC // per, 40)),
+                      alt, ((hs ^ 813) * 16777619) & 0xFFFFFFFF, dsq if reg else None, grocery, seat, _CAT[0],
+                      gi, cell)
+    if r is None:
+        return 0
+    adds, n, ctr, uk = r
+    for x, y, t_ in adds:
+        add(x, y, z, t_)
+    return n + _furn_tail(add, rname, C, z, dsq, stz, seed, reg, tpl, tp, ctr, uk)
+
+
+def _furn_tail(add, rname, C, z, dsq, stz, seed, reg, tpl, tp, ctr, busy):
+    """fim do furnish: tampos dos balcoes e ilhas/fileiras no miolo."""
+    n = 0
+    # em cima dos balcoes: caixa registradora e o que o vanilla poe (cafeteira, soda, chopeira...)
+    tops = ([REGISTER] if reg else []) + [FURN[k] for k in (tpl["tops"] if tpl else ())
+                                          if h32(seed, 812, len(k)) % 3 or rname == "kitchen"]
+    for (x, y, f), t_ in zip(ctr, tops):
+        if f in t_:
+            add(x, y, z, t_[f]); n += 1
+    mode = ISLAND.get(rname) or ("rows" if rname in ROWS else None)
+    if mode:
+        n += islands(add, mode, C, set(busy), z, dsq, stz, seed,
+                     gond=TWO.get(tp["gond"]) if tp and tp["gond"] else None,
+                     seat=(FURN.get(tp["row"]) or TWO.get(tp["row"])) if tp and tp["row"] else None,
+                     rname=rname)
+    return n
+
+
+_SEAT = {}
+_CAT = []       # [_gfpy.Cat, {tipo: id}, {tipo: (c, pool) do room_style}]
+_FCFG = {}      # nome do comodo -> config do furnish (Rust), ou False sem movel
+
+
+def _mkind(k, d, tv):
+    """tipo de movel resolvido para o Rust (mesmas regras do laco do furnish em Python)."""
+    fs = []
+    for f in "NWSE":
+        if f not in d:
+            fs.append(None)
+        elif k in TWO:
+            t1, t2, dx, dy = d[f]
+            fs.append((t1, t2 if isinstance(t2, list) else [t2], dx, dy, _TD.get(t1, {}).get("CustomName") == "Desk"))
+        else:
+            p_ = _TD.get(d[f], {})
+            fs.append((d[f], tv.get(f) if tv else None,
+                       k == "counter" or (p_.get("container") == "counter" and "IsTable" in p_),
+                       p_.get("CustomName") in ("Desk", "School Bench")))
+    return GF.GP.Kind(k in TWO, fs)
+
+
+def _kid(k):
+    """id do tipo no catalogo Rust: o padrao (FURN/TWO) e uma variante por item do pool do room_style
+    (x as da TV no tvstand); a poltrona segue o grupo do sofa quando existe (como room_style)."""
+    if not _CAT:
+        room_style(0)
+        sl = {k_: (c, pool) for c, k_, pool, n in _RS[0]}
+        cat = GF.GP.Cat()
+        _CAT.extend([cat, {}, sl])
+        cp, tvp = sl.get("couch"), sl.get("tv")
+        armv = []
+        if cp:
+            for gn, _ in cp[1]:
+                v = _RS[1].get(gn)
+                armv.append(_mkind("armchair", v, None) if v else None)    # sty.get(k) or FURN[k]
+        cat.setup((cp[0], len(cp[1])) if cp else None, armv, (tvp[0], len(tvp[1])) if tvp else None)
+    cat, ids, sl = _CAT
+    i = ids.get(k)
+    if i is None:
+        two = k in TWO
+        base = TWO[k] if two else FURN[k]
+        sp = sl.get(k)
+        usetv = k == "tvstand" and not two
+        tvs = [TV] + [v or TV for _, v in sl["tv"][1]] if usetv and "tv" in sl else [TV if usetv else None]
+        ds = [base] + [v or base for _, v in sp[1]] if sp else [base]
+        kinds = [_mkind(k, d, tv) for d in ds for tv in tvs]
+        i = ids[k] = cat.reg((sp[0], len(sp[1])) if sp else None, usetv and "tv" in sl,
+                             k == "armchair" and not two and bool(sl.get("couch")), kinds)
+    return i
+
+
+def _fcfg(rname):
+    """parte do furnish que so depende do nome do comodo (mesmas regras do Python)."""
     shop = any(s in rname for s in STOREISH)
-    dflt = (["counter"], ["sshelf", "mshelf"], True) if shop else ([], ["mshelf", "shelf"], 8)  # todo comodo tem loot
+    dflt = (["counter"], ["sshelf", "mshelf"], True) if shop else ([], ["mshelf", "shelf"], 8)
     tpl = TPL.get(rname)
     tp = tpl if rname not in HAND_ONLY else None
     if tp and rname not in HAND_MERGE:
@@ -618,131 +761,25 @@ def furnish(add, rname, cells_, same, z, dsq, stz, seed):
         if tp:
             fx = list(fx) + [k for k in tp["fx"] if k not in fx]
             rep = list(rep) + tp["rep"]
-    per = reg if isinstance(reg, int) and not isinstance(reg, bool) else 5   # m2 por item (RC: ~10-27/100m2)
+    per = reg if isinstance(reg, int) and not isinstance(reg, bool) else 5
+    per = PER_OVR.get(rname, 4 if shop and per > 4 else per)
     reg = reg is True or bool(tp and (shop or rname in REG_ROOMS))
     if reg and tp and "counter" not in fx:
-        fx = ["counter"] + list(fx)        # balcao do caixa
+        fx = ["counter"] + list(fx)
     fx = EXTRA_FX.get(rname, []) + list(fx)
     if not fx and not rep:
-        return 0
-    C = set(cells_)
-    if not C:
-        return 0
-    near = lambda x, y, S_: bool(S_) and any((x + a, y + b) in S_ for a in (-1, 0, 1) for b in (-1, 0, 1))
-    D9 = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 0), (0, 1), (1, -1), (1, 0), (1, 1))
-    nd = lambda x, y: bool(dsq) and any((x + a, y + b, z) in dsq for a, b in D9)
-    used, keep = set(), set()
-    # zona livre (calcula 1 vez): a escada com patamar (st_zone ja tem folga) e a porta + vizinhos em cruz;
-    # o 3x3 em volta de cada lado da porta + anel da escada tirava ~metade do comodo (11 de 24 quadrados)
-    def blocked(x, y):
-        return ((x, y) in stz or (x, y, z) in dsq or (x - 1, y, z) in dsq or
-                (x + 1, y, z) in dsq or (x, y - 1, z) in dsq or (x, y + 1, z) in dsq)
-    xmin, xmax = min(x for x, _ in C), max(x for x, _ in C)
-    ymin, ymax = min(y for _, y in C), max(y for _, y in C)
-    if len(C) == (xmax - xmin + 1) * (ymax - ymin + 1):
-        boundary = {(x, y) for x in range(xmin, xmax + 1) for y in (ymin, ymax)} | \
-                   {(x, y) for y in range(ymin + 1, ymax) for x in (xmin, xmax)}
-    else:
-        boundary = {(x, y) for x, y in C if (x - 1, y) not in C or (x + 1, y) not in C or
-                    (x, y - 1) not in C or (x, y + 1) not in C}
-    cand = []
-    for x, y in boundary:
-        if blocked(x, y):
-            continue
-        walls = [d for d, (a, b) in (("N", (0, -1)), ("W", (-1, 0)), ("S", (0, 1)), ("E", (1, 0)))
-                 if (x + a, y + b) not in C and not same(x + a, y + b)]
-        if not walls or ({"N", "S"} <= set(walls) and {"W", "E"} <= set(walls)):
-            continue
-        if {"N", "S"} <= set(walls) or {"W", "E"} <= set(walls):
-            continue    # corredor de 1 tile: nao bloqueia
-        cand.append((x, y, walls))
-    cand.sort(key=lambda c: (h32(seed, c[0], c[1]), (c[0], c[1])))
-    if not cand:
-        return 0
-    cap = max(len(fx), min(len(C) // per, 40))
-    if tp and rep:      # sorteio ponderado por comodo (variedade como no vanilla)
-        items = list(fx) + [rep[h32(seed, 811, i) % len(rep)] for i in range(cap - len(fx))]
-    else:
-        items = list(fx) + [rep[i % len(rep)] for i in range(cap - len(fx))] if rep else list(fx)
-    n = 0
-    ctr = []
-    sty = room_style(seed)
-    alt = [k for k in dict.fromkeys(list(fx) + list(rep)) if k in FURN and len(FURN[k]) >= 3]  # 1 quadrado
-    lim = len(items) * 2
-    doors = [(x, y) for x, y in C if (x, y, z) in dsq] if reg else []
-    checkout_cand = sorted(cand, key=lambda c: min(abs(c[0] - x) + abs(c[1] - y) for x, y in doors)) if doors else cand
-    rear_cand = list(reversed(checkout_cand)) if rname == "grocery" and doors else cand
-    for kind in items:
-        # O caixa fica o mais proximo possivel da entrada, sem invadir sua passagem.
-        candidates = checkout_cand if kind == "counter" and reg else rear_cand if kind in ("cooler", "shopfreezer") and rname == "grocery" else cand
-        for x, y, walls in candidates:
-            if (x, y) in used or (x, y) in keep:
-                continue
-            if kind in TWO:
-                two = sty.get(kind) or TWO[kind]
-                ok = None
-                for w in walls:
-                    f = FACE[w]
-                    if f not in two:
-                        continue
-                    t1, t2, dx, dy = two[f]
-                    rest = t2 if isinstance(t2, list) else [t2]
-                    ps = [(x + dx * (i + 1), y + dy * (i + 1)) for i in range(len(rest))]
-                    if any(q not in C or q in used or q in keep or blocked(*q) for q in ps):
-                        continue
-                    ok = (f, t1, rest, ps); break
-                if not ok:
-                    continue
-                f, t1, rest, ps = ok
-                add(x, y, z, t1)
-                for (x2, y2), t_ in zip(ps, rest):
-                    add(x2, y2, z, t_)
-                used |= {(x, y)} | set(ps)
-                a, b = FRONT[f]
-                keep |= {(q[0] + a, q[1] + b) for q in [(x, y)] + ps}
-                if tp and tp["seat"] and _TD.get(t1, {}).get("CustomName") == "Desk":
-                    q = (x + dx + a, y + dy + b) if ps else (x + a, y + b)
-                    ff = {v: k for k, v in FACE.items()}[f]     # cadeira olha para a mesa
-                    if q in C and q not in used and not nd(*q) and ff in FURN[tp["seat"]]:
-                        add(q[0], q[1], z, FURN[tp["seat"]][ff]); used.add(q)
-                n += 1
-                break
-            opts = sty.get(kind) or FURN[kind]
-            w = next((d for d in walls if FACE[d] in opts), None)
-            if not w:
-                continue
-            f = FACE[w]
-            add(x, y, z, opts[f])
-            if kind == "tvstand":
-                add(x, y, z, (sty.get("tv") or TV)[f])
-            a, b = {"N": (0, 1), "S": (0, -1), "W": (1, 0), "E": (-1, 0)}[w]
-            p_ = _TD.get(opts[f], {})
-            if kind == "counter" or (p_.get("container") == "counter" and "IsTable" in p_):
-                ctr.append((x, y, f))
-            used.add((x, y))
-            if tp and tp["seat"] and p_.get("CustomName") in ("Desk", "School Bench") and \
-                    (x + a, y + b) in C and (x + a, y + b) not in used and not nd(x + a, y + b):
-                add(x + a, y + b, z, FURN[tp["seat"]][w])      # cadeira na frente da mesa, olhando para ela
-                used.add((x + a, y + b))
-            keep.add((x + a, y + b))          # passagem na frente do movel
-            n += 1
-            break
-        else:   # 2a passada: o que nao coube (2 quadrados, face errada) vira um movel de 1 quadrado do comodo
-            if alt and len(items) < lim:
-                items.append(alt[h32(seed, 813, len(items)) % len(alt)])
-    # em cima dos balcoes: caixa registradora e o que o vanilla poe (cafeteira, soda, chopeira...)
-    tops = ([REGISTER] if reg else []) + [FURN[k] for k in (tpl["tops"] if tpl else ())
-                                          if h32(seed, 812, len(k)) % 3 or rname == "kitchen"]
-    for (x, y, f), t_ in zip(ctr, tops):
-        if f in t_:
-            add(x, y, z, t_[f]); n += 1
-    mode = ISLAND.get(rname) or ("rows" if rname in ROWS else None)
-    if mode:
-        n += islands(add, mode, C, used | keep, z, dsq, stz, seed,
-                     gond=TWO.get(tp["gond"]) if tp and tp["gond"] else None,
-                     seat=(FURN.get(tp["row"]) or TWO.get(tp["row"])) if tp and tp["row"] else None,
-                     rname=rname)
-    return n
+        return False
+    grocery = rname == "grocery"
+    ks = lambda L: [(_kid(k), 1 if k == "counter" and reg else 2 if grocery and k in ("cooler", "shopfreezer") else 0)
+                    for k in L]
+    alt = [k for k in dict.fromkeys(list(fx) + list(rep)) if k in FURN and len(FURN[k]) >= 3]
+    seat = None
+    if tp and tp["seat"]:
+        seat = _SEAT.get(tp["seat"])
+        if seat is None:
+            sd = FURN[tp["seat"]]
+            seat = _SEAT[tp["seat"]] = [sd.get(d) for d in "NWSE"]
+    return ks(fx), ks(rep), per, reg, tp, tpl, ks(alt), seat, grocery, bool(tp and rep)
 
 
 REG_ROOMS = {"gasstore", "cafe", "bar", "bakery", "icecream", "pharmacy", "grocery", "burgerkitchen", "pizzakitchen",
@@ -753,14 +790,25 @@ ROWS = {"classroom", "theatre", "church", "auditorium", "meetingroom", "lectureh
 def islands(add, mode, C, busy, z, dsq, stz, seed, gond=None, seat=None, rname=None):
     """miolo do comodo (>= 2 tiles de qualquer parede, porta ou escada): gondolas duplas em fileiras com
     corredor de 2, e/ou mesas redondas com 2 cadeiras plasticas."""
-    def far(x, y, r):
-        return all((x + a, y + b) in C for a in range(-r, r + 1) for b in range(-r, r + 1))
+    if not isinstance(dsq, DoorSet):
+        dsq = DoorSet(dsq)
     # Enfermarias comuns sao pequenas: dois tiles de margem impediam os leitos com cortina.
-    margin = 1 if mode == "beds" else 2
-    offsets = range(-margin, margin + 1)
-    I = {c for c in C if far(c[0], c[1], margin) and c not in busy and
-         not any((c[0] + a, c[1] + b) in stz for a in offsets for b in offsets) and
-         not any((c[0] + a, c[1] + b, z) in dsq for a in offsets for b in offsets)}
+    margin = 1 if mode in ("beds", "dine") else 2
+    I = GF.GP.isl_mask(C, busy, stz, dsq.n9, z, margin, mode == "dine")     # miolo em Rust (_gfpy.isl_mask)
+    if mode != "dine":
+        I = set(I)
+    if mode == "dine":   # casa: mesa de jantar com cadeiras no miolo (cozinha/sala, como no vanilla)
+        I = sorted(I, key=lambda c: h32(seed, 95, c[0], c[1]))
+        tb = ROUND_TABLES[h32(seed, 91) % len(ROUND_TABLES)]
+        for x, y in I[:6]:
+            ch = [(x + a, y + b, f) for a, b, f in ((-1, 0, "E"), (1, 0, "W"), (0, -1, "S"), (0, 1, "N"))
+                  if (x + a, y + b) in C and (x + a, y + b) not in busy]
+            if len(ch) >= 2:
+                add(x, y, z, tb)
+                for cx, cy, f in ch:
+                    add(cx, cy, z, DINE_CHAIR[f])
+                return 1 + len(ch)
+        return 0
     if len(I) < 4:
         return 0
     xs, ys = [c[0] for c in I], [c[1] for c in I]
@@ -869,27 +917,6 @@ UG_W = {"river": (10, 6), "canal": (8, 4), "stream": (6, 2)}   # galeria subterr
 UG_GAP = 110                   # 1 escada de acesso a galeria a cada ~110 m
 
 
-def h32(*a):
-    """hash deterministico pequeno para variacoes."""
-    x = 2166136261
-    for v in a:
-        x = ((x ^ (int(v) & 0xFFFFFFFF)) * 16777619) & 0xFFFFFFFF
-    return x
-
-
-def h32_grid(x0, y0, n, *extra):
-    """h32(x0 + x, y0 + y, *extra) para a grade n x n, como lista [y][x] (o laco por quadrado chamava h32 milhoes de vezes)."""
-    M, P = np.uint64(0xFFFFFFFF), np.uint64(16777619)
-    a = (np.arange(x0, x0 + n, dtype=np.int64) & 0xFFFFFFFF).astype(np.uint64)
-    b = (np.arange(y0, y0 + n, dtype=np.int64) & 0xFFFFFFFF).astype(np.uint64)
-    x = ((np.uint64(2166136261) ^ a) * P) & M
-    x = ((x[None, :] ^ b[:, None]) * P) & M
-    for e in extra:
-        x = ((x ^ np.uint64(int(e) & 0xFFFFFFFF)) * P) & M
-    return x.tolist()
-
-
-
 # ---------------------------------------------------------------- fontes compactas (ja projetadas)
 class Store:
     """Feicoes projetadas no mapa: lista de aneis float32 (0 = externo) + bbox + tags."""
@@ -969,8 +996,8 @@ def _winpad(A, oy, ox, n, p):
     return np.pad(sub, ((max(0, -ya), max(0, yb - H_)), (max(0, -xa), max(0, xb - W_))), mode="edge")
 
 
-def ground_edges(Ga, LNa, oy, ox, n, HH, wx0, wy0):
-    """Pecas de borda do chao z0 de uma celula, vetorizado: {(x,y): [tiles]} para por logo acima do piso.
+def ground_edges(Ga, LNa, oy, ox, n, HH, wx0, wy0, cell, Bm):
+    """Pecas de borda do chao z0 de uma celula, vetorizado (mascaras em numpy, pecas no Cell.edges do Rust).
     - natural invade o vizinho (grama sobre calcada/terra, mata sobre grama, agua sobre grama): blends 1-4/8-15
     - asfalto em degrau de 1 quadrado: meia-peca de asfalto + meio-fio diagonal
     - meio-fio: no quadrado N/W da divisa asfalto x alto, peca da CURB_LUT (vanilla)
@@ -995,38 +1022,21 @@ def ground_edges(Ga, LNa, oy, ox, n, HH, wx0, wy0):
     K[R1 & aS & aE & ~aN & ~aW] = 2
     K[R1 & aS & aW & ~aN & ~aE] = 3
     K[R1 & aN & aE & ~aS & ~aW] = 4
-    out = {}
+    # Rust (Cell.edges): so as mascaras aqui; o dict e o laco do write_cell la
+    return _edges_rs(cell, n, K, wat, nat, wood, A, R, LNa, oy, ox, HH, wx0, wy0, Bm, sh, natc_of=None)
 
-    def put(M, f):
-        ys, xs = np.nonzero(M)
-        for y, x in zip(ys.tolist(), xs.tolist()):
-            v = f(y, x)
-            out.setdefault((x, y), []).extend(v if isinstance(v, list) else [v])
-
+def _edges_rs(cell, n, K, wat, nat, wood, A, R, LNa, oy, ox, HH, wx0, wy0, Bm, sh, natc_of=None):
+    """mascaras do ground_edges (mesmas contas) -> Cell.edges."""
     c = (slice(1, -1), slice(1, -1))
     Kc = K[c]
-    # 1) natural invadindo o vizinho (mascara cardinal do invasor -> pecas da BLEND_LUT; 8-11 sorteia 12-15)
     bit = lambda M: (sh(M, -1, 0, 2).astype(np.uint8) | sh(M, 0, 1, 2) * 2 | sh(M, 1, 0, 2) * 4 | sh(M, 0, -1, 2) * 8)
     natc, woodc, Ac, Rc = sh(nat, 0, 0, 2), sh(wood, 0, 0, 2), sh(A, 0, 0, 2), sh(R, 0, 0, 2)
     mwood = bit(wood)
-    for src, rec, kind in ((wat, natc, "agua"), (nat, (Rc | Ac) & ~natc, "nat"), (wood, natc & ~woodc, "mata")):
+    ms = []
+    for src, rec in ((wat, natc), (nat, (Rc | Ac) & ~natc), (wood, natc & ~woodc)):
         m = bit(src)
         m[~rec] = 0
-        ys, xs = np.nonzero(m)
-        for y, x in zip(ys.tolist(), xs.tolist()):
-            mm = int(m[y, x])
-            if kind == "agua":
-                base = "blends_natural_02_"; f = 0
-            else:
-                base = "blends_natural_01_"
-                f = 16 if kind == "mata" or mwood[y, x] & mm else 32
-            hh = HH[y][x]
-            out.setdefault((x, y), []).extend(f"{base}{f + (k + 4 if k >= 8 and hh & 1 else k)}" for k in BLEND_LUT[mm])
-    # 2) degrau de asfalto: meia-peca + meio-fio diagonal
-    put(Kc > 0, lambda y, x: f"blends_street_01_{ASPH_FAM + int(Kc[y, x])}")
-    put((Kc == 1) | (Kc == 2), lambda y, x: CURB_DIAG[int(Kc[y, x])])
-    # 3) meio-fio reto/canto: vizinho em degrau conta como asfalto so pelo lado em que a meia-peca e asfalto;
-    #    para o asfalto, predio/agua ao lado tambem nao pede meio-fio
+        ms.append(np.ascontiguousarray(m, np.uint8))
     Ke, Ks, Kse = sh(K, 0, 1), sh(K, 1, 0), sh(K, 1, 1)
     hiE, hiS, hiSE = (np.where(Ac, ~sh(R, dy, dx, 2), sh(A, dy, dx, 2)) for dy, dx in ((0, 1), (1, 0), (1, 1)))
     eA = hiE | (Ke == 1) | (Ke == 3)
@@ -1034,12 +1044,14 @@ def ground_edges(Ga, LNa, oy, ox, n, HH, wx0, wy0):
     seA = hiSE | (Kse == 1)
     code = np.where(Ac, 8, 0) + eA * 4 + seA * 2 + sA * 1
     code[~(Ac | Rc) | (Kc > 0)] = 16
-    keys = [("A" if i & 8 else "R") + f"{(i >> 2) & 1}{(i >> 1) & 1}{i & 1}" for i in range(16)]
-    pcs = [[f"street_curbs_01_{p}" for p in CURB_LUT.get(k, [])] for k in keys] + [[]]
-    curb = np.array([bool(p) for p in pcs], bool)[code]
-    put(curb, lambda y, x: pcs[int(code[y, x])])
-    # 4) faixas pintadas: linha em x na borda N, em y na borda W; so trecho reto (o vanilla nao pinta diagonal,
-    #    e ligar o degrau virava zigue-zague)
+    if not _EDG:
+        keys = [("A" if i & 8 else "R") + f"{(i >> 2) & 1}{(i >> 1) & 1}{i & 1}" for i in range(16)]
+        pcs = [[f"street_curbs_01_{p}" for p in CURB_LUT.get(k, [])] for k in keys] + [[]]
+        _EDG.extend([pcs, np.array([bool(p) for p in pcs], bool), [[int(k) for k in b] for b in BLEND_LUT],
+                     ["", CURB_DIAG[1], CURB_DIAG[2]],
+                     [""] + [f"street_trafficlines_01_{LINE_PC[i]}" for i in (1, 2, 3)]])
+    pcs, curbv, blend, cdiag, lines = _EDG
+    curb = curbv[code]
     L2 = _winpad(LNa, oy, ox, n, 2)
     jj, ii = np.mgrid[0:n + 4, 0:n + 4]
     on = (L2 > 0) & ((L2 < 3) | (((np.where(L2 == 3, ii + wx0, jj + wy0) - 2) // 3) % 2 == 0)) & A
@@ -1048,8 +1060,70 @@ def ground_edges(Ga, LNa, oy, ox, n, HH, wx0, wy0):
     eW = sh(Ly, 0, 0) & (sh(Ly, 1, 0) | sh(Ly, -1, 0))
     pc = eN[c].astype(np.uint8) | eW[c] * 2
     pc[~Ac | curb] = 0
-    put(pc > 0, lambda y, x: f"street_trafficlines_01_{LINE_PC[int(pc[y, x])]}")
-    return out
+    u8 = lambda v: np.ascontiguousarray(v, np.uint8)
+    keep = [ms[0], ms[1], ms[2], u8(mwood), u8(Kc), u8(code), u8(curb), u8(pc),
+            np.ascontiguousarray(HH, np.uint32), u8(Bm)]
+    p_ = [a_.ctypes.data for a_ in keep]
+    cell.edges(n, (p_[0], p_[1], p_[2]), p_[3], p_[4], p_[5], p_[6], p_[7], p_[8], p_[9], blend, ASPH_FAM, cdiag,
+               pcs, lines)
+    return None
+
+
+_EDG = []   # ground_edges Rust: (pecas de meio-fio por codigo, tem peca?, BLEND_LUT, CURB_DIAG, faixas)
+
+
+def h32(*a):
+    """hash deterministico pequeno para variacoes."""
+    x = 2166136261
+    for v in a:
+        x = ((x ^ (int(v) & 0xFFFFFFFF)) * 16777619) & 0xFFFFFFFF
+    return x
+
+
+
+def h32_grid(x0, y0, n, *extra, arr=False):
+    """h32(x0 + x, y0 + y, *extra) para a grade n x n, como lista [y][x] (o laco por quadrado chamava h32 milhoes de vezes)."""
+    M, P = np.uint64(0xFFFFFFFF), np.uint64(16777619)
+    a = (np.arange(x0, x0 + n, dtype=np.int64) & 0xFFFFFFFF).astype(np.uint64)
+    b = (np.arange(y0, y0 + n, dtype=np.int64) & 0xFFFFFFFF).astype(np.uint64)
+    x = ((np.uint64(2166136261) ^ a) * P) & M
+    x = ((x[None, :] ^ b[:, None]) * P) & M
+    for e in extra:
+        x = ((x ^ np.uint64(int(e) & 0xFFFFFFFF)) * P) & M
+    return x.astype(np.uint32) if arr else x.tolist()
+
+
+_GK = {}   # chaves (x, y, 0) da grade, por tamanho
+_GT = []   # tabela de codigos do chao z0 nativo (ordem fixa, ver genfast_rs/src/lib.rs::ground_z0)
+
+
+def ground_native(Bw, g, gw, tr, wx0, wy0, ntree, blds, T, sq):
+    """chao z0 do write_cell em Rust: preenche sq[(x, y, 0)] (ordem de nomes = primeiro uso)."""
+    if not _GT:
+        assert [len(v) for v in (ASPHALT, SIDEWALK, PAVING, YARD, GRASS, GRASS2, WATER, TREES)] == [8, 8, 2, 2, 4, 4, 4, 7]
+        _GT.extend(ASPHALT + SIDEWALK + PAVING + YARD + GRASS + GRASS2 + WATER + TREES + [LAMP] + FLOORS_RES + FLOORS_COM)
+    fl = np.zeros(int(Bw.max()) + 1, np.int32)
+    for bi in np.unique(Bw).tolist():
+        if bi:
+            b = blds[bi]
+            fl[bi] = -1 if b["kind"] == "masp" else (40 + b["h"] % len(FLOORS_RES) if b["kind"] == "res" else
+                                                     40 + len(FLOORS_RES) + b["h"] % len(FLOORS_COM))
+    o1, o2 = GF.ground_z0(Bw, fl, g, gw, tr, h32_grid(wx0, wy0, g.shape[0], arr=True), wx0, wy0, ntree)
+    seq = np.stack([o1.ravel(), o2.ravel()], 1).ravel()
+    seq = seq[seq >= 0]
+    u, first = np.unique(seq, return_index=True)
+    lut = np.full(len(_GT), -1, np.int32)
+    for c in u[np.argsort(first, kind="stable")].tolist():    # primeiro uso, como o add() do laco
+        lut[c] = T(_GT[c])
+    a_, b_ = lut[o1].ravel(), np.where(o2 >= 0, lut[np.maximum(o2, 0)], -1).ravel()     # ordem y, x
+    a_, b_ = np.ascontiguousarray(a_, np.int32), np.ascontiguousarray(b_, np.int32)
+    sq.ground(a_.ctypes.data, b_.ctypes.data, g.shape[0])
+
+
+def sqpush(sq, ev, rank=2):
+    """push no registro Rust (genfast_py.Cell: ponteiro + tamanho)."""
+    ev = np.ascontiguousarray(ev, np.int64)
+    sq.push(ev.ctypes.data, len(ev), rank)
 
 
 def load_sources(d, extra=None):
@@ -1135,26 +1209,6 @@ def levels_of(t, area_m2):
     if area_m2 < 1200:
         return 5
     return 8
-
-
-def snap_poly(pts):
-    """Gira o poligono em torno do centroide para alinhar ao grid se estiver a <20 graus."""
-    if len(pts) < 4:
-        return pts
-    num = den = 0.0
-    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
-        dx, dy = x1 - x0, y1 - y0
-        L = math.hypot(dx, dy)
-        if L < 1e-6:
-            continue
-        a = math.atan2(dy, dx) * 4.0        # mod 90 graus
-        num += L * math.sin(a); den += L * math.cos(a)
-    alpha = math.atan2(num, den) / 4.0
-    if abs(math.degrees(alpha)) > 20 or abs(alpha) < 1e-3:
-        return pts
-    cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
-    c, s = math.cos(-alpha), math.sin(-alpha)
-    return [(cx + (x - cx) * c - (y - cy) * s, cy + (x - cx) * s + (y - cy) * c) for x, y in pts]
 
 
 def poly_area(pts):
@@ -1319,11 +1373,9 @@ def build_rasters(rx0, ry0):
 
     # 3) calcadas: anel de 3 m em volta do asfalto
     asph = Ga == G_ASPH
-    near = np.zeros_like(asph)
-    for dy in range(-3, 4):
-        for dx in range(-3, 4):
-            if dx * dx + dy * dy <= 10:
-                near |= np.roll(np.roll(asph, dy, 0), dx, 1)
+    from ._ndi import ndimage     # scipy se houver; senao numpy (editor sem scipy)
+    yy_, xx_ = np.mgrid[-3:4, -3:4]
+    near = ndimage.binary_dilation(np.pad(asph, 3, mode="wrap"), structure=(xx_ * xx_ + yy_ * yy_ <= 10))[3:-3, 3:-3]
     side = near & ~asph & (Ga != G_PAVE) & (Ga != G_WATER)
     Ga[side] = G_SIDE
 
@@ -1366,12 +1418,19 @@ def build_rasters(rx0, ry0):
     GSr = Image.new("L", (W, H), 0)
     dGS = ImageDraw.Draw(GSr)
     items = []
-    for i in GB.sel(*box):
-        o = P(GB.rings[i][0])
-        ar = poly_area(o)
+    gsel = list(GB.sel(*box))
+    if gsel:       # area e centro de todos os aneis numa chamada nativa
+        gr = [GB.rings[i][0] for i in gsel]
+        goff = np.zeros(len(gr) + 1, np.int64); np.cumsum([len(r) for r in gr], out=goff[1:])
+        gxy = np.concatenate(gr) - off
+        gst = GF.ring_stats(gxy.astype(np.float64), goff).tolist()
+        gxy = gxy.tolist(); goff = goff.tolist()
+    for gk, i in enumerate(gsel):
+        o = list(map(tuple, gxy[goff[gk]:goff[gk + 1]]))
+        ar, cxf, cyf = gst[gk]
         if len(o) < 3 or ar < 12:
             continue
-        cx_ = int(sum(p[0] for p in o) / len(o)); cy_ = int(sum(p[1] for p in o) / len(o))
+        cx_ = int(cxf); cy_ = int(cyf)
         cj = int(CNa[min(H - 1, max(0, cy_)), min(W - 1, max(0, cx_))])
         if cj and ar <= 1.5 * canop[cj - 1][2]:
             continue                            # GeoSampa fecha a cobertura do posto como predio: fica aberta
@@ -1403,12 +1462,19 @@ def build_rasters(rx0, ry0):
     masp = None
     masp_rect = None
     items.sort(key=lambda z: -z[0])
-    for ar, o, t, ismasp, inner, fid in items:
+    cls = [o + [o[0]] if o[0] != o[-1] else o for _, o, *_r in items]
+    if items:      # snap_poly + perimetro + area + centro de todos os predios numa chamada nativa
+        boff = np.zeros(len(cls) + 1, np.int64); np.cumsum([len(c) for c in cls], out=boff[1:])
+        bxy = np.array([q for c in cls for q in c], np.float64).reshape(-1, 2)
+        bxy2, bgeo = GF.bld_geom(bxy, boff, [len(it[1]) for it in items])
+        bgeo = bgeo.tolist(); boff = boff.tolist()
+    for ik, (ar, o, t, ismasp, inner, fid) in enumerate(items):
         if ismasp and masp is not None:
             continue                            # MASP: um volume so
         idx = len(blds)
-        closed = o + [o[0]] if o[0] != o[-1] else o
-        o2 = snap_poly(closed)
+        closed = cls[ik]
+        rot_, per_, carea_, cxf_, cyf_ = bgeo[ik]
+        o2 = list(map(tuple, bxy2[boff[ik]:boff[ik + 1]].tolist())) if rot_ else closed
         if ismasp:
             # caixa suspensa real: 74 x 30 m retangular, vao livre embaixo (o contorno OSM pega a praca)
             xs_ = [q[0] for q in closed]; ys_ = [q[1] for q in closed]
@@ -1432,13 +1498,12 @@ def build_rasters(rx0, ry0):
                 dB.polygon(i, fill=0)
         lv = levels_of(t, ar)
         b = t.get("building", "yes")
-        cxp = min(W - 1, max(0, int(sum(p[0] for p in o) / len(o))))
-        cyp = min(H - 1, max(0, int(sum(p[1] for p in o) / len(o))))
+        cxp = min(W - 1, max(0, int(cxf_)))
+        cyp = min(H - 1, max(0, int(cyf_)))
         # predio muito alto so na Paulista e no centro perto do MASP; fora, 1 em 12 passa de 8 andares
         mxl, myl = rx0 + cxp, ry0 + cyp
         lv = min(lv, MAXL)
-        per_ = sum(math.hypot(q1[0] - q0[0], q1[1] - q0[1]) for q0, q1 in zip(closed, closed[1:]))
-        circ = 4 * math.pi * poly_area(closed[:-1]) / max(per_ * per_, 1e-6)
+        circ = 4 * math.pi * carea_ / max(per_ * per_, 1e-6)
         keep = ismasp or (circ > 0.8 and len(closed) >= 9) or b in ("roof", "dome", "stadium", "grandstand") or \
             "leisure" in t
         lu = int(LUa[cyp, cxp])
@@ -1471,13 +1536,11 @@ def build_rasters(rx0, ry0):
     del B, dB
     Ba[pub & (Ba > 0)] = 0  # via publica vence; estacionamento/servico ficam sob o predio
     # remove lascas de 1 tile: fica so quem pertence a algum bloco 2x2 do mesmo predio
-    keep = np.zeros(Ba.shape, bool)
-    for dy in (0, -1):
-        for dx in (0, -1):
-            a0 = np.roll(np.roll(Ba, dy, 0), dx, 1)
-            blk = (a0 > 0) & (a0 == np.roll(a0, -1, 1)) & (a0 == np.roll(a0, -1, 0)) & \
-                  (a0 == np.roll(np.roll(a0, -1, 0), -1, 1))
-            keep |= np.roll(np.roll(blk, -dy, 0), -dx, 1)
+    # (as 4 voltas antigas de np.roll davam sempre a mesma mascara: o quadrado e o canto NW de um 2x2;
+    #  aqui ela e calculada uma vez so, com o mesmo enrolamento nas bordas)
+    a1 = np.roll(Ba, -1, 0)
+    keep = (Ba > 0) & (Ba == np.roll(Ba, -1, 1)) & (Ba == a1) & (Ba == np.roll(a1, -1, 1))
+    del a1
     Ba[~keep] = 0
     rectify(Ba, blds)
     # remove predios minusculos (<16 tiles) ou finos (bbox com lado < 3)
@@ -1881,16 +1944,16 @@ def kiosk_tardio(Ba, Ga, CNa, pub, blds, xi, yi, pt, fid):
     (banca 4x4 / loja 6x6) no lugar livre mais perto, ate POI_SNAP. -> (predio, x, y) ou None."""
     H_, W_ = Ba.shape
     sh = pt.get("shop")
-    # mascaras so na janela em volta do POI (no raster inteiro custava ~3 np.isin por POI)
-    R = POI_SNAP + 12
-    wy, wx = max(0, yi - R), max(0, xi - R)
-    sl = (slice(wy, min(H_, yi + R + 1)), slice(wx, min(W_, xi + R + 1)))
-    Gw, aw = Ga[sl], (np.isin(Ga[sl], (G_ASPH, G_WATER)) | (CNa[sl] > 0))
-    hard = pub[sl] | aw
+    # mascaras so na janela que a busca alcanca (eram 3 isin do raster inteiro por POI)
+    R_ = POI_SNAP + 12
+    wy0, wx0 = max(0, yi - R_), max(0, xi - R_)
+    sw = (slice(wy0, max(wy0, min(H_, yi + R_ + 1))), slice(wx0, max(wx0, min(W_, xi + R_ + 1))))
+    Gw, Cw, pw = Ga[sw], CNa[sw], pub[sw]
+    hard = pw | np.isin(Gw, (G_ASPH, G_WATER)) | (Cw > 0)
     rua = pt.get("amenity") == "marketplace"     # feira livre fecha a rua de verdade (como em synth_kiosks)
     for n, bad in ((4 if sh in KIOSK_SHOPS else 6, hard | (Gw == G_SIDE)), (4, hard),
-                   (4, aw),     # patio/estacionamento servem
-                   (4, (Gw == G_WATER) if rua else aw)):
+                   (4, np.isin(Gw, (G_ASPH, G_WATER)) | (Cw > 0)),     # patio/estacionamento servem
+                   (4, (Gw == G_WATER) if rua else np.isin(Gw, (G_ASPH, G_WATER)) | (Cw > 0))):
         best = None
         rr = POI_SNAP + 2 if bad is not hard and n == 4 else POI_SNAP   # ultima tentativa: borda ainda a <= 6
         for dy in range(-rr, rr + 1):
@@ -1901,7 +1964,7 @@ def kiosk_tardio(Ba, Ga, CNa, pub, blds, xi, yi, pt, fid):
                 d = dx * dx + dy * dy
                 if best and d >= best[0]:
                     continue
-                if Ba[y0 - 1:y0 + n + 1, x0 - 1:x0 + n + 1].any() or bad[y0 - wy:y0 - wy + n, x0 - wx:x0 - wx + n].any():
+                if Ba[y0 - 1:y0 + n + 1, x0 - 1:x0 + n + 1].any() or bad[y0 - wy0:y0 - wy0 + n, x0 - wx0:x0 - wx0 + n].any():
                     continue
                 best = (d, x0, y0)
         if best:
@@ -1921,14 +1984,15 @@ def posto_predios(Ba, blds, canop, CNa):
     nb = len(blds)
     tot = np.bincount(Ba.ravel(), minlength=nb)
     n = 0
+    from ._ndi import ndimage     # scipy se houver; senao numpy (editor sem scipy)
+    fo = ndimage.find_objects(CNa, max_label=len(canop))     # caixa de cada cobertura (era um nonzero do bloco inteiro)
     for j in range(len(canop)):
-        m = CNa == j + 1
-        ys, xs = np.nonzero(m)
-        if not len(xs):
+        sl = fo[j] if j < len(fo) else None
+        if sl is None:
             continue
-        x0, x1 = max(0, int(xs.min()) - 3), int(xs.max()) + 4
-        y0, y1 = max(0, int(ys.min()) - 3), int(ys.max()) + 4
-        sub, ms = Ba[y0:y1, x0:x1], m[y0:y1, x0:x1]
+        x0, x1 = max(0, sl[1].start - 3), sl[1].stop - 1 + 4
+        y0, y1 = max(0, sl[0].start - 3), sl[0].stop - 1 + 4
+        sub, ms = Ba[y0:y1, x0:x1], CNa[y0:y1, x0:x1] == j + 1
         dm = ms.copy()
         for _ in range(3):
             d2 = dm.copy()
@@ -2054,11 +2118,18 @@ def plan_postos(Ba, Ga, blds, canop, CNa, srcs, todos=()):
         if 0 <= x < W_ and 0 <= y < H_:
             xsq.setdefault((x, y, z), []).extend(ts)
 
+    from ._ndi import ndimage     # scipy se houver; senao numpy (editor sem scipy)
+    fo = ndimage.find_objects(CNa, max_label=len(canop))     # caixa de cada cobertura: nonzero so nela
     for j, (o, t, ar) in enumerate(canop):
-        m = (CNa == j + 1) & (Ba == 0)
-        ys, xs = np.nonzero(m)
+        sl = fo[j] if j < len(fo) else None
+        if sl is None:
+            continue
+        mw = (CNa[sl] == j + 1) & (Ba[sl] == 0)
+        ys, xs = np.nonzero(mw)
         if len(xs) < 6:
             continue
+        ys += sl[0].start; xs += sl[1].start
+        m = np.zeros((H_, W_), bool); m[sl] = mw
         # cobertura e retangulo: o poligono OSM (girado/recortado pela loja) rasterizado sai em escada.
         # Vale o maior retangulo livre na caixa dele (sem predio, rua, calcada, agua); sobra vira patio.
         x0, x1, y0, y1 = int(xs.min()), int(xs.max()), int(ys.min()), int(ys.max())
@@ -2179,36 +2250,14 @@ def max_rect(m):
 def rectify(Ba, blds):
     """Paredes retas: predio nao circular vira uniao de ate 4 retangulos dentro do contorno real
     (o contorno rasterizado torto/diagonal virava escadinha). Circulares e estruturas do Ibirapuera ficam."""
-    bbx = bld_bbox(Ba, len(blds))          # (scipy.ndimage.find_objects no original)
-    for i in range(1, len(blds)):
-        if bbx[i, 2] < 0 or blds[i]["keep"]:
+    from ._ndi import ndimage     # scipy se houver; senao numpy (editor sem scipy)
+    fo = ndimage.find_objects(Ba)
+    assert Ba.dtype == np.int32 and Ba.flags.c_contiguous      # Rust: 1 chamada por predio, no lugar
+    p_, st_, ro = Ba.ctypes.data, Ba.shape[1], GF.C.rectify_one
+    for i, sl in enumerate(fo, 1):
+        if sl is None or i >= len(blds) or blds[i]["keep"]:
             continue
-        sl = (slice(int(bbx[i, 1]), int(bbx[i, 3]) + 1), slice(int(bbx[i, 0]), int(bbx[i, 2]) + 1))
-        sub = Ba[sl]
-        m = sub == i
-        n0 = int(m.sum())
-        if n0 < 16:
-            continue
-        if n0 == m.size:                   # ja e um retangulo: nada a cortar
-            continue
-        rem = m.copy()
-        cov = np.zeros_like(m)
-        nr = n0
-        for k in range(4):
-            if k and nr < max(16, 0.12 * n0):   # nem o resto inteiro passaria no corte abaixo
-                break
-            r = max_rect(rem)
-            if r is None:
-                break
-            y0, x0, y1, x1 = r
-            if min(y1 - y0, x1 - x0) < 3 or (k and (y1 - y0) * (x1 - x0) < max(16, 0.12 * n0)):
-                break
-            cov[y0:y1, x0:x1] = True
-            rem[y0:y1, x0:x1] = False
-            nr = int(rem.sum())
-            if nr < 0.08 * n0:
-                break
-        sub[m & ~cov] = 0
+        ro(p_, st_, sl[0].start, sl[1].start, sl[0].stop - sl[0].start, sl[1].stop - sl[1].start, i)
 
 
 def plan_extras(Ba, Lv, Ga, blds):
@@ -2316,13 +2365,15 @@ def plan_specials(Ba, Lv, Ga, blds):
 
 # ---------------------------------------------------------------- por predio
 def bld_bbox(Ba, nb):
-    ys, xs = np.nonzero(Ba)
-    ids = Ba[ys, xs]
+    """(x0, y0, x1, y1) inclusivo por predio; ausente = (2^30, 2^30, -1, -1). find_objects: uma passada em C
+    (o np.minimum/maximum.at sobre todos os quadrados de predio custava ~0,4 s por chamada)."""
+    from ._ndi import ndimage     # scipy se houver; senao numpy (editor sem scipy)
     bb = np.zeros((nb, 4), np.int32)
     bb[:, 0] = bb[:, 1] = 1 << 30
     bb[:, 2] = bb[:, 3] = -1
-    np.minimum.at(bb[:, 0], ids, xs); np.minimum.at(bb[:, 1], ids, ys)
-    np.maximum.at(bb[:, 2], ids, xs); np.maximum.at(bb[:, 3], ids, ys)
+    for i, sl in enumerate(ndimage.find_objects(Ba, max_label=nb - 1), 1):
+        if sl is not None:
+            bb[i] = (sl[1].start, sl[0].start, sl[1].stop - 1, sl[0].stop - 1)
     return bb
 
 
@@ -2751,17 +2802,18 @@ def plan_layouts(Ba, Ga, blds, bb, stairs, jails):
     return out
 
 
-def _lay_one(bi, b, kind, M, x0, y0, Ba, Ga, st, jail, GX, GY):
+def _lay_one(bi, b, kind, M, x0, y0, Ba, Ga, st, jail, GX, GY, _front=None):
     h, w = M.shape
     # frente: lado com mais rua/calcada/piso encostado
     best, front = -1, "S"
-    for f, ((dx, dy), _) in _LAY_SIDES.items():
+    for f, ((dx, dy), _) in (() if _front else _LAY_SIDES.items()):
         sub = Ba[y0 + dy:y0 + dy + h, x0 + dx:x0 + dx + w]
         g = Ga[y0 + dy:y0 + dy + h, x0 + dx:x0 + dx + w]
         edge = M & (sub != bi)
         sc = int(sum(int(edge[g == c].sum()) * v for c, v in OUT_SCORE.items() if v >= 2))
         if sc > best:
             best, front = sc, f
+    front = _front or front
     back = _LAY_SIDES[front][1]
     yy, xx = np.mgrid[0:h, 0:w]
     if front == "N":
@@ -2861,8 +2913,6 @@ def _lay_one(bi, b, kind, M, x0, y0, Ba, Ga, st, jail, GX, GY):
         if kd:
             m = d >= D - kd
             band(2, m); names[2] = LAY_KITCHEN.get(base, "restaurantkitchen"); pairs.append((1, 2))
-            if base == "burgerkitchen":
-                names[1] = "restaurantdining"
             if Wd >= 9:
                 band(3, m & (u < 3)); names[3] = "bathroom"; pairs.append((1, 3))
             # balcao do salao encostado na parede da cozinha, deixando 3 tiles livres na ponta da porta
@@ -3000,6 +3050,13 @@ def _lay_one(bi, b, kind, M, x0, y0, Ba, Ga, st, jail, GX, GY):
         return None
     for g in zs:
         names.setdefault(g, names.get(1, (base, base)))
+    # POI: o comodo principal (o que a auditoria espera) fica no ponto; senao vira a planta (frente <-> fundo)
+    pp = (b.get("pois") or [None])[0]
+    if pp and kind in ("super", "rest", "shop") and not _front:
+        ys_, xs_ = np.nonzero(Z > 0)
+        k_ = int(np.argmin((xs_ + x0 - pp[0]) ** 2 + (ys_ + y0 - pp[1]) ** 2))
+        if names[int(Z[ys_[k_], xs_[k_]])][0] != names[1][0]:
+            return _lay_one(bi, b, kind, M, x0, y0, Ba, Ga, st, jail, GX, GY, _front=back)
     doors = _lay_doors(Z, x0, y0, pairs, st)
     def clip(E):
         return {g: [(X, Y, s1, s2) for (X, Y), s1, s2 in lst
@@ -3106,6 +3163,44 @@ def bcat(b):
 G = {}
 
 
+def bi_cells(Idc):
+    """(bi, ys, xs) por predio, na ordem de np.unique e de np.nonzero(Idc == bi), num argsort so (era um nonzero por predio)."""
+    Ic = np.ascontiguousarray(Idc, np.int32)      # Rust: agrupamento sem o argsort
+    u, st, ys, xs = (np.frombuffer(b_, t_) for b_, t_ in
+                     zip(GF.GP.bi_groups(Ic.ctypes.data, *Ic.shape),
+                         (np.int32, np.int64, np.int64, np.int64)))
+    for i, bi in enumerate(u):
+        yield bi, ys[st[i]:st[i + 1]], xs[st[i]:st[i + 1]]
+
+
+def st_cell(ox, oy):
+    """escadas com tile na celula (ox, oy): [(bi, [(x, y, sprite)])] na ordem de stairs e de stair_cells;
+    indice feito 1 vez por bloco (antes cada celula percorria todas as escadas do bloco 3 vezes)."""
+    st_ = G["stairs"]
+    memo = G.get("_st_idx")
+    if memo is None or memo[0] is not st_:
+        idx, rx, ry = {}, G["rx0"], G["ry0"]
+        for bi, st in st_.items():
+            for c in stair_cells(st):
+                d = idx.setdefault(((c[0] + rx) // CS, (c[1] + ry) // CS), {})
+                d.setdefault(bi, []).append(c)
+        memo = G["_st_idx"] = (st_, idx)
+    return memo[1].get(((ox + G["rx0"]) // CS, (oy + G["ry0"]) // CS), {})
+
+
+def xsq_cell(ox, oy):
+    """itens de G["xsq"] que caem na celula (ox, oy), na ordem do dict; o indice por celula e feito 1 vez por bloco
+    (antes cada celula percorria o xsq do bloco inteiro)."""
+    xs_ = G["xsq"]
+    memo = G.get("_xsq_idx")
+    if memo is None or memo[0] is not xs_:
+        idx = {}
+        for k, ts in xs_.items():
+            idx.setdefault((k[0] // CS, k[1] // CS), []).append((k, ts))
+        memo = G["_xsq_idx"] = (xs_, idx)
+    return memo[1].get((ox // CS, oy // CS), ()) if ox % CS == 0 and oy % CS == 0 else list(xs_.items())
+
+
 def write_cell(args):
     cx, cy = args
     Ga, LNa, Ba, Lv, blds, stairs, masp = G["Ga"], G["LNa"], G["Ba"], G["Lv"], G["blds"], G["stairs"], G["masp"]
@@ -3138,27 +3233,8 @@ def write_cell(args):
             if 0 <= lx - ox < CS and 0 <= ly - oy < CS}
     maxz = int(Lw[1:-1, 1:-1].max()) if Lw.size else 0
     maxz = max(maxz, int(BALw.max()), max((v[1] for v in lads.values()), default=0))
-    sq = {}           # (x,y,z) -> [tiles]
-    names, nidx = [], {}
-
-    def T(n):
-        i = nidx.get(n)
-        if i is None:
-            i = nidx[n] = len(names); names.append(n)
-        return i
-
-    def add(x, y, z, n):
-        i = nidx.get(n)
-        if i is None:
-            if n.startswith("saopaulo_"):      # folha propria do projeto SP: nao existe no jogo vanilla
-                return
-            i = nidx[n] = len(names); names.append(n)
-        k = (x, y, z)
-        l_ = sq.get(k)
-        if l_ is None:
-            sq[k] = [i]
-        else:
-            l_.append(i)
+    sq = GF.GP.Cell(DROP)      # registro de tiles + tabela de nomes em Rust (genfast_py: Cell)
+    T, add, nget = sq.t, sq.add, sq.get
 
     heli_ = G["heli"]
     jails = G.get("jails", {})
@@ -3169,64 +3245,91 @@ def write_cell(args):
         return bi_ == masp and 0 < z < MASP_Z0 and (wx, wy) not in mzone
 
     # ---- chao z0 (listas python: indexar numpy escalar por quadrado era o gargalo)
-    Bl, gl, gwl, lnl = Bw.tolist(), g.tolist(), gw.tolist(), ln.tolist()
-    TRl = TRw[oy:oy + CS, ox:ox + CS].tolist()
-    HH = h32_grid(ox + GX, oy + GY, CS)
-    for y in range(CS):
-        wy = oy + y
-        Brow, grow, HHrow = Bl[y + 1], gl[y], HH[y]
-        for x in range(CS):
-            wx = ox + x
-            bi = Brow[x + 1]
-            hh = HHrow[x]
-            if bi:
-                b = blds[bi]
-                if b["kind"] == "masp":
-                    add(x, y, 0, PAVING[hh & 1])
-                else:
-                    fl = FLOORS_RES if b["kind"] == "res" else FLOORS_COM
-                    add(x, y, 0, fl[b["h"] % len(fl)])
-                continue
-            c = grow[x]
-            if c == G_ASPH:
-                add(x, y, 0, ASPHALT[hh & 7])     # meio-fio e faixas: ground_edges (abaixo)
-            elif c == G_SIDE:
-                add(x, y, 0, SIDEWALK[(hh >> 3) & 7])
-                touches = G_ASPH in (gwl[y][x + 1], gwl[y + 2][x + 1], gwl[y + 1][x], gwl[y + 1][x + 2])
-                if touches:
-                    if ((wx + GX) * 3 + (wy + GY) * 5) % 23 == 0:
-                        add(x, y, 0, LAMP)
-                elif TRl[y][x] or (ntree == 0 and (hh % 13) == 0):   # arvore real do GeoSampa
-                    add(x, y, 0, TREES[(hh >> 5) % len(TREES)])
-            elif c == G_PAVE:
-                add(x, y, 0, PAVING[(hh >> 2) & 1])
-            elif c == G_YARD:
-                add(x, y, 0, YARD[(hh >> 2) & 1])
-            elif c in (G_PARK, G_GRASS):
-                add(x, y, 0, GRASS[hh & 3])
-                if c == G_PARK and hh % 9 == 0:
-                    add(x, y, 0, TREES[(hh >> 5) % len(TREES)])
-            elif c == G_WATER:
-                add(x, y, 0, WATER[hh & 3])
-            elif c == G_WOOD:
-                add(x, y, 0, GRASS2[hh & 3])
-                if hh % 3 == 0:
-                    add(x, y, 0, TREES[(hh >> 5) % len(TREES)])
-            else:
-                add(x, y, 0, GRASS[hh & 3])   # terra sorteada no meio da grama virava quadrado escuro (xadrez)
+    Bl = Bw.tolist()
+    ground_native(Bw, g, gw, TRw[oy:oy + CS, ox:ox + CS], ox + GX, oy + GY, ntree, blds, T, sq)
 
     # ---- bordas: blends, meio-fio (reto/canto/diagonal) e faixas, autotile vetorizado (ground_edges)
-    for (x, y), ts_ in ground_edges(Ga, LNa, oy, ox, CS, h32_grid(ox + GX, oy + GY, CS, 3), ox + GX, oy + GY).items():
-        if Bl[y + 1][x + 1]:
-            continue
-        l_ = sq.setdefault((x, y, 0), [])
-        l_[1:1] = [T(t) for t in ts_]
+    ground_edges(Ga, LNa, oy, ox, CS, h32_grid(ox + GX, oy + GY, CS, 3, arr=True), ox + GX, oy + GY,
+                 cell=sq, Bm=Bw[1:-1, 1:-1] != 0)     # Rust: pecas e laco dentro do Cell.edges
+
+    # escadas que caem nesta celula: (z limite, [(x, y, sprite)]), na ordem de stairs e de stair_cells
+    st_here = []
+    stc_ = st_cell(ox, oy)
+    for bi, cl_ in stc_.items():
+        cs_ = []
+        for sx, sy, spr in cl_:
+            lx, ly = sx - ox, sy - oy
+            if Bw[ly + 1, lx + 1] == bi:
+                cs_.append((lx, ly, spr))
+        if cs_:
+            b = blds[bi]
+            st_here.append((min(b["lv"], FULL) - (1 if "heli" in b else 2), cs_))
+
+    # piso dos andares de cima em numpy (quadrado interno sem parede): por predio, indice do nome do piso
+    # (ja registrado pelo chao z0, entao a ordem dos nomes nao muda), andar maximo e vao de escada
+    ub_ = np.unique(Bw).tolist()
+    nb_ = (ub_[-1] if ub_ else 0) + 1
+    flix, accz, vok = np.zeros(nb_, np.int64), np.zeros(nb_, np.int64), np.zeros(nb_, bool)
+    for bi in ub_:
+        if bi:
+            b = blds[bi]
+            fl = FLOORS_RES if b["kind"] == "res" else FLOORS_COM
+            i_ = nget(fl[b["h"] % len(fl)])
+            if b["kind"] != "masp" and i_ is not None:
+                vok[bi], flix[bi], accz[bi] = True, i_, min(FULL, b.get("acc", FULL))
+    SVz = np.full((CS, CS), -1, np.int64)        # vao da escada: sem piso ate z <= SVz
+    for bi, cl_ in stc_.items():
+        if bi < nb_ and vok[bi]:
+            zl_ = min(blds[bi]["lv"], FULL) - 1
+            for sx, sy, _ in cl_:
+                lx, ly = sx - ox, sy - oy
+                if Bw[ly + 1, lx + 1] == bi:
+                    SVz[ly, lx] = zl_
+    kyx_ = (np.arange(CS, dtype=np.int64)[:, None] << 8) | np.arange(CS, dtype=np.int64)[None, :]
+    # muros em numpy: nomes numa tabela local (LN), registrados no fim de cada andar na ordem da 1a aparicao
+    LN, LI = [], {}
+
+    def L(n):
+        i = LI.get(n)
+        if i is None:
+            i = LI[n] = len(LN); LN.append(n)
+        return i
+    for n_ in (AC_WALL["W"], AC_WALL["N"], DOOR_EXT[0], DOOR_EXT[1], WIN_W, WIN_N):
+        L(n_)
+    wfl, wacc = np.full(nb_, -1, np.int64), np.zeros(nb_, np.int64)
+    wsty = np.zeros((nb_, 12), np.int64)
+    wmasp, wobel, wind = np.zeros(nb_, bool), np.zeros(nb_, bool), np.zeros(nb_, bool)
+    for bi in ub_:
+        if bi:
+            b = blds[bi]
+            fl = FLOORS_RES if b["kind"] == "res" else FLOORS_COM
+            wfl[bi], wacc[bi] = L(fl[b["h"] % len(fl)]), min(FULL, b.get("acc", FULL))
+            sh, bs = wall_style(b)
+            for k_ in (0, 1, 2, 3, 8, 9, 10, 11):
+                wsty[bi, k_] = L(f"{sh}_{bs + k_}")
+            wmasp[bi], wobel[bi], wind[bi] = b["kind"] == "masp", bool(b.get("obel")), b["rooms"] == "ind"
+    SV2 = np.full((CS, CS), -1, np.int64)        # vao da escada (todo predio): sem piso ate z <= SV2
+    for bi, cl_ in stc_.items():
+        if 0 < bi < nb_:
+            zl_ = min(blds[bi]["lv"], FULL) - 1
+            for sx, sy, _ in cl_:
+                lx, ly = sx - ox, sy - oy
+                if Bw[ly + 1, lx + 1] == bi:
+                    SV2[ly, lx] = zl_
+    SGl, LDl = np.zeros((CS, CS), bool), np.zeros((CS, CS), bool)
+    for px, py in SGN:
+        if 0 <= px - ox < CS and 0 <= py - oy < CS:
+            SGl[py - oy, px - ox] = True
+    for lx, ly in lads:
+        LDl[ly, lx] = True
+    ORw, ORn = np.zeros((CS, CS), bool), np.zeros((CS, CS), bool)
 
     # ---- predios, andar a andar
+    rf_ = None        # telhado Rust: (Bw int32, casa por predio, h32_grid 5, mascara do heliponto), 1 vez por celula
     rooms = []                       # (name, z, rects)
     bld_rooms = {}                   # bi -> [room idx]
     doors_done = set()
-    dsq = set()                      # quadrados de porta (dos dois lados), por z: mobilia nao encosta
+    dsq = DoorSet()                  # quadrados de porta (dos dois lados), por z: mobilia nao encosta
     nfurn = 0
     for z in range(0, maxz + 1):
         In = (Bw > 0) & (Lw > z)
@@ -3253,117 +3356,180 @@ def write_cell(args):
                     q_ = (vx, vy + d_, "W") if vs == "W" else (vx + d_, vy, "N")
                     if q_ not in opening:
                         vit.add(q_)
+        if z == 0:
+            for (vx, vy, vs) in list(opening) + list(vit):
+                if 0 <= vx < CS and 0 <= vy < CS:
+                    (ORw if vs == "W" else ORn)[vy, vx] = True
         # bordas: wallW[y,x] entre (x-1,y) e (x,y); wallN entre (x,y-1) e (x,y)  (coords com borda)
         eW = Id[:, 1:] != Id[:, :-1]           # shape (CS+2, CS+1): coluna j = borda entre j e j+1
         eN = Id[1:, :] != Id[:-1, :]
         cand = Id[1:-1, 1:-1] > 0
         cand = cand | eW[1:-1, 0:CS] | eN[0:CS, 1:-1] | eW[0:CS, 0:CS] | eN[0:CS, 0:CS]
-        eWl, eNl, Idl = eW.tolist(), eN.tolist(), Id.tolist()
+        Idl = Id.tolist()
+        Id32 = np.ascontiguousarray(Id, np.int32); Id32p = Id32.ctypes.data
+        Id32 = np.ascontiguousarray(Id, np.int32); Idp = Id32.ctypes.data   # raster do same() p/ o _gfpy
+        Idc = Id[1:-1, 1:-1]
+        simple = vok[Idc] & ~eW[1:-1, 0:CS] & ~eN[0:CS, 1:-1]     # so o piso (o laco faria o mesmo, 1 tile)
+        if z > 0:
+            fm = simple & (z <= accz[Idc]) & (z > SVz)
+            sqpush(sq, (((z + 64) << 16 | kyx_[fm]) << 24) | flix[Idc[fm]])
+        cand &= ~simple
         cy_, cx_ = np.nonzero(cand)
-        for y, x in zip(cy_.tolist(), cx_.tolist()):
-            if True:
-                X, Y = x + 1, y + 1
-                hasW = eWl[Y][X - 1]
-                hasN = eNl[Y - 1][X]
-                inside = Idl[Y][X]
-                if not (hasW or hasN):
-                    # piso dos andares de cima + pilar
+        Ya, Xa = cy_ + 1, cx_ + 1
+        hW, hN, ins = eW[Ya, Xa - 1], eN[Ya - 1, Xa], Id[Ya, Xa]
+        aW, aN = np.where(hW, Id[Ya, Xa - 1], 0), np.where(hN, Id[Ya - 1, Xa], 0)
+        e0 = ~(hW | hN)
+        o1, o2, o3 = Id[Ya - 1, Xa - 1], Id[Ya, Xa - 1], Id[Ya - 1, Xa]
+        pil = e0 & (eN[Ya - 1, Xa - 1] | eW[Ya - 1, Xa - 1]) & (ins == 0)
+        own = np.where(e0, np.where(pil, np.where(o1 > 0, o1, np.where(o2 > 0, o2, o3)), 0),
+                       np.where(ins > 0, ins, np.where(aW > 0, aW, aN)))
+        rare = wmasp[own] | wmasp[ins]                 # MASP: laco Python
+        exW, exN = hW & ((aW == 0) | (ins == 0)), hN & ((aN == 0) | (ins == 0))
+        Wo, No = hW & ~hN, hN & ~hW
+        if z == 0:                                     # portas/portoes do plano e vitrines: laco Python
+            rare |= (Wo & exW & ORw[cy_, cx_]) | (No & exN & ORn[cy_, cx_])
+        flo = (ins > 0) & (z > 0) & (z <= wacc[ins]) & (~e0 | (z > SV2[cy_, cx_]))
+        zacc = (z > 0) & (z < wacc[own])
+        oxW = np.where(ins == 0, Xa, Xa - 1)
+        dW = Wo & exW & zacc & BCw[Ya, oxW] & (BALw[Ya, oxW] > z)      # porta da varanda
+        oyN = np.where(ins == 0, Ya, Ya - 1)
+        dN = No & exN & zacc & BCw[oyN, Xa] & (BALw[oyN, Xa] > z)
+        sg1 = SGl[cy_, cx_] if z == 1 else np.zeros(len(cy_), bool)
+        wx_, wy_ = cx_ + ox, cy_ + oy
+        wiW = Wo & exW & ~dW & ~wobel[own] & ((wy_ + GY) % 3 == 1) & ~sg1
+        wiN = No & exN & ~dN & ~wobel[own] & ((wx_ + GX) % 3 == 1) & ~sg1
+        acb = (ins == 0) & (z > 0) & (BALw[Ya, Xa] == 0) & ~wind[own] & ~wobel[own] & ~LDl[cy_, cx_] & ~sg1
+        acW, acN = Wo & exW & ~dW & ~wiW & acb, No & exN & ~dN & ~wiN & acb
+        acm = acW | acN
+        if acm.any():
+            hm = h32v(wx_[acm] + GX, wy_[acm] + GY, z, 11) % 9 == 0
+            acW[acm] &= hm; acN[acm] &= hm
+        M4 = np.full((len(cy_), 4), -1, np.int64)      # piso, parede, ar-condicionado, porta/janela
+        M4[:, 0] = np.where(flo, wfl[ins], -1)
+        kk = np.where(e0, 3, np.where(hW & hN, 2, np.where(Wo, 0, 1) + np.where(dW | dN, 10, np.where(wiW | wiN, 8, 0))))
+        M4[:, 1] = np.where((~e0 | pil) & (own > 0), wsty[own, kk], -1)
+        M4[:, 2] = np.where(acW, 0, np.where(acN, 1, -1))
+        M4[:, 3] = np.where(dW, 2, np.where(dN, 3, np.where(wiW, 4, np.where(wiN, 5, -1))))
+        for x, y in zip(cx_[dW].tolist(), cy_[dW].tolist()):
+            dsq |= {(x, y, z), (x - 1, y, z)}
+        for x, y in zip(cx_[dN].tolist(), cy_[dN].tolist()):
+            dsq |= {(x, y, z), (x, y - 1, z)}
+        ri = np.nonzero(rare)[0]
+        rl = []
+        if len(ri):
+            M4[ri] = -1
+
+            def ar(x_, y_, z_, n):
+                ev_.append(L(n))
+            eWl, eNl = eW.tolist(), eN.tolist()
+            for i_, y, x in zip(ri.tolist(), cy_[ri].tolist(), cx_[ri].tolist()):
+                ev_ = []; rl.append((i_, ev_))
+                if True:
+                    X, Y = x + 1, y + 1
+                    hasW = eWl[Y][X - 1]
+                    hasN = eNl[Y - 1][X]
+                    inside = Idl[Y][X]
+                    if not (hasW or hasN):
+                        # piso dos andares de cima + pilar
+                        if inside and 0 < z <= min(FULL, blds[inside].get("acc", FULL)) and \
+                                not nofl(inside, z, ox + x, oy + y):  # <= : forro no 1o nivel sem acesso
+                            b = blds[inside]
+                            st = stairs.get(inside)
+                            wx, wy = ox + x, oy + y
+                            if st and (wx, wy) in st_set(st) and z <= min(b["lv"], FULL) - 1:
+                                pass  # vao da escada que chega neste andar
+                            else:
+                                fl = FLOORS_RES if b["kind"] == "res" else FLOORS_COM
+                                ar(x, y, z, fl[b["h"] % len(fl)])
+                        if (eNl[Y - 1][X - 1] or eWl[Y - 1][X - 1]) and not inside:
+                            owner = Idl[Y - 1][X - 1] or Idl[Y][X - 1] or Idl[Y - 1][X]
+                            if owner and blds[owner]["kind"] == "masp":
+                                if z >= MASP_Z0:
+                                    ar(x, y, z, M1 + "11")       # quina da caixa
+                            elif owner:
+                                sh, bs = wall_style(blds[owner])
+                                ar(x, y, z, f"{sh}_{bs + 3}")
+                        continue
+                    a = Idl[Y][X - 1] if hasW else 0
+                    n_ = Idl[Y - 1][X] if hasN else 0
+                    owner = inside or a or n_
+                    b = blds[owner]
                     if inside and 0 < z <= min(FULL, blds[inside].get("acc", FULL)) and \
                             not nofl(inside, z, ox + x, oy + y):  # <= : forro no 1o nivel sem acesso
-                        b = blds[inside]
-                        st = stairs.get(inside)
-                        wx, wy = ox + x, oy + y
-                        if st and (wx, wy) in st_set(st) and z <= min(b["lv"], FULL) - 1:
-                            pass  # vao da escada que chega neste andar
-                        else:
-                            fl = FLOORS_RES if b["kind"] == "res" else FLOORS_COM
-                            add(x, y, z, fl[b["h"] % len(fl)])
-                    if (eNl[Y - 1][X - 1] or eWl[Y - 1][X - 1]) and not inside:
-                        owner = Idl[Y - 1][X - 1] or Idl[Y][X - 1] or Idl[Y - 1][X]
-                        if owner and blds[owner]["kind"] == "masp":
-                            if z >= MASP_Z0:
-                                add(x, y, z, M1 + "11")       # quina da caixa
-                        elif owner:
-                            sh, bs = wall_style(blds[owner])
-                            add(x, y, z, f"{sh}_{bs + 3}")
-                    continue
-                a = Idl[Y][X - 1] if hasW else 0
-                n_ = Idl[Y - 1][X] if hasN else 0
-                owner = inside or a or n_
-                b = blds[owner]
-                if inside and 0 < z <= min(FULL, blds[inside].get("acc", FULL)) and \
-                        not nofl(inside, z, ox + x, oy + y):  # <= : forro no 1o nivel sem acesso
-                    fl = FLOORS_RES if b["kind"] == "res" else FLOORS_COM
-                    add(x, y, z, fl[b["h"] % len(fl)])
-                if b["kind"] == "masp":   # vao livre embaixo, caixa toda de vidro em cima
-                    if z >= MASP_Z0:
-                        add(x, y, z, MASP_GLASS[2] if hasW and hasN else MASP_GLASS[0] if hasW else MASP_GLASS[1])
-                        if z in (MASP_Z0, MASP_LV - 1):          # vigas laterais na base e no topo da caixa
-                            o_ = 0 if z == MASP_Z0 else 2
-                            if hasW:
-                                add(x, y, z, M2 + str(o_))
-                            if hasN:
-                                add(x, y, z, M2 + str(o_ + 1))
-                    continue
-                sh, bs = wall_style(b)
-                wx, wy = ox + x, oy + y
-                exterior_w = hasW and (a == 0 or inside == 0)
-                exterior_n = hasN and (n_ == 0 or inside == 0)
-                if hasW and hasN:
-                    add(x, y, z, f"{sh}_{bs + 2}")
-                    continue
-                if hasW:
-                    op = opening.get((x, y, "W")) if z == 0 and exterior_w else None
-                    if op and op != "door":   # portao de garagem (o sprite ja e a parede)
-                        add(x, y, z, op); dsq |= {(x, y, z), (x - 1, y, z)}
+                        fl = FLOORS_RES if b["kind"] == "res" else FLOORS_COM
+                        ar(x, y, z, fl[b["h"] % len(fl)])
+                    if b["kind"] == "masp":   # vao livre embaixo, caixa toda de vidro em cima
+                        if z >= MASP_Z0:
+                            ar(x, y, z, MASP_GLASS[2] if hasW and hasN else MASP_GLASS[0] if hasW else MASP_GLASS[1])
+                            if z in (MASP_Z0, MASP_LV - 1):          # vigas laterais na base e no topo da caixa
+                                o_ = 0 if z == MASP_Z0 else 2
+                                if hasW:
+                                    ar(x, y, z, M2 + str(o_))
+                                if hasN:
+                                    ar(x, y, z, M2 + str(o_ + 1))
                         continue
-                    door = op == "door"
-                    out_ = (Y, X) if inside == 0 else (Y, X - 1)
-                    if exterior_w and 0 < z < min(FULL, b.get("acc", FULL)) and BCw[out_] and BALw[out_] > z:
-                        door = True                        # porta da varanda
-                    if z == 0 and exterior_w and not door and (x, y, "W") in vit:
-                        add(x, y, z, VITRINE[0]); continue
-                    win = exterior_w and not door and not b.get("obel") and ((wy + GY) % 3 == 1 or b["kind"] == "masp") \
-                        and not (z == 1 and (wx, wy) in SGN)
-                    add(x, y, z, f"{sh}_{bs + (10 if door else 8 if win else 0)}")
-                    if exterior_w and inside == 0 and z > 0 and not door and not win and not BALw[Y, X] and \
-                            b["rooms"] != "ind" and not b.get("obel") and (x, y) not in lads and h32(wx + GX, wy + GY, z, 11) % 9 == 0:
-                        add(x, y, z, AC_WALL["W"])
-                    if door:
-                        add(x, y, z, DOOR_EXT[0]); dsq |= {(x, y, z), (x - 1, y, z)}
-                    elif win:
-                        add(x, y, z, WIN_W)
-                else:
-                    op = opening.get((x, y, "N")) if z == 0 and exterior_n else None
-                    if op and op != "door":
-                        add(x, y, z, op); dsq |= {(x, y, z), (x, y - 1, z)}
+                    sh, bs = wall_style(b)
+                    wx, wy = ox + x, oy + y
+                    exterior_w = hasW and (a == 0 or inside == 0)
+                    exterior_n = hasN and (n_ == 0 or inside == 0)
+                    if hasW and hasN:
+                        ar(x, y, z, f"{sh}_{bs + 2}")
                         continue
-                    door = op == "door"
-                    out_ = (Y, X) if inside == 0 else (Y - 1, X)
-                    if exterior_n and 0 < z < min(FULL, b.get("acc", FULL)) and BCw[out_] and BALw[out_] > z:
-                        door = True
-                    if z == 0 and exterior_n and not door and (x, y, "N") in vit:
-                        add(x, y, z, VITRINE[1]); continue
-                    win = exterior_n and not door and not b.get("obel") and ((wx + GX) % 3 == 1 or b["kind"] == "masp") \
-                        and not (z == 1 and (wx, wy) in SGN)
-                    add(x, y, z, f"{sh}_{bs + 1 + (10 if door else 8 if win else 0)}")
-                    if exterior_n and inside == 0 and z > 0 and not door and not win and not BALw[Y, X] and \
-                            b["rooms"] != "ind" and not b.get("obel") and (x, y) not in lads and h32(wx + GX, wy + GY, z, 11) % 9 == 0:
-                        add(x, y, z, AC_WALL["N"])
-                    if door:
-                        add(x, y, z, DOOR_EXT[1]); dsq |= {(x, y, z), (x, y - 1, z)}
-                    elif win:
-                        add(x, y, z, WIN_N)
+                    if hasW:
+                        op = opening.get((x, y, "W")) if z == 0 and exterior_w else None
+                        if op and op != "door":   # portao de garagem (o sprite ja e a parede)
+                            ar(x, y, z, op); dsq |= {(x, y, z), (x - 1, y, z)}
+                            continue
+                        door = op == "door"
+                        out_ = (Y, X) if inside == 0 else (Y, X - 1)
+                        if exterior_w and 0 < z < min(FULL, b.get("acc", FULL)) and BCw[out_] and BALw[out_] > z:
+                            door = True                        # porta da varanda
+                        if z == 0 and exterior_w and not door and (x, y, "W") in vit:
+                            ar(x, y, z, VITRINE[0]); continue
+                        win = exterior_w and not door and not b.get("obel") and ((wy + GY) % 3 == 1 or b["kind"] == "masp") \
+                            and not (z == 1 and (wx, wy) in SGN)
+                        ar(x, y, z, f"{sh}_{bs + (10 if door else 8 if win else 0)}")
+                        if exterior_w and inside == 0 and z > 0 and not door and not win and not BALw[Y, X] and \
+                                b["rooms"] != "ind" and not b.get("obel") and (x, y) not in lads and not (z == 1 and (wx, wy) in SGN) and h32(wx + GX, wy + GY, z, 11) % 9 == 0:
+                            ar(x, y, z, AC_WALL["W"])
+                        if door:
+                            ar(x, y, z, DOOR_EXT[0]); dsq |= {(x, y, z), (x - 1, y, z)}
+                        elif win:
+                            ar(x, y, z, WIN_W)
+                    else:
+                        op = opening.get((x, y, "N")) if z == 0 and exterior_n else None
+                        if op and op != "door":
+                            ar(x, y, z, op); dsq |= {(x, y, z), (x, y - 1, z)}
+                            continue
+                        door = op == "door"
+                        out_ = (Y, X) if inside == 0 else (Y - 1, X)
+                        if exterior_n and 0 < z < min(FULL, b.get("acc", FULL)) and BCw[out_] and BALw[out_] > z:
+                            door = True
+                        if z == 0 and exterior_n and not door and (x, y, "N") in vit:
+                            ar(x, y, z, VITRINE[1]); continue
+                        win = exterior_n and not door and not b.get("obel") and ((wx + GX) % 3 == 1 or b["kind"] == "masp") \
+                            and not (z == 1 and (wx, wy) in SGN)
+                        ar(x, y, z, f"{sh}_{bs + 1 + (10 if door else 8 if win else 0)}")
+                        if exterior_n and inside == 0 and z > 0 and not door and not win and not BALw[Y, X] and \
+                                b["rooms"] != "ind" and not b.get("obel") and (x, y) not in lads and not (z == 1 and (wx, wy) in SGN) and h32(wx + GX, wy + GY, z, 11) % 9 == 0:
+                            ar(x, y, z, AC_WALL["N"])
+                        if door:
+                            ar(x, y, z, DOOR_EXT[1]); dsq |= {(x, y, z), (x, y - 1, z)}
+                        elif win:
+                            ar(x, y, z, WIN_N)
+        for i_, ev_ in rl:
+            M4[i_, :len(ev_)] = ev_
+        V = M4 >= 0
+        seq = M4[V]
+        if len(seq):
+            u, first = np.unique(seq, return_index=True)
+            lut = np.zeros(len(LN), np.int64)
+            for c in u[np.argsort(first, kind="stable")].tolist():    # 1o uso, como o add() do laco
+                lut[c] = T(LN[c])
+            key = ((z + 64) << 16) | (cy_.astype(np.int64) << 8) | cx_
+            sqpush(sq, (np.broadcast_to(key[:, None], M4.shape)[V] << 24) | lut[seq])
         # paredes internas (grade de comodos) + comodos
-        if z < FULL:                              # quadrados de cada predio de uma vez (argsort estavel = ordem do nonzero)
-            _fl = Id[1:-1, 1:-1].ravel()
-            _od = np.argsort(_fl, kind="stable")
-            _ids, _st = np.unique(_fl[_od], return_index=True)
-            _en = np.append(_st[1:], _fl.size)
-            _grp = zip(_ids.tolist(), _st.tolist(), _en.tolist())
-        else:
-            _grp = ()
-        for bi, _a, _b in _grp:
+        for bi, ys, xs in (bi_cells(Id[1:-1, 1:-1]) if z < FULL else ()):
             if bi == 0:
                 continue
             b = blds[bi]
@@ -3372,8 +3538,6 @@ def write_cell(args):
             S = grid_of(b)
             if b["kind"] == "masp" or b.get("obel"):
                 S = 1000                          # MASP e obelisco: um salao por andar
-            _ix = _od[_a:_b]
-            ys, xs = np.divmod(_ix, Id.shape[1] - 2)
             gx = ((xs + ox + GX) // S).tolist(); gy = ((ys + oy + GY) // S).tolist()
             LY = G.get("lays", {}).get(bi)
             if LY and z > LY["zmax"]:
@@ -3382,14 +3546,39 @@ def write_cell(args):
                 Zl, lx0, ly0 = LY["Z"], LY["x0"] - ox, LY["y0"] - oy
                 zh, zw = Zl.shape
                 zof = lambda xx, yy: int(Zl[yy - ly0, xx - lx0]) if 0 <= yy - ly0 < zh and 0 <= xx - lx0 < zw else 0
+                Zl32 = np.ascontiguousarray(Zl, np.int32); Zlp = Zl32.ctypes.data
                 gx = ["L"] * len(xs); gy = Zl[ys - ly0, xs - lx0].tolist()
+            # so os quadrados que podem ter parede interna (o laco abaixo refaz o teste completo, mesma ordem)
+            if b["kind"] == "masp" or b.get("obel"):
+                pre = np.zeros(len(xs), bool)
+            elif LY:
+                Zp = np.pad(Zl, 1)
+                gv = np.asarray(gy)
+                gwv, gnv = Zp[ys - ly0 + 1, xs - lx0], Zp[ys - ly0, xs - lx0 + 1]
+                pre = (gv > 0) & (((gwv > 0) & (gwv != gv)) | ((gnv > 0) & (gnv != gv)))
+            else:
+                pre = (((xs + ox + GX) % S == 0) & (xs > 0)) | (((ys + oy + GY) % S == 0) & (ys > 0))
+            pre &= ~(eW[ys + 1, xs] | eN[ys, xs + 1])     # nao sobrepor parede externa
+            pi_ = np.nonzero(pre)[0]
+            pxs, pys = xs[pi_].tolist(), ys[pi_].tolist()
+            pgx, pgy = [gx[i] for i in pi_.tolist()], [gy[i] for i in pi_.tolist()]
+            xs_n, ys_n = xs, ys
             xs, ys = xs.tolist(), ys.tolist()
             sh, bs = int_wall(b)
             st = stairs.get(bi)
+            stz_ = st_zone(st) if st else ()
             # bordas internas entre blocos
-            for (x, y, wgx, wgy) in zip(xs, ys, gx, gy):
+            if not LY and not (b["kind"] == "masp" or b.get("obel")):   # Rust: mesmo laco (Cell.int_walls)
+                pxa, pya = np.ascontiguousarray(xs_n[pi_], np.int64), np.ascontiguousarray(ys_n[pi_], np.int64)
+                jl = jails.get(bi, ())[:2] if z == 0 else ()
+                dd = sq.int_walls(pxa.ctypes.data, pya.ctypes.data, len(pxa), ox, oy, GX, GY, S, int(bi), Id32p, CS + 2,
+                                  list(stz_), z, sh, bs, FRAME_INT, DOOR_INT, tuple(jl) if len(jl) == 2 else None)
+                if dd:
+                    dsq |= dd
+                pxs = ()
+            for (x, y, wgx, wgy) in zip(pxs, pys, pgx, pgy):
                 wx, wy = x + ox, y + oy
-                if st and (wx, wy) in st_zone(st):
+                if (wx, wy) in stz_:
                     continue
                 if LY:
                     g_ = wgy
@@ -3402,9 +3591,6 @@ def write_cell(args):
                 if b["kind"] == "masp" or b.get("obel"):
                     wW = wN = False
                 if not (wW or wN):
-                    continue
-                # nao sobrepor parede externa
-                if eWl[y + 1][x] or eNl[y][x + 1]:
                     continue
                 if LY:
                     dW = wW and (wx, wy, "W") in LY["doors"]
@@ -3427,39 +3613,52 @@ def write_cell(args):
             if z == 0 and bi in jails:
                 put_jail(add, rooms, bld_rooms, bi, jails[bi], S, ox + GX, oy + GY, dsq)
             # comodos = blocos
-            keys = {}
-            for (x, y, k1, k2) in zip(xs, ys, gx, gy):
-                keys.setdefault((k1, k2), []).append((x, y))
+            svc = not LY and z == 0 and btags(b).get("shop") == "supermarket" and len(b.get("pois") or ()) < 2
+            # agrupamento em Rust (Groups); listas so nos casos raros
+            ga_ = np.zeros(len(xs_n), np.int64) if LY else np.ascontiguousarray((xs_n + ox + GX) // S, np.int64)
+            gb_ = np.ascontiguousarray(Zl[ys_n - ly0, xs_n - lx0] if LY else (ys_n + oy + GY) // S, np.int64)
+            xa_, ya_ = np.ascontiguousarray(xs_n, np.int64), np.ascontiguousarray(ys_n, np.int64)
+            G_ = GF.GP.group_rooms(xa_.ctypes.data, ya_.ctypes.data, ga_.ctypes.data, gb_.ctypes.data, len(xa_))
+            kl = G_.keys()
+            if LY:
+                kl = [("L", k2) for _, k2 in kl]
+            keys = {k: G_.cells(i) for i, k in enumerate(kl)} if svc else None
             service_rooms = {}
-            if not LY and z == 0 and btags(b).get("shop") == "supermarket" and len(b.get("pois") or ()) < 2:
+            if svc:
                 eligible = [k for k, cs in keys.items() if len(cs) >= 9 and
                             max(p[0] for p in cs) - min(p[0] for p in cs) >= 2 and
                             max(p[1] for p in cs) - min(p[1] for p in cs) >= 2]
                 if len(eligible) >= 4:
                     eligible.sort(key=lambda k: (len(keys[k]), k))
                     service_rooms = dict(zip(eligible[:3], ("bathroom", "office", "storage")))
-            for k, cells_ in keys.items():
+            for gi, k in enumerate(kl):
+                cells_ = keys[k] if keys is not None else None
+                grp = cells_ is None              # quadrados ainda so no Groups (Rust)
                 if b["kind"] == "masp" and z < MASP_Z0:
                     continue
                 if LY and k[1] <= 0:              # cela (desenhada pela put_jail) / fora do predio
                     continue
                 if not LY and z == 0 and jails.get(bi, ())[:2] == k:
+                    if grp:
+                        cells_, grp = G_.cells(gi), False
                     jk = jails[bi]; jw = jail_layout(S, jk[2])[-1][1]
                     cells_ = [(x_, y_) for x_, y_ in cells_
                               if not (0 <= (x_ + ox + GX) % S - jk[3] <= jw and 0 <= (y_ + oy + GY) % S - jk[4] < 5)]
                     if not cells_:
                         continue
-                rects = to_rects(cells_)
+                rects = G_.rects(gi) if grp else to_rects(cells_)
                 rname = LY["names"][k[1]][0 if z == 0 else 1] if LY else service_rooms.get(k) or room_name(b, z, k)
                 stz = {(a_ - ox, b_ - oy) for a_, b_ in st_zone(st)} if st else set()
                 same = lambda xx, yy, bi=bi, k=k, S=S: Idl[yy + 1][xx + 1] == bi and \
                     ((xx + ox + GX) // S, (yy + oy + GY) // S) == k
+                sk = (Idp, Id32.shape[1], Id32.shape[0], 0, 0, bi, 0, ox + GX, oy + GY, S, k[0], k[1])   # o mesmo same() p/ o furn_cand
                 if LY:
                     same = lambda xx, yy, g=k[1], zof=zof: zof(xx, yy) == g
+                    sk = (Zlp, zw, zh, lx0, ly0, k[1], 1, 0, 0, 1, 0, 0)
                     k = (7919, k[1])              # chave inteira para os hashes de piso/mobilia
                     EXl = LY["extra"] if z == 0 else LY.get("extra_up", {})
                     if EXl:                       # caixas, balcao, vitrine, mesas, carteiras: fixos da planta
-                        CC = set(cells_)
+                        CC = set(G_.cells(gi) if grp else cells_)
                         for X_, Y_, s1, s2 in EXl.get(k[1], ()):
                             q = (X_ - ox, Y_ - oy)
                             if q not in CC or q in stz or any((q[0] + a_, q[1] + b_, z) in dsq
@@ -3470,7 +3669,7 @@ def write_cell(args):
                                 add(q[0], q[1], z, s2)
                             stz.add(q); nfurn += 1
                 if b["kind"] == "masp":            # pinacoteca: acervo em grade, sem mobilia comum
-                    for x_, y_ in cells_:
+                    for x_, y_ in (G_.cells(gi) if grp else cells_):
                         spr = masp_art(x_ + ox + GX, y_ + oy + GY)
                         if spr and (x_, y_) not in stz and (x_, y_, z) not in dsq and \
                                 same(x_ + 1, y_) and same(x_, y_ + 1) and same(x_ - 1, y_) and same(x_, y_ - 1):
@@ -3478,33 +3677,33 @@ def write_cell(args):
                 elif not b.get("obel"):            # obelisco: so a escada por dentro
                     if rname in ROOM_FLOOR:
                         rf = T(ROOM_FLOOR[rname][h32(bi, k[0], k[1]) % len(ROOM_FLOOR[rname])])
-                        for x_, y_ in cells_:
-                            lst = sq.get((x_, y_, z))
-                            if lst:
-                                sq[(x_, y_, z)] = [rf if names[i].startswith("floors_interior") else i for i in lst]
-                    nfurn += furnish(add, rname, cells_, same, z, dsq, stz, h32(bi, z, k[0], k[1]))
+                        if grp:
+                            G_.replace(gi, sq, z, rf)
+                        else:
+                            for x_, y_ in cells_:
+                                sq.replace(x_, y_, z, rf)
+                    nfurn += furnish(add, rname, cells_, same, z, dsq, stz, h32(bi, z, k[0], k[1]), sk=sk,
+                                     grp=(G_, gi, sq) if grp else None)
                 bld_rooms.setdefault(bi, []).append(len(rooms))
                 rooms.append((rname, z, rects))
-        # escadas neste nivel
-        for bi, st in stairs.items():
-            b = blds[bi]
-            if z > min(b["lv"], FULL) - (1 if "heli" in b else 2):   # heliponto: escada sobe ao telhado
+        # escadas neste nivel (so as da celula: st_here, calculado 1 vez por celula)
+        for zl, cs_ in st_here:
+            if z > zl:   # heliponto: escada sobe ao telhado
                 continue
-            for sx, sy, spr in stair_cells(st):
-                lx, ly = sx - ox, sy - oy
-                if 0 <= lx < CS and 0 <= ly < CS and Bw[ly + 1, lx + 1] == bi:
-                    add(lx, ly, z, spr)
+            for lx, ly, spr in cs_:
+                add(lx, ly, z, spr)
         # varandas: piso + mureta so nas bordas livres da varanda
         if z > 0:
             bz = BALw > z
             cz = (bz[1:-1, 1:-1] | bz[1:-1, :-2] | bz[:-2, 1:-1]) & (Bw[1:-1, 1:-1] == 0)
-            for y, x in zip(*np.nonzero(cz)):
-                y = int(y); x = int(x); Y, X = y + 1, x + 1
-                me = bz[Y, X]
+            bzl = bz.tolist() if cz.any() else None    # listas: indexar numpy escalar por quadrado era lento
+            for y, x in zip(*(v.tolist() for v in np.nonzero(cz))):
+                Y, X = y + 1, x + 1
+                me = bzl[Y][X]
                 if me:
                     add(x, y, z, BAL_FLOOR)
-                lw_ = me != bz[Y, X - 1] and not Bw[Y, X - 1]
-                ln_ = me != bz[Y - 1, X] and not Bw[Y - 1, X]
+                lw_ = me != bzl[Y][X - 1] and not Bl[Y][X - 1]
+                ln_ = me != bzl[Y - 1][X] and not Bl[Y - 1][X]
                 if lw_ and ln_:
                     add(x, y, z, LOW_NW)
                 elif lw_:
@@ -3513,26 +3712,30 @@ def write_cell(args):
                     add(x, y, z, LOW_N)
         # telhado plano no topo, com condensadoras/exaustores (comercio) ou antena (casa)
         topm = (Bw[1:-1, 1:-1] > 0) & (Lw[1:-1, 1:-1] == z) if z > 0 else None
-        if topm is not None:
-            for y, x in zip(*np.nonzero(topm)):
-                y = int(y); x = int(x)
-                bi = Bw[y + 1, x + 1]
-                st_ = stairs.get(bi)
-                if st_ and "heli" in blds[bi] and (ox + x, oy + y) in st_set(st_):
-                    continue                      # vao da escada que chega ao heliponto
-                add(x, y, z, ROOF)
-                if (ox + x, oy + y) in heli_:
-                    continue
-                if bi == masp or not (Bw[y, x + 1] == Bw[y + 2, x + 1] == Bw[y + 1, x] == Bw[y + 1, x + 2] == bi):
-                    continue
-                hh = h32(ox + x + GX, oy + y + GY, 5)
-                if blds[bi]["kind"] == "res":
-                    if hh % 23 == 0:
-                        add(x, y, z, DISH[hh >> 8 & 1])
-                elif hh % 19 == 0:
-                    add(x, y, z, ROOF_BIG[(hh >> 8) % len(ROOF_BIG)])
-                elif hh % 151 == 0:
-                    add(x, y, z, DISH[hh >> 8 & 1])
+        if topm is not None and topm.any():    # Rust (Cell.roof)
+            if rf_ is None:
+                bwi = np.ascontiguousarray(Bw, np.int32)
+                ub = np.unique(bwi).tolist()
+                resv = [False] * (ub[-1] + 1)
+                for bi in ub:
+                    if bi:
+                        resv[bi] = blds[bi]["kind"] == "res"
+                hg = np.ascontiguousarray(h32_grid(ox + GX, oy + GY, CS, 5, arr=True), np.uint32)
+                hm = np.zeros((CS, CS), np.uint8)       # 2 = vao da escada do heliponto, 4 = heliponto
+                for bi in ub:
+                    st_ = stairs.get(bi) if bi else None
+                    if st_ and "heli" in blds[bi]:
+                        for wx_, wy_ in st_set(st_):
+                            if 0 <= wx_ - ox < CS and 0 <= wy_ - oy < CS and Bl[wy_ - oy + 1][wx_ - ox + 1] == bi:
+                                hm[wy_ - oy, wx_ - ox] |= 2
+                for wx_, wy_ in heli_:
+                    if 0 <= wx_ - ox < CS and 0 <= wy_ - oy < CS:
+                        hm[wy_ - oy, wx_ - ox] |= 4
+                rf_ = (bwi, resv, hg, hm)
+            bwi, resv, hg, hm = rf_
+            flr = np.ascontiguousarray(hm | topm.astype(np.uint8))
+            sq.roof(z, CS, flr.ctypes.data, bwi.ctypes.data, hg.ctypes.data, resv, -1 if masp is None else masp,
+                    ROOF, tuple(DISH), list(ROOF_BIG))
     # escada de servico na fachada, do chao ate o andar de baixo do telhado
     for (lx, ly), (lsd, llv) in lads.items():
         for z in range(llv):
@@ -3560,11 +3763,11 @@ def write_cell(args):
             if 0 <= lx < CS and 0 <= ly < CS:
                 add(lx, ly, MASP_LV, spr)
     # extras (heliponto, camping, metro/masmorra): tiles e comodos em coordenada de raster
-    for (px, py, pz), ts in G["xsq"].items():
+    for (px, py, pz), ts in xsq_cell(ox, oy):
         lx, ly = px - ox, py - oy
         if 0 <= lx < CS and 0 <= ly < CS:
             if (px, py, pz) in G["xclr"]:
-                sq.pop((lx, ly, pz), None)
+                sq.clear(lx, ly, pz)
             for n in ts:
                 add(lx, ly, pz, n)
     for ri, (rname, rz, cells_) in enumerate(G["xrooms"]):
@@ -3575,7 +3778,7 @@ def write_cell(args):
             elif rz < 0:   # subsolo precisa de predio proprio: comodo orfao nunca e "visto" e fica preto
                 bld_rooms.setdefault(("x", rname, len(rooms)), []).append(len(rooms))
             rooms.append((rname, rz, to_rects(loc)))
-    return finish_cell(cx, cy, sq, names, rooms, bld_rooms, maxz)
+    return finish_cell(cx, cy, sq, rooms, bld_rooms, maxz)
 
 
 def wall_style(b):
@@ -3591,54 +3794,70 @@ GARAGE_N = ("walls_garage_01_3", "walls_garage_01_4", "walls_garage_01_5")   # o
 OUT_SCORE = {G_SIDE: 3, G_PAVE: 3, G_ASPH: 3, G_YARD: 2, G_PARK: 1, G_GRASS: 1, G_DEF: 1}
 
 
+def h32v(*a):
+    """h32 em arrays (uint64 -> int64), mesmo resultado que h32 elemento a elemento."""
+    M, P = np.uint64(0xFFFFFFFF), np.uint64(16777619)
+    x = np.uint64(2166136261)
+    for v in a:
+        x = ((x ^ (np.asarray(v, np.int64) & 0xFFFFFFFF).astype(np.uint64)) * P) & M
+    return np.asarray(x).astype(np.int64)
+
+
 def plan_openings(Id, gw, blds, ox, oy, GX, GY):
     """Portas externas e portao de garagem no terreo, por predio na celula (padrao Raccoon City:
     todo predio com entrada, ~2-3 portas por casa, portao de garagem em parte das casas).
-    Devolve {(x, y, lado): "door" | sprite do portao}. Lado W = parede oeste do quadrado, N = norte."""
+    Devolve {(x, y, lado): "door" | sprite do portao}. Lado W = parede oeste do quadrado, N = norte.
+    Bordas candidatas em numpy (era edge() por quadrado); mesma ordem de candidatos do laco (y, x, W antes de N)."""
     C = Id.shape[0] - 2
     eW = Id[:, 1:] != Id[:, :-1]
     eN = Id[1:, :] != Id[:-1, :]
-    cand = collections.defaultdict(list)   # bi -> [(score, x, y, lado)]
-    per = collections.Counter()
-
-    def edge(x, y, side):
-        X, Y = x + 1, y + 1
-        if not (0 <= x < C and 0 <= y < C):
-            return None
-        if side == "W":
-            if not eW[Y, X - 1] or eN[Y - 1, X]:
-                return None
-            a, b = Id[Y, X - 1], Id[Y, X]
-            o = (Y, X) if b == 0 else (Y, X - 1)
+    Ip = Id.astype(np.int64)
+    lut = np.zeros(256, np.int64)
+    for k_, v_ in OUT_SCORE.items():
+        lut[k_] = v_
+    b_, gb = Ip[1:C + 1, 1:C + 1], gw[1:C + 1, 1:C + 1]
+    ismasp = np.zeros(len(blds), bool)
+    for bi in np.unique(Ip).tolist():
+        if bi:
+            ismasp[bi] = blds[bi]["kind"] == "masp"
+    sides = []
+    for W in (True, False):
+        if W:
+            v = eW[1:C + 1, 0:C] & ~eN[0:C, 1:C + 1]; a_, ga = Ip[1:C + 1, 0:C], gw[1:C + 1, 0:C]
         else:
-            if not eN[Y - 1, X] or eW[Y, X - 1]:
-                return None
-            a, b = Id[Y - 1, X], Id[Y, X]
-            o = (Y, X) if b == 0 else (Y - 1, X)
-        if (a == 0) == (b == 0):
-            return None
-        return int(a or b), OUT_SCORE.get(int(gw[o]), 0)
-
-    ys, xs = np.nonzero(eW[1:-1, 0:C] | eN[0:C, 1:-1])
-    for y, x in zip(ys.tolist(), xs.tolist()):
-        for side in ("W", "N"):
-            e = edge(x, y, side)
-            if not e:
-                continue
-            bi, sc = e
-            if blds[bi]["kind"] == "masp":
-                continue
-            per[bi] += 1
-            if sc == 0:
-                continue
-            # nao na quina: a parede continua dos dois lados
-            nb = ((x, y - 1), (x, y + 1)) if side == "W" else ((x - 1, y), (x + 1, y))
-            if all((edge(a, b, side) or (0,))[0] == bi for a, b in nb):
-                cand[bi].append((sc, x, y, side))
+            v = eN[0:C, 1:C + 1] & ~eW[1:C + 1, 0:C]; a_, ga = Ip[0:C, 1:C + 1], gw[0:C, 1:C + 1]
+        v = v & ((a_ == 0) != (b_ == 0))
+        bi = np.where(v, a_ + b_, 0)
+        sc = np.where(b_ == 0, lut[gb], lut[ga])
+        P_ = np.pad(bi, 1)
+        nb = (P_[0:C, 1:C + 1] == bi) & (P_[2:, 1:C + 1] == bi) if W else (P_[1:C + 1, 0:C] == bi) & (P_[1:C + 1, 2:] == bi)
+        ok = v & ~ismasp[bi]
+        sides.append((ok, bi, sc, ok & (sc > 0) & nb))
+    per = collections.Counter(dict(enumerate(
+        (np.bincount(sides[0][1][sides[0][0]], minlength=len(blds)) +
+         np.bincount(sides[1][1][sides[1][0]], minlength=len(blds))).tolist())))
+    ys_, xs_, ss_ = [], [], []
+    for si, (_, bi, sc, cm) in enumerate(sides):
+        y_, x_ = np.nonzero(cm)
+        ys_.append(y_); xs_.append(x_); ss_.append(np.full(len(y_), si))
+    ys, xs, ss = np.concatenate(ys_), np.concatenate(xs_), np.concatenate(ss_)
+    pos = (ys * C + xs) * 2 + ss
+    o = np.argsort(pos, kind="stable"); ys, xs, ss, pos = ys[o], xs[o], ss[o], pos[o]
+    bis = np.where(ss == 0, sides[0][1][ys, xs], sides[1][1][ys, xs])
+    scs = np.where(ss == 0, sides[0][2][ys, xs], sides[1][2][ys, xs])
+    hk = h32v(bis, xs + ox + GX, ys + oy + GY)
+    _, fi = np.unique(bis, return_index=True)
+    rank = np.zeros(len(blds), np.int64); rank[bis[fi]] = np.argsort(np.argsort(fi))
+    o = np.lexsort((np.arange(len(bis)), hk, -scs, rank[bis]))
+    cand = {}
+    for bi, sc, x, y, si in zip(bis[o].tolist(), scs[o].tolist(), xs[o].tolist(), ys[o].tolist(), ss[o].tolist()):
+        l_ = cand.get(bi)
+        if l_ is None:
+            l_ = cand[bi] = []
+        l_.append((sc, x, y, "W" if si == 0 else "N"))
     area = np.bincount(Id[1:-1, 1:-1].ravel(), minlength=len(blds) + 1)
     plan = {}
-    for bi, cs in cand.items():
-        cs.sort(key=lambda c: (-c[0], h32(bi, c[1] + ox + GX, c[2] + oy + GY)))
+    for bi, cs in cand.items():     # cs ja em (-score, h32(bi, x, y), ordem do laco)
         picked = []
         b = blds[bi]
         # portao de garagem: casa (res) pequena/media, ~1 em 3, 3 quadrados voltados para rua/calcada/piso
@@ -3772,7 +3991,12 @@ def room_poi(b, z, k):
                    and Ba[p[1], p[0]]), 0)
         own = {}
         if bi:
-            ys, xs = np.nonzero(Ba == bi)
+            fo = G.get("_fo_ba")
+            if fo is None or fo[0] is not Ba:
+                from ._ndi import ndimage     # scipy se houver; senao numpy (editor sem scipy)
+                fo = G["_fo_ba"] = (Ba, ndimage.find_objects(Ba))
+            sl = fo[1][bi - 1]
+            ys, xs = np.nonzero(Ba[sl] == bi); ys += sl[0].start; xs += sl[1].start
             cells = set(zip(((xs + ox_) // S).tolist(), ((ys + oy_) // S).tolist()))
             for p in sorted(ps, key=lambda p: 0 if (p[2].get("shop") or p[2].get("amenity") in AMEN_ROOMS) else 1):
                 free = cells - set(own)
@@ -3865,44 +4089,16 @@ def room_name(b, z, k):
 
 def to_rects(cells_):
     """cells (x,y) locais -> retangulos (x,y,w,h) juntando faixas de linhas iguais."""
-    rows = {}
-    for x, y in cells_:
-        rows.setdefault(int(y), []).append(int(x))
-    runs = {}
-    for y, xsr in rows.items():
-        xsr.sort()
-        s = p = xsr[0]
-        out = []
-        for v in xsr[1:]:
-            if v == p + 1:
-                p = v
-                continue
-            out.append((s, p)); s = p = v
-        out.append((s, p))
-        runs[y] = out
-    rects = []
-    open_ = {}
-    for y in sorted(runs):
-        cur = {}
-        for r in runs[y]:
-            if r in open_ and open_[r][1] + open_[r][2] == y:
-                ry0 = open_[r][1]
-                cur[r] = (r, ry0, open_[r][2] + 1)
-            else:
-                cur[r] = (r, y, 1)
-        for r, v in open_.items():
-            if r not in cur or cur[r][1] != v[1]:
-                rects.append((v[0][0], v[1], v[0][1] - v[0][0] + 1, v[2]))
-        open_ = cur
-    for r, v in open_.items():
-        rects.append((v[0][0], v[1], v[0][1] - v[0][0] + 1, v[2]))
-    return rects
+    return GF.GP.to_rects(cells_)
 
 
-def finish_cell(cx, cy, sq, names, rooms, bld_rooms, maxz):
-    """Escreve lotheader, lotpack e chunkdata de uma celula."""
-    zmax = max([k[2] for k in sq] + [0])
-    zmin = min([k[2] for k in sq] + [0])          # subsolo (metro) = z negativo
+DROP = "saopaulo_"      # folhas proprias do projeto SP: nao existem no jogo vanilla (o tile some, o resto do quadrado fica)
+
+
+def finish_cell(cx, cy, sq, rooms, bld_rooms, maxz):
+    """Escreve lotheader, lotpack e chunkdata de uma celula (registro em Rust: lotpack, z e densidade prontos)."""
+    lp, zmin, zmax, dens = sq.finish()
+    names = sq.names()
     # lotheader
     hb = bytearray(b"LOTH")
     hb += struct.pack("<ii", 1, len(names))
@@ -3918,46 +4114,11 @@ def finish_cell(cx, cy, sq, names, rooms, bld_rooms, maxz):
     hb += struct.pack("<i", len(bld_rooms))
     for bi, lst in bld_rooms.items():
         hb += struct.pack("<i", len(lst)) + struct.pack(f"<{len(lst)}i", *lst)
-    # densidade de zumbis por chunk (0..4): mais predio = mais zumbi
-    dens = bytearray(1024)
-    occ = [0] * 1024
-    for (x, y, z) in sq:
-        if z == 1:
-            occ[(x >> 3) * 32 + (y >> 3)] += 1
-    for ci in range(1024):
-        dens[ci] = min(2, 1 + occ[ci] // 32)   # PC fraco: no maximo 2 (RC usa 3); o sandbox ainda pode subir
-    hb += dens
-    # lotpack
-    # quadrados agrupados por chunk e ordenados (z, x, y): so percorre os ocupados, vazios viram "pula n"
-    from array import array
-    zb = zmin * 64                      # chave unica: chunk << 16 | (z - zmin) * 64 + (x & 7) * 8 + (y & 7)
-    its = [(((((x >> 3) << 5) | (y >> 3)) << 16) | (z * 64 - zb + ((x & 7) << 3) + (y & 7)), t)
-           for (x, y, z), t in sq.items() if t]
-    its.sort(key=itemgetter(0))
-    tot = (zmax - zmin + 1) * 64
-    body = array("i")
-    app, ext = body.append, body.extend
-    offs = []
-    base = 12 + 8 * 1024
-    n, p = len(its), 0
-    for ci in range(1024):
-        offs.append(base + 4 * len(body))
-        prev = 0
-        hi = (ci + 1) << 16
-        while p < n and its[p][0] < hi:
-            key, t = its[p]
-            p += 1
-            k = key & 0xFFFF
-            if k > prev:
-                app(-1); app(k - prev)
-            app(len(t) + 1); app(-1); ext(t)
-            prev = k + 1
-        if tot > prev:
-            app(-1); app(tot - prev)
-    if sys.byteorder != "little":
-        body.byteswap()
-    body = body.tobytes()
-    lp = bytearray(b"LOTP") + struct.pack("<ii", 1, 1024) + struct.pack("<1024q", *offs) + body
+    hb += dens      # densidade de zumbis por chunk (0..4): mais predio = mais zumbi
+    return _finish_put(cx, cy, hb, lp, names, rooms, bld_rooms, zmax)
+
+
+def _finish_put(cx, cy, hb, lp, names, rooms, bld_rooms, zmax):
     ch = put(f"{cx}_{cy}.lotheader", hb) | put(f"world_{cx}_{cy}.lotpack", lp)   # chunkdata: o export grava
     if ch:
         G.setdefault("changed", []).append((cx, cy))
