@@ -60,8 +60,20 @@ echo "-- instalando dependencias prontas e montando o .app..."
 xattr -dr com.apple.quarantine "$BUNDLE" 2>/dev/null || true
 
 FINAL="$DEST/$APP_NAME.app"
-if pgrep -f "$FINAL/Contents/MacOS/" >/dev/null 2>&1; then
-  fail "feche o $APP_NAME antes de reinstalar"
+RUNF="${PZMS_HOME:-$HOME/Library/Application Support/jpzmapstudio}/running.json"
+RESUME=""
+running() { pgrep -f "$FINAL/Contents/MacOS/" >/dev/null 2>&1; }
+wait_exit() { for _ in $(seq 1 "$1"); do running || return 0; sleep 0.5; done; ! running; }
+if running; then
+  echo "-- $APP_NAME aberto: salvando o projeto e fechando para atualizar..."
+  RESUME=1
+  PORT="$(sed -n 's/.*"port": *\([0-9][0-9]*\).*/\1/p' "$RUNF" 2>/dev/null || true)"
+  if [ -n "$PORT" ]; then
+    curl -fsS -m 20 -X POST -H 'Content-Type: application/json' -d '{}' "http://127.0.0.1:$PORT/api/shutdown" >/dev/null 2>&1 || true
+  fi
+  # versao antiga (sem /api/shutdown): pede para o app sair; a janela salva o projeto ao fechar
+  wait_exit 20 || osascript -e 'tell application "J'"'"' PZ MAP STUDIO" to quit' >/dev/null 2>&1 || true
+  wait_exit 40 || fail "nao consegui fechar o $APP_NAME; feche a janela e rode o instalador de novo"
 fi
 rm -rf "$FINAL"
 mv "$BUNDLE" "$FINAL"
@@ -72,5 +84,5 @@ echo
 echo "== Pronto: $FINAL"
 echo "   Seus dados ficam em ~/Library/Application Support/jpzmapstudio (nao sao apagados ao reinstalar)."
 if [ -z "${PZMS_NO_LAUNCH:-}" ]; then
-  open "$FINAL"
+  if [ -n "$RESUME" ]; then open "$FINAL" --args --resume; else open "$FINAL"; fi
 fi

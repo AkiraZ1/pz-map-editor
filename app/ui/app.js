@@ -66,7 +66,28 @@ async function boot() {
   if (!S.pal) await loadPalette();
   afterState();
   if (S.state.project && !S.cells.size) resetView();
+  if (!S.state.project && S.state.resume) await resumeSession(S.state.resume);
   for (const f of window.PZMS_INIT || []) f();
+  if (!S.viewT) S.viewT = setInterval(postView, 2000);
+}
+
+// o instalador fecha o app salvando; ao reabrir volta ao mesmo projeto e camera
+async function resumeSession(r) {
+  try { await api("/api/resume/done", {}); } catch (e) { /* segue */ }
+  await openProject(r.path);
+  const v = r.view || {};
+  if (!S.state.project || v.x == null) return;
+  if (v.z != null && v.z !== S.z) setZ(v.z);
+  Object.assign(S.gl.cam, { x: v.x, y: v.y, zoom: v.zoom || S.gl.cam.zoom });
+  S.needDraw = true; ensureCells();
+  say("projeto reaberto de onde parou");
+}
+
+function postView() {
+  if (!S.state || !S.state.project || !S.gl) return;
+  const c = S.gl.cam, v = { x: c.x, y: c.y, zoom: c.zoom, z: S.z }, k = JSON.stringify(v);
+  if (k === S.viewK) return;
+  S.viewK = k; api("/api/view", v).catch(() => {});
 }
 
 function setupGame(err) {

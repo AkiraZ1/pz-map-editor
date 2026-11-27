@@ -66,9 +66,25 @@ if (Test-Sha $bundled) {
 Write-Host '-- Python conferido (sha256 ok)'
 
 # o app aberto trava os arquivos: pede para fechar antes
-$running = @(Get-Process -Name python, pythonw -ErrorAction SilentlyContinue | Where-Object {
-    $_.Path -and $_.Path.StartsWith($InstallDir, [StringComparison]::OrdinalIgnoreCase) })
-if ($running.Count -gt 0) { Fail "feche o $AppName antes de reinstalar" }
+# aberto: pede para salvar o projeto e fechar (/api/shutdown); depois reabre de onde parou
+function Get-Running { @(Get-Process -Name python, pythonw -ErrorAction SilentlyContinue | Where-Object {
+    $_.Path -and $_.Path.StartsWith($InstallDir, [StringComparison]::OrdinalIgnoreCase) }) }
+function Wait-Exit([int]$n) { for ($i = 0; $i -lt $n; $i++) { if ((Get-Running).Count -eq 0) { return $true }; Start-Sleep -Milliseconds 500 }; return ((Get-Running).Count -eq 0) }
+$Resume = $false
+if ((Get-Running).Count -gt 0) {
+    Write-Host "-- $AppName aberto: salvando o projeto e fechando para atualizar..."
+    $Resume = $true
+    $runf = Join-Path $env:APPDATA 'jpzmapstudio\running.json'
+    try {
+        $port = (Get-Content -LiteralPath $runf -Raw | ConvertFrom-Json).port
+        Invoke-WebRequest -UseBasicParsing -Method Post -Uri "http://127.0.0.1:$port/api/shutdown" -Body '{}' -ContentType 'application/json' -TimeoutSec 20 | Out-Null
+    } catch { }
+    if (-not (Wait-Exit 20)) {
+        # versao antiga (sem /api/shutdown): fecha a janela; o app salva o projeto ao fechar
+        Get-Running | ForEach-Object { [void]$_.CloseMainWindow() }
+        if (-not (Wait-Exit 40)) { Fail "nao consegui fechar o $AppName; feche a janela e rode o instalador de novo" }
+    }
+}
 
 New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 foreach ($d in @('python', 'app')) {
@@ -110,5 +126,8 @@ Write-Host ''
 Write-Host "== Pronto: $exe"
 Write-Host "   Seus dados ficam em $env:APPDATA\jpzmapstudio (nao sao apagados ao reinstalar)."
 Write-Host '   A janela usa o Microsoft Edge WebView2 (ja vem no Windows 10/11 atualizado); sem ele, abre no navegador.'
-if (-not $NoLaunch) { Start-Process -FilePath $exe -WorkingDirectory $InstallDir }
+if (-not $NoLaunch) {
+    if ($Resume) { Start-Process -FilePath $exe -WorkingDirectory $InstallDir -ArgumentList '--resume' }
+    else { Start-Process -FilePath $exe -WorkingDirectory $InstallDir }
+}
 exit 0

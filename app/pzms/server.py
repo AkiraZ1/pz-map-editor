@@ -39,6 +39,7 @@ class App:
         self.lock = threading.RLock()
         self._catalog = None
         self.handlers = {}                 # extensoes registradas por modulos (catalogo, osm, export)
+        self.resume = None                 # {"path", "view"} para reabrir depois de atualizar (routes_session)
         if self.media and A.is_ready(self.version):
             self._load_assets()
 
@@ -80,6 +81,7 @@ class App:
                 "undo": p.undo[-1]["label"] if p.undo else None, "redo": p.redo[-1]["label"] if p.redo else None,
                 "nu": len(p.undo), "nr": len(p.redo), "dirty": p.dirty()},
             "recent": self.cfg.get("recent", [])[:10],
+            "resume": self.resume if p is None else None,
             "projects_dir": gamedir.projects_dir(),
             "jobs": {k: j.view() for k, j in self.jobs.items()},
         }

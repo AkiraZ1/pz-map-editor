@@ -17,8 +17,12 @@ def main(argv=None):
     ap.add_argument("--browser", action="store_true", help="abrir no navegador em vez da janela nativa")
     ap.add_argument("--port", type=int, default=int(os.environ.get("PZMS_PORT", "0")))
     ap.add_argument("--no-open", action="store_true", help="so o servidor (testes)")
+    ap.add_argument("--resume", action="store_true", help="reabrir o ultimo projeto (usado pelo instalador)")
     a = ap.parse_args(argv)
     app, srv, url = server.serve(a.port)
+    from pzms import routes_session
+    routes_session.take_resume(app, recent_fallback=a.resume)
+    app.handlers["running_clear"] = routes_session.mark_running(srv.server_address[1])
     print(f"{APP_NAME} {__version__} em {url}", flush=True)
     if a.no_open:
         try:
