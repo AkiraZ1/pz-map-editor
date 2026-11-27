@@ -377,6 +377,7 @@ class Rotator:
         self.join = {}          # (W, N) -> NW
         self.face = {}          # (sheet, nome, grupo) -> {facing: {(gx,gy): sprite}}
         self.faceof = {}        # sprite -> (chave, facing, (gx,gy))
+        self.garage = {}        # (folha, bloco de 8, lado, parte) -> sprite do portao de garagem
         side = {}
         for n, p in tiles.items():
             sheet, _, i = n.rpartition("_")
@@ -389,6 +390,8 @@ class Rotator:
             if "WallNW" in p and "CornerWestWall" in p and "CornerNorthWall" in p:
                 self.corner[n] = (p["CornerWestWall"], p["CornerNorthWall"])
                 self.join[(p["CornerWestWall"], p["CornerNorthWall"])] = n
+            if "GarageDoor" in p and s in ("W", "N") and str(p["GarageDoor"]).isdigit():
+                self.garage[(sheet, i // 8, s, int(p["GarageDoor"]))] = n
             f = p.get("Facing")
             if f in FACE and "CustomName" in p:
                 gp = tuple(int(c) for c in p.get("SpriteGridPos", "0,0").split(","))
@@ -435,6 +438,21 @@ class Rotator:
         elif r == 3 and c in (6, 7):
             c = 13 - c
         return f"{sheet}_{base * 32 + r * 8 + c}"
+
+    # portao de garagem: partes 1-2-3 (e 4-5-6) correm de S para N na parede W e de O para L na N (medido no vanilla).
+    _GDIR = {"W": (0, -1), "N": (1, 0)}
+
+    def garage_part(self, n, side, ns, L):
+        p = self.t.get(n, {})
+        g = str(p.get("GarageDoor", ""))
+        if not g.isdigit():
+            return None
+        sheet, _, i = n.rpartition("_")
+        g = int(g)
+        k = (g - 1) % 3
+        if L(*self._GDIR[side]) != self._GDIR[ns]:
+            k = 2 - k
+        return self.garage.get((sheet, int(i) // 8, ns, g - (g - 1) % 3 + k))
 
     def roof_flat(self, n):
         sheet, _, i = n.rpartition("_")
@@ -486,7 +504,10 @@ class Rotator:
                             ns, nx, ny = "W", round(a), int(b - 0.5)
                         else:
                             ns, nx, ny = "N", int(a - 0.5), round(b)
-                        if ns != side:
+                        g = self.garage_part(m, side, ns, L)
+                        if g:
+                            m = g
+                        elif ns != side:
                             m2 = self.flip.get(m)
                             if not m2:
                                 approx += 1
