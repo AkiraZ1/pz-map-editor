@@ -6,6 +6,7 @@
   <a href="https://github.com/AkiraZ1/pz-map-editor/releases/latest"><img src="https://img.shields.io/github/v/release/AkiraZ1/pz-map-editor?label=vers%C3%A3o&color=d9a441&style=for-the-badge" alt="Última versão"></a>
   <img src="https://img.shields.io/badge/Project%20Zomboid-B42%20(42.21%20%7C%2042.22)-4a5a2a?style=for-the-badge" alt="Project Zomboid B42">
   <img src="https://img.shields.io/badge/macOS%20%7C%20Windows-1d2024?style=for-the-badge" alt="macOS e Windows">
+  <a href="https://www.virustotal.com/gui/file/38baa6a6f26fb75ea9754ed5ef8b2fffabfd1bc925674de0930f3bcdb7ff4749"><img src="https://img.shields.io/badge/VirusTotal-0%20detec%C3%A7%C3%B5es-2ea043?style=for-the-badge&logo=virustotal&logoColor=white" alt="VirusTotal: 0 detecções"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0-6f7680?style=for-the-badge" alt="Licença GPL-3.0"></a>
 </p>
 
@@ -87,6 +88,8 @@
 > Você **não** precisa instalar Python, compilador nem nada além disso.
 
 **1. Baixe** o `jpzmapstudio-<versão>.zip` em **[Releases](https://github.com/AkiraZ1/pz-map-editor/releases/latest)** e descompacte.
+
+> 🛡️ **Verificado no VirusTotal:** nenhum antivírus acusou o zip da 0.4.6. [Ver o relatório](https://www.virustotal.com/gui/file/38baa6a6f26fb75ea9754ed5ef8b2fffabfd1bc925674de0930f3bcdb7ff4749).
 
 **2. Rode o instalador** do seu sistema:
 
