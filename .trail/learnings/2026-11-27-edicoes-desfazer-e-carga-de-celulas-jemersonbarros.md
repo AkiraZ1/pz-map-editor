@@ -3,7 +3,7 @@ title: "Edicoes, desfazer e carga de celulas vao em fila no cliente (servidor e 
 author: JemersonBarros
 date: 2026-11-27
 branch: main
-cost: { minutes: 49, tokens: 803247 }
+cost: { minutes: 50, tokens: 809536 }
 id: l-0d762314
 scope: repo
 status: active
@@ -47,6 +47,10 @@ Versao antiga sem /api/shutdown: o Mac pede quit pelo osascript (a janela salva 
 - When the server changes extras, it bumps the atlas `sig`. The UI polls the status and reloads the page when the sig no longer matches. The project stays open on the server, so boot shows it again.
 - Mods that provide sheets the opened map already uses (read from the lotheader tile tables) are added automatically to project meta `tilemods`.
 - The export does NOT write `require=` into mod.info, because the B42 format is uncertain. It writes `pack=` and `tiledef=` for the project's own sheets and shows in the UI which mods must be enabled.
+- The export now writes `require=` into 42/mod.info, listing the mods whose tiles the map uses (meta tilemods). This replaces the earlier decision not to write it.
+- Format confirmed in the local B42 mods: one line `require=IdA,IdB`, plain ids separated by commas, no backslash.
+
+In the code: app/pzms/export.py, where it writes mod.info.
 
 ## Watch out
 - Toda chamada nova que mexa no projeto deve passar por serial() no cliente, senao volta a corrida.

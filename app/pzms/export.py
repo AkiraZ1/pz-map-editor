@@ -273,6 +273,9 @@ def export(project, mods_dir=None, opts=None, jobs=None):
             f.write(f"author={opts['author']}\n")
         for ln in extra:
             f.write(ln + "\n")
+        need = [m for m in (meta.get("tilemods") or []) if m and m != modid]
+        if need:                                     # mods cujos tiles o mapa usa (formato B42: require=IdA,IdB)
+            f.write("require=" + ",".join(need) + "\n")
     th = os.path.join(mdir, "thumb.png")
     try:
         if todo or not os.path.exists(th):
