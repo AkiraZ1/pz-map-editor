@@ -31,8 +31,9 @@
   <br><sub>Part of São Paulo generated from OpenStreetMap: streets, sidewalks and buildings with rooms and furniture, all editable.</sub>
 </p>
 
-> The app's interface is in Portuguese (Brazil). Tools are icon-and-letter based, and the screenshots below
-> show where everything is.
+> 🌐 **English and Portuguese:** the app opens in English when your system is in English (and in Portuguese
+> when it is in Portuguese). You can switch any time in **About** (click the app name at the top left).
+> The installers follow your system language too. The screenshots below are from the Portuguese version.
 
 ---
 

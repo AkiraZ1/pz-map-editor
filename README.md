@@ -78,6 +78,10 @@
 </table>
 
 > **Tiles de mods:** o botão **Tiles extras** deixa usar os tiles dos mods que você já tem instalados.
+>
+> 🌐 **Português e inglês:** o app abre em português quando o sistema está em português e em inglês nos outros
+> idiomas. Dá para trocar a qualquer hora em **Sobre** (clique no nome do app, no canto de cima). Os
+> instaladores também seguem o idioma do sistema.
 
 ---
 
