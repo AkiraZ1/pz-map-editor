@@ -6,7 +6,7 @@
   <a href="https://github.com/AkiraZ1/pz-map-editor/releases/latest"><img src="https://img.shields.io/github/v/release/AkiraZ1/pz-map-editor?label=release&color=d9a441&style=for-the-badge" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/Project%20Zomboid-B42%20(42.21%20%7C%2042.22)-4a5a2a?style=for-the-badge" alt="Project Zomboid B42">
   <img src="https://img.shields.io/badge/macOS%20%7C%20Windows-1d2024?style=for-the-badge" alt="macOS and Windows">
-  <a href="https://www.virustotal.com/gui/file/38baa6a6f26fb75ea9754ed5ef8b2fffabfd1bc925674de0930f3bcdb7ff4749"><img src="https://img.shields.io/badge/VirusTotal-0%20detections-2ea043?style=for-the-badge&logo=virustotal&logoColor=white" alt="VirusTotal: 0 detections"></a>
+  <a href="https://www.virustotal.com/gui/file/10028ea3a66c48a6f02f6591b5ad5a08fa50481d3cd35ac0dc72f2fd2ca4663e"><img src="https://img.shields.io/badge/VirusTotal-0%20detections-2ea043?style=for-the-badge&logo=virustotal&logoColor=white" alt="VirusTotal: 0 detections"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-6f7680?style=for-the-badge" alt="GPL-3.0 license"></a>
 </p>
 
@@ -93,7 +93,7 @@
 
 **1. Download** `jpzmapstudio-<version>.zip` from **[Releases](https://github.com/AkiraZ1/pz-map-editor/releases/latest)** and unzip it.
 
-> 🛡️ **Checked on VirusTotal:** no antivirus engine flagged the 0.4.6 zip. [See the report](https://www.virustotal.com/gui/file/38baa6a6f26fb75ea9754ed5ef8b2fffabfd1bc925674de0930f3bcdb7ff4749).
+> 🛡️ **Checked on VirusTotal:** no antivirus engine flagged the 0.5.1 zip. [See the report](https://www.virustotal.com/gui/file/10028ea3a66c48a6f02f6591b5ad5a08fa50481d3cd35ac0dc72f2fd2ca4663e).
 
 **2. Run the installer** for your system:
 
