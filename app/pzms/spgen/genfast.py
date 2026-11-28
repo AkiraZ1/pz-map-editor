@@ -1,7 +1,9 @@
 """Rotinas nativas do spgen, so em Rust e pre-compiladas (fonte: genfast_rs/ e genfast_py/, copia de
 saopaulo/scripts). Binarios por plataforma em bin/<alvo>/ (alvo = mac-arm64 | mac-x64 | win-x64):
-  _genfast_rs.so|.dll   ABI C via ctypes (C): max_rect, rectify_one, ground_z0, ring_stats, bld_geom
-  _gfpy.so|.pyd         modulo PyO3 abi3 (GP): Cell, Groups, furnish, isl_mask, to_rects, bi_groups...
+  _genfast_rs.so|.dll   ABI C via ctypes (C): max_rect, poly_area, rectify_one, ground_z0, ring_stats,
+                        bld_geom, plan_extras, smooth_ground, sidewalk, drop_small
+  _gfpy.so|.pyd         modulo PyO3 abi3 (GP): Cell, Groups, furnish, isl_mask, to_rects, bi_groups,
+                        poi_* / kiosk_spot / muro_lote / zone_mask (poi.rs)...
 Recompilar: python tools/build_rust.py (precisa de cargo; ver o docstring de la)."""
 import ctypes
 import importlib.util
@@ -47,6 +49,16 @@ def _load_c():
     c.ring_stats.restype = None
     c.bld_geom.argtypes = [P, P, P, ctypes.c_int, P, P]
     c.bld_geom.restype = None
+    c.poly_area.argtypes = [P, ctypes.c_int]
+    c.poly_area.restype = ctypes.c_double
+    c.plan_extras.argtypes = [ctypes.c_int, ctypes.c_int, P, P, P, P, P, ctypes.c_int, ctypes.c_int, P, P, P, P]
+    c.plan_extras.restype = None
+    c.smooth_ground.argtypes = [ctypes.c_int, ctypes.c_int, P, P, P, P]
+    c.smooth_ground.restype = None
+    c.sidewalk.argtypes = [ctypes.c_int, ctypes.c_int, P, ctypes.c_uint8, ctypes.c_uint8, ctypes.c_uint8, ctypes.c_uint8]
+    c.sidewalk.restype = None
+    c.drop_small.argtypes = [ctypes.c_int, ctypes.c_int, P, ctypes.c_int, ctypes.c_int]
+    c.drop_small.restype = None
     return c
 
 
@@ -90,3 +102,55 @@ def bld_geom(xy, offs, nop):
     oxy = np.empty_like(xy); out = np.zeros((len(offs) - 1, 5))
     C.bld_geom(_p(xy), _p(offs), _p(nop), len(offs) - 1, _p(oxy), _p(out))
     return oxy, out
+
+
+def max_rect(m):
+    m = np.ascontiguousarray(m, np.uint8)
+    out = np.zeros(4, np.int32)
+    if not C.max_rect(_p(m), m.shape[0], m.shape[1], _p(out)):
+        return None
+    return tuple(int(v) for v in out)
+
+
+def poly_area(pts):
+    a = np.ascontiguousarray(pts, np.float64)
+    return C.poly_area(_p(a), len(a))
+
+
+def plan_extras(Ba, Lv, Ga, apt, okb, gwater, walk_lut):
+    """varandas + escada de servico (gen.plan_extras): (BAL u8, BC bool, [(b, x, y, lado 'W'|'N')] na ordem do dict)."""
+    H, W = Ba.shape
+    Ba = np.ascontiguousarray(Ba, np.int32)
+    Lv, Ga = np.ascontiguousarray(Lv, np.uint8), np.ascontiguousarray(Ga, np.uint8)
+    apt, okb = np.ascontiguousarray(apt, np.uint8), np.ascontiguousarray(okb, np.uint8)
+    lut = np.ascontiguousarray(walk_lut, np.uint8)
+    BAL, BC = np.zeros((H, W), np.uint8), np.zeros((H, W), np.uint8)
+    nb = len(apt)
+    lad = np.empty(nb * 5, np.int64)
+    C.plan_extras(H, W, _p(Ba), _p(Lv), _p(Ga), _p(apt), _p(okb), nb, int(gwater), _p(lut), _p(BAL), _p(BC), _p(lad))
+    lad = lad.reshape(nb, 5)
+    bs = np.nonzero(lad[:, 0] >= 0)[0]
+    bs = bs[np.argsort(lad[bs, 4], kind="stable")]
+    return BAL, BC.view(bool), [(int(b), int(lad[b, 1]), int(lad[b, 2]), "WN"[lad[b, 3]]) for b in bs]
+
+
+def smooth_ground(Ga, Ba, keep, grp):
+    """gen.smooth_ground nativo: devolve um Ga novo (uint8)."""
+    out = np.array(Ga, np.uint8, order="C", copy=True)
+    Ba = np.ascontiguousarray(Ba, np.int32)
+    keep = np.ascontiguousarray(keep, np.uint8)
+    grp = np.ascontiguousarray(grp, np.uint8)
+    C.smooth_ground(out.shape[0], out.shape[1], _p(out), _p(Ba), _p(keep), _p(grp))
+    return out
+
+
+def sidewalk(Ga, asph, pave, water, side):
+    """anel de calcada (r2 <= 10, wrap) no lugar: Ga uint8 contiguo."""
+    assert Ga.dtype == np.uint8 and Ga.flags.c_contiguous
+    C.sidewalk(Ga.shape[0], Ga.shape[1], _p(Ga), asph, pave, water, side)
+
+
+def drop_small(Ba, nb, masp):
+    """zera predios com < 16 quadrados ou bbox com lado < 3 (masp fica), no lugar: Ba int32 contiguo."""
+    assert Ba.dtype == np.int32 and Ba.flags.c_contiguous
+    C.drop_small(Ba.shape[0], Ba.shape[1], _p(Ba), nb, masp or -1)

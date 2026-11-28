@@ -334,3 +334,217 @@ pub unsafe extern "C" fn bld_geom(xy: *const f64, offs: *const i64, nop: *const 
         out[5 * k + 4] = nsum((0..m).map(|i| p[2 * i + 1])) / m as f64;
     }
 }
+
+/// plan_extras do gen.py (varandas + escada de servico), com o wrap do np.roll.
+/// ba i32 (h*w), lv/ga u8; apt/okb u8 por predio (nb); walk_lut u8[256] (Ga caminhavel).
+/// Saida: bal u8, bc u8 (h*w, zerados pelo chamador); lad i64[nb*5] = (chave, x, y, lado 0=W 1=N, ordem), chave -1 = sem.
+#[no_mangle]
+pub unsafe extern "C" fn plan_extras(h: i32, w: i32, ba: *const i32, lv: *const u8, ga: *const u8,
+                                     apt: *const u8, okb: *const u8, nb: i32, gwater: i32, walk_lut: *const u8,
+                                     bal: *mut u8, bc: *mut u8, lad: *mut i64) {
+    let (hh, ww) = (h as usize, w as usize);
+    let n = hh * ww;
+    let ba = std::slice::from_raw_parts(ba, n);
+    let lv = std::slice::from_raw_parts(lv, n);
+    let ga = std::slice::from_raw_parts(ga, n);
+    let apt = std::slice::from_raw_parts(apt, nb as usize);
+    let okb = std::slice::from_raw_parts(okb, nb as usize);
+    let wl = std::slice::from_raw_parts(walk_lut, 256);
+    let bal = std::slice::from_raw_parts_mut(bal, n);
+    let bc = std::slice::from_raw_parts_mut(bc, n);
+    let lad = std::slice::from_raw_parts_mut(lad, nb as usize * 5);
+    let wrap = |v: isize, m: usize| -> usize { v.rem_euclid(m as isize) as usize };
+    let mut own = vec![0i32; n];
+    let mut cand = vec![0u8; n];
+    let mut c0 = vec![0u8; n];
+    for &(ax, sh) in &[(0usize, 1isize), (0, -1), (1, 1), (1, -1)] {
+        // own = roll(Ba, sh, ax): own[p] = Ba[p - sh ao longo de ax]
+        for y in 0..hh {
+            for x in 0..ww {
+                let s = if ax == 0 { wrap(y as isize - sh, hh) * ww + x } else { y * ww + wrap(x as isize - sh, ww) };
+                let o = ba[s];
+                let p = y * ww + x;
+                own[p] = o;
+                cand[p] = (ba[p] == 0 && ga[p] as i32 != gwater && o > 0 && apt[o as usize] != 0) as u8;
+            }
+        }
+        let along = 1 - ax;
+        // vizinho p+k ao longo de `along`, com wrap
+        let nbr = |y: usize, x: usize, k: isize| -> usize {
+            if along == 1 { y * ww + wrap(x as isize + k, ww) } else { wrap(y as isize + k, hh) * ww + x }
+        };
+        for y in 0..hh {
+            for x in 0..ww {
+                let p = y * ww + x;
+                let pos = if along == 1 { x } else { y };
+                let mut c = cand[p] != 0 && pos % 7 == 2;
+                if c {
+                    for k in 1..3 {
+                        let q = nbr(y, x, k);
+                        if cand[q] == 0 || own[q] != own[p] { c = false; break; }
+                    }
+                }
+                c0[p] = c as u8;
+            }
+        }
+        for y in 0..hh {
+            for x in 0..ww {
+                let p = y * ww + x;
+                if c0[p] == 0 { continue; }
+                let s = if ax == 0 { wrap(y as isize - sh, hh) * ww + x } else { y * ww + wrap(x as isize - sh, ww) };
+                let l = lv[s];
+                for k in 0..3 {
+                    let q = nbr(y, x, k);
+                    if l > bal[q] { bal[q] = l; }
+                }
+                bc[nbr(y, x, 1)] = 1;
+            }
+        }
+    }
+    for p in 0..n {
+        if bal[p] == 0 { bc[p] = 0; }
+    }
+    for i in 0..nb as usize { lad[i * 5] = -1; }
+    let mut ord: i64 = 0;
+    for (side, ax) in [(0i64, 1usize), (1, 0)] {
+        for y in 0..hh {
+            for x in 0..ww {
+                let p = y * ww + x;
+                if ba[p] != 0 || bal[p] != 0 || wl[ga[p] as usize] == 0 { continue; }
+                // own = roll(Ba, 1, ax); vizinhos ao longo de along = 1 - ax
+                let (o, a, b) = if ax == 1 {
+                    let xs = wrap(x as isize - 1, ww);
+                    (ba[y * ww + xs], ba[wrap(y as isize - 1, hh) * ww + xs], ba[wrap(y as isize + 1, hh) * ww + xs])
+                } else {
+                    let ys = wrap(y as isize - 1, hh) * ww;
+                    (ba[ys + x], ba[ys + wrap(x as isize - 1, ww)], ba[ys + wrap(x as isize + 1, ww)])
+                };
+                if o <= 0 || okb[o as usize] == 0 || a != o || b != o { continue; }
+                let k = (((x as i64).wrapping_mul(73856093)) ^ ((y as i64).wrapping_mul(19349663))) & 0xFFFFFF;
+                let r = &mut lad[o as usize * 5..o as usize * 5 + 5];
+                if r[0] < 0 {
+                    r[4] = ord; ord += 1;
+                    r[0] = k; r[1] = x as i64; r[2] = y as i64; r[3] = side;
+                } else if k < r[0] {
+                    r[0] = k; r[1] = x as i64; r[2] = y as i64; r[3] = side;
+                }
+            }
+        }
+    }
+}
+
+/// smooth_ground do gen.py: 2 passadas; quadrado livre (grp > 0, sem predio, fora de keep) com 3+ vizinhos
+/// N/S/W/E (borda = 'edge') de outro grupo vira o 1o desses vizinhos (ordem N, S, W, E). ga e alterado no lugar.
+#[no_mangle]
+pub unsafe extern "C" fn smooth_ground(h: i32, w: i32, ga: *mut u8, ba: *const i32, keep: *const u8, grp: *const u8) {
+    let (hh, ww) = (h as usize, w as usize);
+    let n = hh * ww;
+    let ga = std::slice::from_raw_parts_mut(ga, n);
+    let ba = std::slice::from_raw_parts(ba, n);
+    let keep = std::slice::from_raw_parts(keep, n);
+    let grp = std::slice::from_raw_parts(grp, 256);
+    let mut src = vec![0u8; n];
+    for _ in 0..2 {
+        src.copy_from_slice(ga);
+        for y in 0..hh {
+            let yn = if y == 0 { 0 } else { y - 1 };
+            let ys = if y + 1 == hh { y } else { y + 1 };
+            for x in 0..ww {
+                let p = y * ww + x;
+                let g0 = grp[src[p] as usize];
+                if g0 == 0 || ba[p] != 0 || keep[p] != 0 { continue; }
+                let xw = if x == 0 { 0 } else { x - 1 };
+                let xe = if x + 1 == ww { x } else { x + 1 };
+                let nb = [src[yn * ww + x], src[ys * ww + x], src[y * ww + xw], src[y * ww + xe]];
+                let gn = [grp[nb[0] as usize], grp[nb[1] as usize], grp[nb[2] as usize], grp[nb[3] as usize]];
+                for g in 1u8..5 {
+                    if g == g0 { continue; }
+                    let c = gn.iter().filter(|&&v| v == g).count();
+                    if c >= 3 {
+                        let k = (0..4).find(|&k| gn[k] == g).unwrap();
+                        ga[p] = nb[k];
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// anel de calcada: quadrado a ate r2 <= 10 de asfalto (com wrap, como o np.pad mode="wrap"), sem ser asfalto,
+/// calcadao ou agua, vira `side`. ga e alterado no lugar.
+#[no_mangle]
+pub unsafe extern "C" fn sidewalk(h: i32, w: i32, ga: *mut u8, asph: u8, pave: u8, water: u8, side: u8) {
+    let (hh, ww) = (h as usize, w as usize);
+    let n = hh * ww;
+    let ga = std::slice::from_raw_parts_mut(ga, n);
+    // dilatacao horizontal de raio r (1..3) com wrap, por linha, via prefixo circular
+    let mut hr = [vec![0u8; n], vec![0u8; n], vec![0u8; n]];
+    let mut pre = vec![0u32; ww + 1];
+    for y in 0..hh {
+        let row = &ga[y * ww..(y + 1) * ww];
+        for x in 0..ww { pre[x + 1] = pre[x] + (row[x] == asph) as u32; }
+        let tot = pre[ww];
+        for r in 1..4usize {
+            let o = &mut hr[r - 1][y * ww..(y + 1) * ww];
+            for x in 0..ww {
+                // soma em [x-r, x+r] circular
+                let a = x as isize - r as isize;
+                let b = x + r;
+                let s = if a >= 0 && b < ww {
+                    pre[b + 1] - pre[a as usize]
+                } else if a < 0 {
+                    let a2 = (a + ww as isize) as usize;
+                    pre[b.min(ww - 1) + 1] + (tot - pre[a2])
+                } else {
+                    (tot - pre[a as usize]) + pre[b - ww + 1]
+                };
+                o[x] = (s > 0) as u8;
+            }
+        }
+    }
+    // raio horizontal por dy: floor(sqrt(10 - dy^2))
+    const HW: [usize; 7] = [1, 2, 3, 3, 3, 2, 1];
+    let mut out = vec![0u8; n];
+    for y in 0..hh {
+        for x in 0..ww {
+            let p = y * ww + x;
+            let g = ga[p];
+            if g == asph || g == pave || g == water { continue; }
+            let mut near = false;
+            for (i, &r) in HW.iter().enumerate() {
+                let yy = (y as isize + i as isize - 3).rem_euclid(hh as isize) as usize;
+                if hr[r - 1][yy * ww + x] != 0 { near = true; break; }
+            }
+            out[p] = near as u8;
+        }
+    }
+    for p in 0..n { if out[p] != 0 { ga[p] = side; } }
+}
+
+/// remove predios com < 16 quadrados ou bbox com lado < 3 (masp > 0 fica). Ba alterado no lugar.
+#[no_mangle]
+pub unsafe extern "C" fn drop_small(h: i32, w: i32, ba: *mut i32, nb: i32, masp: i32) {
+    let (hh, ww, nb) = (h as usize, w as usize, nb as usize);
+    let ba = std::slice::from_raw_parts_mut(ba, hh * ww);
+    let mut cnt = vec![0i64; nb];
+    let mut bb = vec![[i32::MAX, i32::MAX, -1i32, -1i32]; nb];
+    for y in 0..hh {
+        for x in 0..ww {
+            let b = ba[y * ww + x] as usize;
+            cnt[b] += 1;
+            let r = &mut bb[b];
+            if (x as i32) < r[0] { r[0] = x as i32; }
+            if (y as i32) < r[1] { r[1] = y as i32; }
+            if (x as i32) > r[2] { r[2] = x as i32; }
+            if (y as i32) > r[3] { r[3] = y as i32; }
+        }
+    }
+    let mut drop = vec![false; nb];
+    for b in 1..nb {
+        let r = bb[b];
+        let side = if r[2] < 0 { i64::MIN } else { ((r[2] - r[0] + 1).min(r[3] - r[1] + 1)) as i64 };
+        drop[b] = (cnt[b] < 16 || side < 3) && b as i32 != masp;
+    }
+    for v in ba.iter_mut() { if drop[*v as usize] { *v = 0; } }
+}

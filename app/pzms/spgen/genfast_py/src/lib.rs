@@ -2,6 +2,7 @@
 //! por comodo com a conversao para numpy). Mesmas regras do Python do gen.py; o hash da saida tem que bater.
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PySet, PyTuple};
+mod poi;
 
 struct Grid { x0: i32, y0: i32, w: usize, h: usize, g: Vec<u8> }
 
@@ -777,5 +778,17 @@ fn _gfpy(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(group_rooms, m)?)?;
     m.add_function(wrap_pyfunction!(to_rects, m)?)?;
     m.add_function(wrap_pyfunction!(bi_groups, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::poi_snap, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::posto_carve, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::poi_cells, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::poi_assign, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::area_pick, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::kiosk_spot, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::carve_rect, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::canopy_free, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::park_frags, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::free_rect5, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::zone_mask, m)?)?;
+    m.add_function(wrap_pyfunction!(poi::muro_lote, m)?)?;
     Ok(())
 }
