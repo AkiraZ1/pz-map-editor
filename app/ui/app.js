@@ -453,7 +453,7 @@ function wallClickOps(fx, fy) {
 function openingOpts(kind) {
   const box = h("span", { class: "opgrid" });
   const search = h("input", { type: "search", placeholder: "buscar (en/pt/tile)", value: OPEN.q, style: "width:11em" });
-  const name = o => o.pt || o.en || o.label;
+  const name = o => gameName(o) || o.label;
   const fill = () => {
     box.innerHTML = "";
     const L = (OPEN.list || {})[kind] || [], q = fold(OPEN.q);
@@ -462,7 +462,7 @@ function openingOpts(kind) {
       if (q && ![o.label, o.en, o.pt, o.W, o.N].some(t => fold(t).includes(q))) continue;
       const c = h("canvas", { width: 30, height: 44 });
       try { S.atlas.thumb(c, [o.W], 30, 44); } catch (e) { /* atlas carregando */ }
-      box.append(h("button", { class: o.W === cur.W ? "on" : "", title: `${name(o)}${o.en && o.pt ? " / " + o.en : ""}\n${o.W} | ${o.N}`,
+      box.append(h("button", { class: o.W === cur.W ? "on" : "", title: `${name(o)}${o.en && o.pt && o.en !== o.pt ? " / " + (name(o) === o.en ? o.pt : o.en) : ""}\n${o.W} | ${o.N}`,
         onclick: () => { OPEN.sel[kind] = o.W; try { localStorage.setItem("pzms.openings", JSON.stringify(OPEN.sel)); } catch (e) { /* ok */ } setTool("wall"); } }, c));
     }
     if (!box.children.length) box.append(h("span", { style: "color:var(--dim)" }, OPEN.list ? "nada encontrado" : "carregando..."));
@@ -539,7 +539,9 @@ function renderCats() {
   renderSubs(); renderItems();
 }
 const fold = s => String(s).toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");   // busca sem acento
-const playerName = it => [it.pt, it.en && it.en !== it.pt ? it.en : ""].filter(Boolean).join(" / ");
+// nome vanilla do jogo (en/pt): primeiro o do idioma da interface
+const gameName = o => (window.PZMS_LANG === "en" ? (o.en || o.pt) : (o.pt || o.en)) || "";
+const playerName = it => { const a = gameName(it), b = a === it.pt ? it.en : it.pt; return [a, b && b !== a ? b : ""].filter(Boolean).join(" / "); };
 function catItems() {
   const q = fold(S.search.trim());
   if (q) return S.pal.items.filter(it => [it.label, it.id, it.sub, it.en, it.pt].some(v => v && fold(v).includes(q)));
@@ -571,7 +573,7 @@ function renderItems(limit = 360) {
   for (const it of items.slice(0, limit)) {
     if (S.item && it.rot && it.rot[0] !== it.id && S.sub === null && !S.search && it.rot.length > 1) continue; // so 1 orientacao por grupo
     const c = h("canvas", { "data-id": it.id });
-    const card = h("div", { class: "card" + (S.item && S.item.id === it.id ? " on" : ""), title: `${playerName(it) || it.label}\n${it.label}\n${it.icon}`, onclick: () => selectItem(it) }, c, h("span", {}, it.pt || it.en || it.label));
+    const card = h("div", { class: "card" + (S.item && S.item.id === it.id ? " on" : ""), title: `${playerName(it) || it.label}\n${it.label}\n${it.icon}`, onclick: () => selectItem(it) }, c, h("span", {}, gameName(it) || it.label));
     el.append(card); thumbIO.observe(c);
   }
   if (items.length > limit) el.append(h("button", { style: "grid-column:1/-1", onclick: () => renderItems(limit * 3) }, `mostrar mais (${items.length - limit})`));
@@ -929,6 +931,9 @@ function about() {
     h("p", { class: "note" }, `Jogo detectado: ${(st.game && st.game.version) || "?"}  -  ${(st.game && st.game.media) || ""}`),
     h("p", { class: "note" }, "Sprites e predios sao lidos da sua propria instalacao e guardados em cache local; nada do jogo e redistribuido."),
     h("p", {}, h("b", {}, "J' PZ MAP STUDIO — criado por Jemerson Barros")),
+    h("div", { class: "row", style: "gap:6px;align-items:center" }, h("span", {}, "Idioma"),
+      ...[["pt", "Português"], ["en", "English"]].map(([k, n]) =>
+        h("button", { class: window.PZMS_LANG === k ? "on" : "", "data-noi18n": "", onclick: () => window.setLang(k) }, n))),
   ], [h("button", { onclick: closeModal }, "Fechar")]);
 }
 

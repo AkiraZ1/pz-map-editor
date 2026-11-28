@@ -21,9 +21,14 @@ $Url = "https://github.com/astral-sh/python-build-standalone/releases/download/$
 $Src = $PSScriptRoot
 $Cache = Join-Path $env:LOCALAPPDATA 'jpzmapstudio\dl'
 
+# idioma das mensagens: o idioma da interface do Windows (pt = portugues, o resto = ingles)
+$En = $true
+try { $En = ((Get-UICulture).TwoLetterISOLanguageName -ne 'pt') } catch { $En = $true }
+function T([string]$TextPt, [string]$TextEn) { if ($script:En) { return $TextEn } else { return $TextPt } }
+
 function Fail([string]$msg) {
     Write-Host ''
-    Write-Host "ERRO: $msg" -ForegroundColor Red
+    Write-Host ((T 'ERRO' 'ERROR') + ": $msg") -ForegroundColor Red
     exit 1
 }
 
@@ -32,16 +37,16 @@ function Test-Sha([string]$path) {
     return ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLower() -eq $Sha)
 }
 
-Write-Host "== $AppName : instalador Windows"
+Write-Host ("== $AppName : " + (T 'instalador Windows' 'Windows installer'))
 $arch = $env:PROCESSOR_ARCHITEW6432
 if (-not $arch) { $arch = $env:PROCESSOR_ARCHITECTURE }
-if ($arch -eq 'ARM64') { Write-Host '-- Windows ARM64: usando o runtime x64 (emulacao do Windows 11).' }
-elseif ($arch -ne 'AMD64') { Fail "arquitetura nao suportada: $arch (precisa Windows 64 bits)" }
+if ($arch -eq 'ARM64') { Write-Host (T '-- Windows ARM64: usando o runtime x64 (emulacao do Windows 11).' '-- Windows ARM64: using the x64 runtime (Windows 11 emulation).') }
+elseif ($arch -ne 'AMD64') { Fail (T "arquitetura nao suportada: $arch (precisa Windows 64 bits)" "unsupported architecture: $arch (needs 64-bit Windows)") }
 
-if (-not (Test-Path -LiteralPath (Join-Path $Src 'app\pzms\main.py'))) { Fail "pacote incompleto (falta app\pzms\main.py em $Src)" }
-if (-not (Test-Path -LiteralPath (Join-Path $Src 'launcher\build.py'))) { Fail 'pacote incompleto (falta launcher\build.py)' }
+if (-not (Test-Path -LiteralPath (Join-Path $Src 'app\pzms\main.py'))) { Fail (T "pacote incompleto (falta app\pzms\main.py em $Src)" "incomplete package (app\pzms\main.py missing in $Src)") }
+if (-not (Test-Path -LiteralPath (Join-Path $Src 'launcher\build.py'))) { Fail (T 'pacote incompleto (falta launcher\build.py)' 'incomplete package (launcher\build.py missing)') }
 $tarExe = Join-Path $env:SystemRoot 'System32\tar.exe'
-if (-not (Test-Path -LiteralPath $tarExe)) { Fail 'tar.exe nao encontrado (precisa Windows 10 1803 ou mais novo)' }
+if (-not (Test-Path -LiteralPath $tarExe)) { Fail (T 'tar.exe nao encontrado (precisa Windows 10 1803 ou mais novo)' 'tar.exe not found (needs Windows 10 1803 or newer)') }
 
 New-Item -ItemType Directory -Force -Path $Cache | Out-Null
 $tgz = Join-Path $Cache $Tarball
@@ -49,21 +54,21 @@ $bundled = Join-Path $Src "runtime\$Tarball"
 if (Test-Sha $bundled) {
     $tgz = $bundled
 } elseif (-not (Test-Sha $tgz)) {
-    Write-Host "-- baixando Python $PyVer portatil..."
+    Write-Host (T "-- baixando Python $PyVer portatil..." "-- downloading portable Python $PyVer...")
     try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch { }
     $part = "$tgz.part"
     try {
         Invoke-WebRequest -Uri $Url -OutFile $part -UseBasicParsing
     } catch {
-        Fail "download do Python falhou ($Url): $($_.Exception.Message)"
+        Fail ((T "download do Python falhou" "Python download failed") + " ($Url): $($_.Exception.Message)")
     }
     Move-Item -LiteralPath $part -Destination $tgz -Force
     if (-not (Test-Sha $tgz)) {
         Remove-Item -LiteralPath $tgz -Force
-        Fail 'sha256 do Python nao confere (download corrompido ou adulterado)'
+        Fail (T 'sha256 do Python nao confere (download corrompido ou adulterado)' 'Python sha256 does not match (corrupted or tampered download)')
     }
 }
-Write-Host '-- Python conferido (sha256 ok)'
+Write-Host (T '-- Python conferido (sha256 ok)' '-- Python verified (sha256 ok)')
 
 # o app aberto trava os arquivos: pede para fechar antes
 # aberto: pede para salvar o projeto e fechar (/api/shutdown); depois reabre de onde parou
@@ -72,7 +77,7 @@ function Get-Running { @(Get-Process -Name python, pythonw -ErrorAction Silently
 function Wait-Exit([int]$n) { for ($i = 0; $i -lt $n; $i++) { if ((Get-Running).Count -eq 0) { return $true }; Start-Sleep -Milliseconds 500 }; return ((Get-Running).Count -eq 0) }
 $Resume = $false
 if ((Get-Running).Count -gt 0) {
-    Write-Host "-- $AppName aberto: salvando o projeto e fechando para atualizar..."
+    Write-Host (T "-- $AppName aberto: salvando o projeto e fechando para atualizar..." "-- $AppName is open: saving the project and closing it to update...")
     $Resume = $true
     $runf = Join-Path $env:APPDATA 'jpzmapstudio\running.json'
     try {
@@ -82,7 +87,7 @@ if ((Get-Running).Count -gt 0) {
     if (-not (Wait-Exit 20)) {
         # versao antiga (sem /api/shutdown): fecha a janela; o app salva o projeto ao fechar
         Get-Running | ForEach-Object { [void]$_.CloseMainWindow() }
-        if (-not (Wait-Exit 40)) { Fail "nao consegui fechar o $AppName; feche a janela e rode o instalador de novo" }
+        if (-not (Wait-Exit 40)) { Fail (T "nao consegui fechar o $AppName; feche a janela e rode o instalador de novo" "could not close $AppName; close the window and run the installer again") }
     }
 }
 
@@ -91,21 +96,21 @@ foreach ($d in @('python', 'app')) {
     $p = Join-Path $InstallDir $d
     if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath $p -Recurse -Force }
 }
-Write-Host '-- extraindo o Python...'
+Write-Host (T '-- extraindo o Python...' '-- extracting Python...')
 $ErrorActionPreference = 'Continue'   # PS 5.1: stderr de programa nativo nao pode virar erro fatal
 & $tarExe -xzf $tgz -C $InstallDir
-if ($LASTEXITCODE -ne 0) { Fail "tar.exe falhou (codigo $LASTEXITCODE)" }
+if ($LASTEXITCODE -ne 0) { Fail ((T "tar.exe falhou (codigo" "tar.exe failed (code") + " $LASTEXITCODE)") }
 $py = Join-Path $InstallDir 'python\python.exe'
-if (-not (Test-Path -LiteralPath $py)) { Fail 'Python extraido incompleto' }
+if (-not (Test-Path -LiteralPath $py)) { Fail (T 'Python extraido incompleto' 'extracted Python is incomplete') }
 
-Write-Host '-- instalando dependencias prontas e montando o executavel...'
+Write-Host (T '-- instalando dependencias prontas e montando o executavel...' '-- installing bundled dependencies and building the executable...')
 & $py -I (Join-Path $Src 'launcher\build.py') --target $Target --src $Src --home $InstallDir
-if ($LASTEXITCODE -ne 0) { Fail "montagem falhou (codigo $LASTEXITCODE)" }
+if ($LASTEXITCODE -ne 0) { Fail ((T "montagem falhou (codigo" "build failed (code") + " $LASTEXITCODE)") }
 $ErrorActionPreference = 'Stop'
 
 $exe = Join-Path $InstallDir "$AppName.exe"
 $ico = Join-Path $InstallDir 'icon.ico'
-if (-not (Test-Path -LiteralPath $exe)) { Fail 'executavel nao foi criado' }
+if (-not (Test-Path -LiteralPath $exe)) { Fail (T 'executavel nao foi criado' 'the executable was not created') }
 
 if (-not $NoShortcuts) {
     $shell = New-Object -ComObject WScript.Shell
@@ -119,13 +124,13 @@ if (-not $NoShortcuts) {
         $lnk.Description = "$AppName - criado por Jemerson Barros"
         $lnk.Save()
     }
-    Write-Host '-- atalhos criados na Area de Trabalho e no Menu Iniciar'
+    Write-Host (T '-- atalhos criados na Area de Trabalho e no Menu Iniciar' '-- shortcuts created on the Desktop and in the Start Menu')
 }
 
 Write-Host ''
-Write-Host "== Pronto: $exe"
-Write-Host "   Seus dados ficam em $env:APPDATA\jpzmapstudio (nao sao apagados ao reinstalar)."
-Write-Host '   A janela usa o Microsoft Edge WebView2 (ja vem no Windows 10/11 atualizado); sem ele, abre no navegador.'
+Write-Host ("== " + (T 'Pronto' 'Done') + ": $exe")
+Write-Host (T "   Seus dados ficam em $env:APPDATA\jpzmapstudio (nao sao apagados ao reinstalar)." "   Your data lives in $env:APPDATA\jpzmapstudio (it is kept when you reinstall).")
+Write-Host (T '   A janela usa o Microsoft Edge WebView2 (ja vem no Windows 10/11 atualizado); sem ele, abre no navegador.' '   The window uses Microsoft Edge WebView2 (included in an up-to-date Windows 10/11); without it, the app opens in the browser.')
 if (-not $NoLaunch) {
     if ($Resume) { Start-Process -FilePath $exe -WorkingDirectory $InstallDir -ArgumentList '--resume' }
     else { Start-Process -FilePath $exe -WorkingDirectory $InstallDir }
